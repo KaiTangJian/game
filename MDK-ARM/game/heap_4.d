@@ -1,0 +1,14 @@
+game\heap_4.o: ..\FreeRTOS\portable\MemMang\heap_4.c
+game\heap_4.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdlib.h
+game\heap_4.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\string.h
+game\heap_4.o: ../FreeRTOS/include/FreeRTOS.h
+game\heap_4.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stddef.h
+game\heap_4.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdint.h
+game\heap_4.o: ../Core/Src/FreeRTOSConfig.h
+game\heap_4.o: ../FreeRTOS/include/projdefs.h
+game\heap_4.o: ../FreeRTOS/include/portable.h
+game\heap_4.o: ../FreeRTOS/include/deprecated_definitions.h
+game\heap_4.o: ..\FreeRTOS\portable\RVDS\ARM_CM4F\portmacro.h
+game\heap_4.o: ../FreeRTOS/include/mpu_wrappers.h
+game\heap_4.o: ../FreeRTOS/include/task.h
+game\heap_4.o: ../FreeRTOS/include/list.h

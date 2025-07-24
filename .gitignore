@@ -1,0 +1,22 @@
+﻿# VS Code配置
+.vscode/
+
+# CubeMX生成文件
+build/
+Debug/
+Release/
+Core/Startup/
+Drivers/CMSIS/
+
+# 编译输出
+*.elf
+*.axf
+*.bin
+*.map
+*.lst
+*.hex
+
+# Keil/IAR工程文件
+*.uvproj*
+*.eww
+*.dep

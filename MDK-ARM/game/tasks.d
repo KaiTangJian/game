@@ -1,0 +1,16 @@
+game\tasks.o: ..\FreeRTOS\source\tasks.c
+game\tasks.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdlib.h
+game\tasks.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\string.h
+game\tasks.o: ../FreeRTOS/include/FreeRTOS.h
+game\tasks.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stddef.h
+game\tasks.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdint.h
+game\tasks.o: ../Core/Src/FreeRTOSConfig.h
+game\tasks.o: ../FreeRTOS/include/projdefs.h
+game\tasks.o: ../FreeRTOS/include/portable.h
+game\tasks.o: ../FreeRTOS/include/deprecated_definitions.h
+game\tasks.o: ..\FreeRTOS\portable\RVDS\ARM_CM4F\portmacro.h
+game\tasks.o: ../FreeRTOS/include/mpu_wrappers.h
+game\tasks.o: ../FreeRTOS/include/task.h
+game\tasks.o: ../FreeRTOS/include/list.h
+game\tasks.o: ../FreeRTOS/include/timers.h
+game\tasks.o: ../FreeRTOS/include/stack_macros.h

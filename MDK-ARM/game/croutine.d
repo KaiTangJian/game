@@ -1,0 +1,13 @@
+game\croutine.o: ..\FreeRTOS\source\croutine.c
+game\croutine.o: ../FreeRTOS/include/FreeRTOS.h
+game\croutine.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stddef.h
+game\croutine.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdint.h
+game\croutine.o: ../Core/Src/FreeRTOSConfig.h
+game\croutine.o: ../FreeRTOS/include/projdefs.h
+game\croutine.o: ../FreeRTOS/include/portable.h
+game\croutine.o: ../FreeRTOS/include/deprecated_definitions.h
+game\croutine.o: ..\FreeRTOS\portable\RVDS\ARM_CM4F\portmacro.h
+game\croutine.o: ../FreeRTOS/include/mpu_wrappers.h
+game\croutine.o: ../FreeRTOS/include/task.h
+game\croutine.o: ../FreeRTOS/include/list.h
+game\croutine.o: ../FreeRTOS/include/croutine.h
