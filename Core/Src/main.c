@@ -89,10 +89,10 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
- // my_printf(&huart1,"hello\r\n");
-//	HAL_UART_Transmit(&huart1,(uint8_t *)buffer1, sizeof(buffer1), 100);
+// my_printf(&huart1,"hello\r\n");
+	//HAL_UART_Transmit(&huart1,(uint8_t *)buffer1, sizeof(buffer1), 100);
   /* USER CODE END 2 */
-
+  FreeRTOS_Start();
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -100,8 +100,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-//		my_printf(&huart1,"hello\r\n");
-//		HAL_UART_Transmit(&huart1,(uint8_t *)buffer1, sizeof(buffer1), 100);
+		my_printf(&huart1,"hello\r\n");
+		HAL_UART_Transmit(&huart1,(uint8_t *)buffer1, sizeof(buffer1), 100);
   }
   /* USER CODE END 3 */
 }

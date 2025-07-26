@@ -11,7 +11,7 @@
 
 #include "KEY_APP.h"
 #include "USART_APP.h"
-
+#include "Scheduler.h"
 
 
 extern UART_HandleTypeDef huart1;

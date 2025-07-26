@@ -25,6 +25,7 @@
 "game\system_stm32f4xx.o"
 "game\key_app.o"
 "game\usart_app.o"
+"game\scheduler.o"
 "game\croutine.o"
 "game\event_groups.o"
 "game\list.o"

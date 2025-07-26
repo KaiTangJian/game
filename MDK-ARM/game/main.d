@@ -40,3 +40,4 @@ game\main.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include
 game\main.o: ../APP/KEY_APP.h
 game\main.o: ../APP/mydefine.h
 game\main.o: ../APP/USART_APP.h
+game\main.o: ../APP/Scheduler.h
