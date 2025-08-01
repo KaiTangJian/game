@@ -8,7 +8,7 @@ game\heap_4.o: ../Core/Src/FreeRTOSConfig.h
 game\heap_4.o: ../FreeRTOS/include/projdefs.h
 game\heap_4.o: ../FreeRTOS/include/portable.h
 game\heap_4.o: ../FreeRTOS/include/deprecated_definitions.h
-game\heap_4.o: ..\FreeRTOS\portable\RVDS\ARM_CM4F\portmacro.h
+game\heap_4.o: ../FreeRTOS/portable/RVDS/ARM_CM4F/portmacro.h
 game\heap_4.o: ../FreeRTOS/include/mpu_wrappers.h
 game\heap_4.o: ../FreeRTOS/include/task.h
 game\heap_4.o: ../FreeRTOS/include/list.h

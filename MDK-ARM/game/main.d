@@ -28,9 +28,13 @@ game\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h
 game\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
 game\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 game\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
+game\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
 game\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 game\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 game\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+game\main.o: ../Core/Inc/dma.h
+game\main.o: ../Core/Inc/spi.h
+game\main.o: ../Core/Inc/tim.h
 game\main.o: ../Core/Inc/usart.h
 game\main.o: ../Core/Inc/gpio.h
 game\main.o: ../APP/mydefine.h
@@ -40,3 +44,5 @@ game\main.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include
 game\main.o: ../APP/KEY_APP.h
 game\main.o: ../APP/mydefine.h
 game\main.o: ../APP/USART_APP.h
+game\main.o: ../APP/Scheduler.h
+game\main.o: ../APP/Lcd.h

@@ -18,6 +18,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
+#include "spi.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -33,7 +36,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-char buffer1[] = "hello\r\n";
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -55,7 +57,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+uint16_t count;
 /* USER CODE END 0 */
 
 /**
@@ -66,7 +68,6 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -87,10 +88,21 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART1_UART_Init();
+  MX_TIM2_Init();
+  MX_TIM3_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
- // my_printf(&huart1,"hello\r\n");
-//	HAL_UART_Transmit(&huart1,(uint8_t *)buffer1, sizeof(buffer1), 100);
+  //HAL_TIM_Base_Start_IT(&htim2);
+  //HAL_TIM_Base_Start_IT(&htim3);
+  LCD_Init(); // ��ʼ��LCD
+  count = LCD_ReadID();
+  my_printf(&huart1, "count: %d\r\n", count);
+//	LCD_Clear(RED);
+	LCD_Test();
+  //LCD_Test(); // LCD���Ժ���
+  //FreeRTOS_Start();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -100,8 +112,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-//		my_printf(&huart1,"hello\r\n");
-//		HAL_UART_Transmit(&huart1,(uint8_t *)buffer1, sizeof(buffer1), 100);
+		my_printf(&huart1,"hello\r\n");
+		LCD_Test();
   }
   /* USER CODE END 3 */
 }
@@ -173,7 +185,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
-
+    if (htim->Instance == TIM2)
+    {
+      my_printf(&huart1,"TIM2\r\n");
+    }
+    else if(htim->Instance == TIM3)
+    {
+      my_printf(&huart1,"TIM3\r\n");
+    }
   /* USER CODE END Callback 1 */
 }
 

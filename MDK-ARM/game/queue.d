@@ -8,7 +8,7 @@ game\queue.o: ../Core/Src/FreeRTOSConfig.h
 game\queue.o: ../FreeRTOS/include/projdefs.h
 game\queue.o: ../FreeRTOS/include/portable.h
 game\queue.o: ../FreeRTOS/include/deprecated_definitions.h
-game\queue.o: ..\FreeRTOS\portable\RVDS\ARM_CM4F\portmacro.h
+game\queue.o: ../FreeRTOS/portable/RVDS/ARM_CM4F/portmacro.h
 game\queue.o: ../FreeRTOS/include/mpu_wrappers.h
 game\queue.o: ../FreeRTOS/include/task.h
 game\queue.o: ../FreeRTOS/include/list.h

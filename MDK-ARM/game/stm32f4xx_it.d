@@ -28,6 +28,7 @@ game\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.
 game\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
 game\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 game\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
+game\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
 game\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 game\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 game\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
@@ -37,7 +38,7 @@ game\stm32f4xx_it.o: ../Core/Src/FreeRTOSConfig.h
 game\stm32f4xx_it.o: ../FreeRTOS/include/projdefs.h
 game\stm32f4xx_it.o: ../FreeRTOS/include/portable.h
 game\stm32f4xx_it.o: ../FreeRTOS/include/deprecated_definitions.h
-game\stm32f4xx_it.o: ..\FreeRTOS\portable\RVDS\ARM_CM4F\portmacro.h
+game\stm32f4xx_it.o: ../FreeRTOS/portable/RVDS/ARM_CM4F/portmacro.h
 game\stm32f4xx_it.o: ../FreeRTOS/include/mpu_wrappers.h
 game\stm32f4xx_it.o: ../FreeRTOS/include/task.h
 game\stm32f4xx_it.o: ../FreeRTOS/include/list.h

@@ -6,7 +6,7 @@ game\croutine.o: ../Core/Src/FreeRTOSConfig.h
 game\croutine.o: ../FreeRTOS/include/projdefs.h
 game\croutine.o: ../FreeRTOS/include/portable.h
 game\croutine.o: ../FreeRTOS/include/deprecated_definitions.h
-game\croutine.o: ..\FreeRTOS\portable\RVDS\ARM_CM4F\portmacro.h
+game\croutine.o: ../FreeRTOS/portable/RVDS/ARM_CM4F/portmacro.h
 game\croutine.o: ../FreeRTOS/include/mpu_wrappers.h
 game\croutine.o: ../FreeRTOS/include/task.h
 game\croutine.o: ../FreeRTOS/include/list.h

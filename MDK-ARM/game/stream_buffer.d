@@ -7,7 +7,7 @@ game\stream_buffer.o: ../Core/Src/FreeRTOSConfig.h
 game\stream_buffer.o: ../FreeRTOS/include/projdefs.h
 game\stream_buffer.o: ../FreeRTOS/include/portable.h
 game\stream_buffer.o: ../FreeRTOS/include/deprecated_definitions.h
-game\stream_buffer.o: ..\FreeRTOS\portable\RVDS\ARM_CM4F\portmacro.h
+game\stream_buffer.o: ../FreeRTOS/portable/RVDS/ARM_CM4F/portmacro.h
 game\stream_buffer.o: ../FreeRTOS/include/mpu_wrappers.h
 game\stream_buffer.o: ../FreeRTOS/include/task.h
 game\stream_buffer.o: ../FreeRTOS/include/list.h

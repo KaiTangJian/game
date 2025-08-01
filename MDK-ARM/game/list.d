@@ -7,6 +7,6 @@ game\list.o: ../Core/Src/FreeRTOSConfig.h
 game\list.o: ../FreeRTOS/include/projdefs.h
 game\list.o: ../FreeRTOS/include/portable.h
 game\list.o: ../FreeRTOS/include/deprecated_definitions.h
-game\list.o: ..\FreeRTOS\portable\RVDS\ARM_CM4F\portmacro.h
+game\list.o: ../FreeRTOS/portable/RVDS/ARM_CM4F/portmacro.h
 game\list.o: ../FreeRTOS/include/mpu_wrappers.h
 game\list.o: ../FreeRTOS/include/list.h

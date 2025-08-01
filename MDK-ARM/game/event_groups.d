@@ -7,7 +7,7 @@ game\event_groups.o: ../Core/Src/FreeRTOSConfig.h
 game\event_groups.o: ../FreeRTOS/include/projdefs.h
 game\event_groups.o: ../FreeRTOS/include/portable.h
 game\event_groups.o: ../FreeRTOS/include/deprecated_definitions.h
-game\event_groups.o: ..\FreeRTOS\portable\RVDS\ARM_CM4F\portmacro.h
+game\event_groups.o: ../FreeRTOS/portable/RVDS/ARM_CM4F/portmacro.h
 game\event_groups.o: ../FreeRTOS/include/mpu_wrappers.h
 game\event_groups.o: ../FreeRTOS/include/task.h
 game\event_groups.o: ../FreeRTOS/include/list.h

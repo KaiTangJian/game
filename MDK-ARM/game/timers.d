@@ -7,7 +7,7 @@ game\timers.o: ../Core/Src/FreeRTOSConfig.h
 game\timers.o: ../FreeRTOS/include/projdefs.h
 game\timers.o: ../FreeRTOS/include/portable.h
 game\timers.o: ../FreeRTOS/include/deprecated_definitions.h
-game\timers.o: ..\FreeRTOS\portable\RVDS\ARM_CM4F\portmacro.h
+game\timers.o: ../FreeRTOS/portable/RVDS/ARM_CM4F/portmacro.h
 game\timers.o: ../FreeRTOS/include/mpu_wrappers.h
 game\timers.o: ../FreeRTOS/include/task.h
 game\timers.o: ../FreeRTOS/include/list.h
