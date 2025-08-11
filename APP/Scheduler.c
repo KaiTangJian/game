@@ -2,155 +2,190 @@
 #include "task.h"
 #include "mydefine.h"
 #include "queue.h"
-//Æô¶¯ÈÎÎñÅäÖÃ
+#include "semphr.h"
+#include "Bright_APP.h"
+#include "adc.h"
+#include "Lcd.h"
+#include "UI_Manager.h"
+// å¯åŠ¨ä»»åŠ¡é…ç½®
 #define START_TASK_STACK_SIZE 130
-#define START_TASK_PRIORITY 1
+#define START_TASK_PRIORITY 4
 TaskHandle_t Start_Task_Handle;
-void Start_Task(void * pvParameters);
+void Start_Task(void *pvParameters);
 
-//ÈÎÎñ1ÅäÖÃ
-#define START_TASK1_STACK_SIZE 1024
-#define START_TASK1_PRIORITY 4
-TaskHandle_t Start_Task1_Handle;
-void Task1(void * pvParameters);
-//ÈÎÎñ2ÅäÖÃ
+// ä»»åŠ¡LvHandler_Taské…ç½®
+#define START_LvHandler_Task_STACK_SIZE 1024
+#define START_LvHandler_Task_PRIORITY 4
+TaskHandle_t Start_LvHandler_Task_Handle;
+void LvHandler_Task(void *pvParameters);
+//// ä»»åŠ¡2é…ç½®
 #define START_TASK2_STACK_SIZE 512
-#define START_TASK2_PRIORITY 2
+#define START_TASK2_PRIORITY 3
 TaskHandle_t Start_Task2_Handle;
-void Task2(void * pvParameters);
+void Task2(void *pvParameters);
 
-//ÈÎÎñ3ÅäÖÃ
+// ä»»åŠ¡3é…ç½®
 #define START_TASK3_STACK_SIZE 256
 #define START_TASK3_PRIORITY 1
 TaskHandle_t Start_Task3_Handle;
-void Task3(void * pvParameters);
+void Task3(void *pvParameters);
 
-//Æô¶¯
+// å¯åŠ¨
 
-char* buffer1[128] ={"qwudhuqhdhqwudhqhdu"};
+char *buffer1[128] = {"qwudhuqhdhqwudhqhdu"};
 QueueHandle_t queue1;
 QueueHandle_t queue2;
+QueueHandle_t lvgl_mutex;
+uint8_t tx_buf[8];
+uint8_t rx_buf[8];
+uint8_t Mode = 0;
+uint8_t Tx_cnt;
+uint8_t playerId;
+float accX;
+float accY;
+float accZ;
+float gyroX;
+float gyroY;
+float gyroZ;
+typedef struct
+{
+    uint8_t Player_ID;
+    float AX;
+    float AY;
+    float AZ;
+    float GX;
+    float GY;
+    float GZ;
+} Remote_Data;
+Remote_Data Data1_Receive;
+
+// void handlePlayerMovement(uint8_t playerId, float accX, float accY, float accZ, float gyroX, float gyroY, float gyroZ)
+//	{
+//     // éŽºÑƒåŸ—å®¸ï¹€å½¸ç»‰è¯²å§©
+//     if (accX > 0.1) {
+//         moveRight();
+//     }
+//		else if (accX < -0.1)
+//		{
+//         moveLeft();
+//     }
+//		else
+//		{
+//         stopMovement();
+//     }
+// }
+
 void FreeRTOS_Start()
 {
-    queue1 = xQueueCreate(2,sizeof(uint8_t));
-    queue2 = xQueueCreate(1,sizeof(char*));
-    //´´½¨Æô¶¯ÈÎÎñ
-    xTaskCreate((TaskFunction_t)Start_Task, 
-         (char *) "Start_Task", 
-        (configSTACK_DEPTH_TYPE) START_TASK_STACK_SIZE, 
-        (void*)NULL, 
-        (UBaseType_t) START_TASK_PRIORITY , 
-        (TaskHandle_t*)  &Start_Task_Handle); 
-    //Æô¶¯µ÷¶ÈÆ÷ ×Ô¶¯´´½¨¿ÕÏÐÈÎÎñ
+    queue1 = xQueueCreate(2, sizeof(uint8_t));
+    queue2 = xQueueCreate(1, sizeof(char *));
+    lvgl_mutex = xSemaphoreCreateMutex();
+    if (lvgl_mutex == NULL)
+    {
+        // åˆ›å»ºå¤±è´¥ï¼Œæ‰“å°æ—¥å¿—æˆ–å¤„ç†é”™è¯¯
+        my_printf(&huart1, "lvgl_mutex åˆ›å»ºå¤±è´¥ï¼\r\n");
+    }
+    // åˆ›å»ºå¯åŠ¨ä»»åŠ¡
+    xTaskCreate((TaskFunction_t)Start_Task,
+                (char *)"Start_Task",
+                (configSTACK_DEPTH_TYPE)START_TASK_STACK_SIZE,
+                (void *)NULL,
+                (UBaseType_t)START_TASK_PRIORITY,
+                (TaskHandle_t *)&Start_Task_Handle);
+    // å¯åŠ¨è°ƒåº¦å™¨ è‡ªåŠ¨åˆ›å»ºç©ºé—²ä»»åŠ¡
     vTaskStartScheduler();
-
 }
 
-void Start_Task(void * pvParameters)
+void Start_Task(void *pvParameters)
 {
-    //´´½¨ÈÎÎñ1
+    // åˆ›å»ºä»»åŠ¡1
     taskENTER_CRITICAL();
-    xTaskCreate((TaskFunction_t)Task1, 
-         (char *) "Task1", 
-        (configSTACK_DEPTH_TYPE) START_TASK1_STACK_SIZE, 
-        (void*)NULL, 
-        (UBaseType_t) START_TASK1_PRIORITY , 
-        (TaskHandle_t*)  &Start_Task1_Handle); 
+    xTaskCreate((TaskFunction_t)LvHandler_Task,
+                (char *)"LvHandler_Task",
+                (configSTACK_DEPTH_TYPE)START_LvHandler_Task_STACK_SIZE,
+                (void *)NULL,
+                (UBaseType_t)START_LvHandler_Task_PRIORITY,
+                (TaskHandle_t *)&Start_LvHandler_Task_Handle);
 
-    //´´½¨ÈÎÎñ2
-    xTaskCreate((TaskFunction_t)Task2, 
-         (char *) "Task2", 
-        (configSTACK_DEPTH_TYPE) START_TASK2_STACK_SIZE, 
-        (void*)NULL, 
-        (UBaseType_t) START_TASK2_PRIORITY , 
-        (TaskHandle_t*)  &Start_Task2_Handle); 
+    // åˆ›å»ºä»»åŠ¡2
+    xTaskCreate((TaskFunction_t)Task2,
+                (char *)"Task2",
+                (configSTACK_DEPTH_TYPE)START_TASK2_STACK_SIZE,
+                (void *)NULL,
+                (UBaseType_t)START_TASK2_PRIORITY,
+                (TaskHandle_t *)&Start_Task2_Handle);
 
-    //´´½¨ÈÎÎñ3
-    xTaskCreate((TaskFunction_t)Task3, 
-         (char *) "Task3", 
-       (configSTACK_DEPTH_TYPE) START_TASK3_STACK_SIZE, 
-        (void*)NULL, 
-        (UBaseType_t) START_TASK3_PRIORITY , 
-       (TaskHandle_t*)  &Start_Task3_Handle); 
+    // åˆ›å»ºä»»åŠ¡3
+    xTaskCreate((TaskFunction_t)Task3,
+                (char *)"Task3",
+                (configSTACK_DEPTH_TYPE)START_TASK3_STACK_SIZE,
+                (void *)NULL,
+                (UBaseType_t)START_TASK3_PRIORITY,
+                (TaskHandle_t *)&Start_Task3_Handle);
 
-    //É¾³ýÆô¶¯ÈÎÎñ(Ö»ÒªÖ´ÐÐÒ»´Î)
+    // åˆ é™¤å¯åŠ¨ä»»åŠ¡(åªè¦æ‰§è¡Œä¸€æ¬¡)
     vTaskDelete(NULL);
-    taskEXIT_CRITICAL();  
-
+    taskEXIT_CRITICAL();
 }
 
-void Task1(void * pvParameters)
+void LvHandler_Task(void *pvParameters)
 {
-        uint8_t data = 12;
-        BaseType_t result1 = pdFALSE;
-        BaseType_t result2 = pdFALSE;
-    while(1)
+			create_home_screen();
+      xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
+    lv_disp_load_scr(Home_Screen);
+    Current_State = UI_STATE_START;
+    xSemaphoreGive(lvgl_mutex);
+		while (1)
     {
-        //LCD_Test();
-        // Ïò¶ÓÁÐ1·¢ËÍÊý¾Ý
-        result1 = xQueueSend(queue1, &data, portMAX_DELAY);
-
-        //char *p = buffer1; // ÐÂÔö
-        result2 = xQueueSend(queue2, buffer1, portMAX_DELAY); // ÐÞ¸Ä
-
-        if(result1 == pdTRUE)
-        {
-            my_printf(&huart1, "task1Ïò¶ÓÁÐ1·¢ËÍÊý¾Ý³É¹¦\r\n");
-        }
-        else
-        {
-            my_printf(&huart1, "task1Ïò¶ÓÁÐ1·¢ËÍÊý¾ÝÊ§°Ü\r\n");
-        }
-        if(result2 == pdTRUE)
-        {
-            my_printf(&huart1, "task1Ïò¶ÓÁÐ2·¢ËÍÊý¾Ý³É¹¦\r\n");
-        }
-        else
-        {
-            my_printf(&huart1, "task1Ïò¶ÓÁÐ2·¢ËÍÊý¾ÝÊ§°Ü\r\n");
-        }
-        HAL_Delay(50);
+        xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
+        lv_task_handler();
+        xSemaphoreGive(lvgl_mutex);
+        vTaskDelay(pdMS_TO_TICKS(5));
     }
 }
 
-void Task2(void * pvParameters)
+void Task2(void *pvParameters)
 {
-    char* queue2_result = 0;
-    BaseType_t result = pdFALSE;
-
-    while(1)
+    my_printf(&huart1, "OK111\r\n");
+    MPU6050_Init();
+    if (MPU6050_Init() != HAL_OK)
     {
-        //´Ó¶ÓÁÐ2½ÓÊÕÊý¾Ý
-        BaseType_t result = xQueueReceive(queue2, &queue2_result, portMAX_DELAY);
-        if(result == pdTRUE)
-        {
-            my_printf(&huart1, "task2½ÓÊÕµ½µÄÊý¾Ý=%s..\r\n", queue2_result);
-        }
-        else
-        {
-            my_printf(&huart1, "task2½ÓÊÕÊý¾ÝÊ§°Ü..\r\n");
-        }
-        HAL_Delay(50);
-    
+        my_printf(&huart1, "MPU6050 Init Failed!\r\n");
+    }
+    while (1)
+    {
+
+        MPU6050_Read_All();
+        // éŽµæ’³åµƒæˆæ’³åš­é’é¢è¦†é™ï¿½
+        my_printf(&huart1, "Acc [g]: %.2f, %.2f, %.2f\t", Ax, Ay, Az);
+        my_printf(&huart1, "Gyro [deg/s]: %.2f, %.2f, %.2f\t", Gx, Gy, Gz);
+        my_printf(&huart1, "Temp: %.2f C\r\n", Temperature);
+        //					handlePlayerMovement(playerId, accX, accY, accZ, gyroX, gyroY, gyroZ);//æ©æ„¬å§©é’ã‚†æŸ‡
+        //			        if(NRF24L01_RxPacket(rx_buf)==0X00)  //NRF24L01å¦¯â€³æ½¡éŽºãƒ¦æ•¹éç‰ˆåµéªžè·ºåž½é‚î…Ÿæ§¸éšï¸½å¸´é€èˆµåžšé”?
+        //						{
+        //								my_printf(&huart1,"GZ");
+        //						}
+        //						else
+        //						{
+        //							my_printf(&huart1,"GG");
+        //						}
+        vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
 
-void Task3(void * pvParameters)
+void Task3(void *pvParameters)
 {
     uint8_t queue1_result = 0;
     BaseType_t result = pdFALSE;
-    while(1)
+    while (1)
     {
-        //´Ó¶ÓÁÐ1½ÓÊÕÊý¾Ý
-        result = xQueueReceive(queue1, &queue1_result, portMAX_DELAY);
-        if(result == pdTRUE)
-        {
-            my_printf(&huart1, "task3½ÓÊÕµ½µÄÊý¾Ý=%d..\r\n", queue1_result);
-        }
-        else
-        {
-            my_printf(&huart1, "task3½ÓÊÕÊý¾ÝÊ§°Ü..\r\n");
-        }
+        my_printf(&huart1, "task3OK\r\n");
+        adc_task();
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
 
+void vApplicationTickHook(void)
+{
+    lv_tick_inc(1);
+}

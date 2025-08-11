@@ -18,7 +18,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "adc.h"
 #include "dma.h"
+#include "i2c.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -27,6 +29,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "mydefine.h"
+#include "NRF24L01.h"
+#include "Bright_APP.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,7 +61,27 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint16_t count;
+	void lv_ex_label(void)
+{
+	
+	char* github_addr = "https://gitee.com/W23";
+		lv_obj_t * label = lv_label_create(lv_scr_act());
+    lv_label_set_recolor(label, true);
+    lv_label_set_long_mode(label, LV_LABEL_LONG_SCROLL_CIRCULAR); /*Circular scroll*/
+    lv_obj_set_width(label, 120);
+    lv_label_set_text_fmt(label, "#ff0000 Gitee: %s#", github_addr);
+    lv_obj_align(label, LV_ALIGN_CENTER, 0, 10);
+	
+    lv_obj_t * label2 = lv_label_create(lv_scr_act());
+    lv_label_set_recolor(label2, true);
+    lv_label_set_long_mode(label2, LV_LABEL_LONG_SCROLL_CIRCULAR); /*Circular scroll*/
+    lv_obj_set_width(label2, 120);
+    lv_label_set_text_fmt(label2, "#ff0000ff Hello# #0000ff world !123456789#");
+    lv_obj_align(label2, LV_ALIGN_CENTER, 0, -10);
+}
+extern uint8_t tx_buf[8];
+extern uint8_t rx_buf[8];
+
 /* USER CODE END 0 */
 
 /**
@@ -91,18 +115,21 @@ int main(void)
   MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_TIM2_Init();
-  MX_TIM3_Init();
   MX_SPI1_Init();
+  MX_ADC1_Init();
+  MX_I2C2_Init();
+  MX_I2C3_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   //HAL_TIM_Base_Start_IT(&htim2);
   //HAL_TIM_Base_Start_IT(&htim3);
-  LCD_Init(); // ��ʼ��LCD
-  count = LCD_ReadID();
-  my_printf(&huart1, "count: %d\r\n", count);
-//	LCD_Clear(RED);
-	LCD_Test();
-  //LCD_Test(); // LCD���Ժ���
-  //FreeRTOS_Start();
+	HAL_TIM_PWM_Start(&htim4,TIM_CHANNEL_1);
+	LCD_Init();
+  lv_init();
+  lv_port_disp_init();
+  lv_ex_label();
+  adc_dma_init();
+  FreeRTOS_Start();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -113,7 +140,8 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 		my_printf(&huart1,"hello\r\n");
-		LCD_Test();
+     
+    HAL_Delay(5);
   }
   /* USER CODE END 3 */
 }

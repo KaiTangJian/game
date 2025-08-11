@@ -1,0 +1,13 @@
+game\lv_tlsf.o: ..\lvgl\src\misc\lv_tlsf.c
+game\lv_tlsf.o: ..\lvgl\src\misc\../lv_conf_internal.h
+game\lv_tlsf.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdint.h
+game\lv_tlsf.o: ..\lvgl\src\misc\../lv_conf_kconfig.h
+game\lv_tlsf.o: ../lvgl/examples/porting/../../lv_conf.h
+game\lv_tlsf.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\limits.h
+game\lv_tlsf.o: ..\lvgl\src\misc\lv_tlsf.h
+game\lv_tlsf.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stddef.h
+game\lv_tlsf.o: ..\lvgl\src\misc\lv_mem.h
+game\lv_tlsf.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\string.h
+game\lv_tlsf.o: ..\lvgl\src\misc\lv_types.h
+game\lv_tlsf.o: ..\lvgl\src\misc\lv_log.h
+game\lv_tlsf.o: ..\lvgl\src\misc\lv_assert.h

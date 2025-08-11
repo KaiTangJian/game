@@ -1,0 +1,16 @@
+game\lv_font.o: ..\lvgl\src\font\lv_font.c
+game\lv_font.o: ..\lvgl\src\font\lv_font.h
+game\lv_font.o: ..\lvgl\src\font\../lv_conf_internal.h
+game\lv_font.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdint.h
+game\lv_font.o: ..\lvgl\src\font\../lv_conf_kconfig.h
+game\lv_font.o: ../lvgl/examples/porting/../../lv_conf.h
+game\lv_font.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stddef.h
+game\lv_font.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdbool.h
+game\lv_font.o: ..\lvgl\src\font\lv_symbol_def.h
+game\lv_font.o: ..\lvgl\src\font\../misc/lv_area.h
+game\lv_font.o: ..\lvgl\src\font\../misc/lv_utils.h
+game\lv_font.o: ..\lvgl\src\font\../misc/lv_log.h
+game\lv_font.o: ..\lvgl\src\font\../misc/lv_types.h
+game\lv_font.o: ..\lvgl\src\font\../misc/lv_assert.h
+game\lv_font.o: ..\lvgl\src\font\../misc/lv_mem.h
+game\lv_font.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\string.h

@@ -1,7 +1,8 @@
 #ifndef __LCD_H
 #define __LCD_H
 #include "main.h"
-
+#include "mydefine.h"
+#include "lvgl.h"
 // LCD参数结构体
 typedef struct
 {
@@ -14,8 +15,6 @@ typedef struct
     uint16_t setycmd; // 设置y坐标指令
 }_lcd_dev;
 
-// 引脚定义改为CubeMX风格
-// LCD控制线
 #define LCD_CS_CLR()    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET)
 #define LCD_CS_SET()    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_SET)
 #define LCD_RS_CLR()    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET)
@@ -66,6 +65,7 @@ typedef struct
 // 屏幕方向定义
 #define DFT_SCAN_DIR  L2R_U2D  // 默认的扫描方向
 
+
 // 函数声明
 void LCD_Init(void);
 void LCD_DisplayOn(void);
@@ -79,20 +79,18 @@ void LCD_Draw_Circle(uint16_t x0, uint16_t y0, uint8_t r);
 void LCD_DrawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
 void LCD_DrawRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
 void LCD_Fill(uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, uint16_t color);
-void LCD_Color_Fill(uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, uint16_t *color);
 void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t num, uint8_t size, uint8_t mode);
 void LCD_ShowNum(uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint8_t size);
 void LCD_ShowxNum(uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint8_t size, uint8_t mode);
 void LCD_ShowString(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t size, uint8_t *p);
 void LCD_WriteReg(uint16_t LCD_Reg, uint16_t LCD_RegValue);
 uint16_t LCD_ReadReg(uint16_t LCD_Reg);
-void LCD_WriteRAM_Prepare(void);
-void LCD_WriteRAM(uint16_t RGB_Code);
-void LCD_Scan_Dir(uint8_t dir);
 void LCD_Display_Dir(uint8_t dir);
 void LCD_Set_Window(uint16_t sx, uint16_t sy, uint16_t width, uint16_t height);
 void LCD_Test(void);
-uint16_t LCD_ReadID(void);
+void LCD_Fill_Array(uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, lv_color_t *color_p);
+
+
 // LCD基础通信函数
 void LCD_WR_REG(uint8_t cmd);
 void LCD_WR_DATA(uint8_t dat);
