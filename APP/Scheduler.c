@@ -130,10 +130,14 @@ void Start_Task(void *pvParameters)
 
 void LvHandler_Task(void *pvParameters)
 {
-			create_home_screen();
-      xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
+	vTaskDelay(pdMS_TO_TICKS(100));
+    create_home_screen();
+    create_game_win_screen();
+    xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
     lv_disp_load_scr(Home_Screen);
     Current_State = UI_STATE_START;
+    create_game_play_screen();
+    //lv_disp_load_scr(game_play_screen);
     xSemaphoreGive(lvgl_mutex);
 		while (1)
     {
@@ -141,6 +145,15 @@ void LvHandler_Task(void *pvParameters)
         lv_task_handler();
         xSemaphoreGive(lvgl_mutex);
         vTaskDelay(pdMS_TO_TICKS(5));
+                // 添加临时测试代码来切换界面
+         static uint8_t test_state = 0;
+        if (++test_state % 100 == 0) {  // 每500ms切换一次
+             if (test_state/100 % 3 == 0)
+                 lv_disp_load_scr(Home_Screen);
+             else if (test_state/100 % 3 == 1)
+                 lv_disp_load_scr(game_win_screen);
+
+         }
     }
 }
 
@@ -169,7 +182,7 @@ void Task2(void *pvParameters)
         //						{
         //							my_printf(&huart1,"GG");
         //						}
-        vTaskDelay(pdMS_TO_TICKS(100));
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
 

@@ -189,6 +189,6 @@
 "game\game_manager.o"
 "game\game_data.o"
 --strict --scatter "game\game.sct"
---summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--summary_stderr --info summarysizes --map --load_addr_map_info --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
---list "game.map" -o game\game.axf
+--list ".\game\game.map" -o game\game.axf

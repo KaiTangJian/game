@@ -21,20 +21,24 @@ Target DLL:      CMSIS_AGDI.dll V1.33.21.0
 Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
-C:\Users\71551\Desktop\STM32PROJECT\game (3)\MDK-ARM\game.uvprojx
-Project File Date:  08/11/2025
+c:\Users\71551\Desktop\STM32PROJECT\game (3)\MDK-ARM\game.uvprojx
+Project File Date:  08/12/2025
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin'
 Build target 'game'
-compiling Game_Manager.c...
+compiling Scheduler.c...
 ..\APP\Game_Manager.h(19): warning:  #1-D: last line of file ends without a newline
   #endif
-..\APP\Game_Manager.c: 1 warning, 0 errors
+..\APP\Scheduler.c(191): warning:  #177-D: variable "queue1_result"  was declared but never referenced
+      uint8_t queue1_result = 0;
+..\APP\Scheduler.c(192): warning:  #177-D: variable "result"  was declared but never referenced
+      BaseType_t result = pdFALSE;
+..\APP\Scheduler.c: 3 warnings, 0 errors
 linking...
-Program Size: Code=168582 RO-data=47674 RW-data=732 ZI-data=117908  
+Program Size: Code=169430 RO-data=47686 RW-data=776 ZI-data=97064  
 FromELF: creating hex file...
-"game\game.axf" - 0 Error(s), 1 Warning(s).
+"game\game.axf" - 0 Error(s), 3 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -56,7 +60,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE@5.1.2
-Build Time Elapsed:  00:00:09
+Build Time Elapsed:  00:00:12
 </pre>
 </body>
 </html>

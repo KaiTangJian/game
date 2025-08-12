@@ -184,3 +184,5 @@ game\scheduler.o: ../FreeRTOS/include/semphr.h
 game\scheduler.o: ..\APP\Bright_APP.h
 game\scheduler.o: ../Core/Inc/adc.h
 game\scheduler.o: ..\APP\UI_Manager.h
+game\scheduler.o: ..\APP\Game_Manager.h
+game\scheduler.o: ..\APP\Game_Data.h
