@@ -1,12 +1,4 @@
 #include "Game_Manager.h"
-typedef enum
-{
-    GAME_STATE_LOADING,
-    GAME_STATE_PLAYING,
-    GAME_STATE_PAUSED,
-    GAME_STATE_WON,
-    GAME_STATE_LOST
-} GameState_t;
 GameState_t current_game_state;     // 当前游戏状�?
 const Level_t *current_level_data;  // 当前关卡数据
 GamePlayer_t current_player1_state; // 冰人的当前状�?

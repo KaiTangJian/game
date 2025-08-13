@@ -3,12 +3,19 @@
 #include "gpio.h"
 #include "Game_Data.h"
 #include "lvgl.h"
-
+typedef enum
+{
+    GAME_STATE_LOADING,
+    GAME_STATE_PLAYING,
+    GAME_STATE_PAUSED,
+    GAME_STATE_WON,
+    GAME_STATE_LOST
+} GameState_t;
 //extern GameState_t current_game_state;
 //extern const Level_t* current_level_data;
 
-//extern GamePlayer_t current_player1_state; // 冰人的当前状态
-//extern GamePlayer_t current_player2_state; // 火人的当前状态
+//extern GamePlayer_t current_player1_state; // 冰人的当前状�?
+//extern GamePlayer_t current_player2_state; // 火人的当前状�?
 
 //extern uint32_t current_game_score;
 //extern uint32_t remaining_game_time_sec;

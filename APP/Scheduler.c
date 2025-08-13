@@ -30,9 +30,19 @@ void Task2(void *pvParameters);
 TaskHandle_t Start_Task3_Handle;
 void Task3(void *pvParameters);
 
-// 启动
+//游戏逻辑任务
+#define GAME_LOGIC_TASK_STACK_SIZE 512
+#define GAME_LOGIC_TASK_PRIORITY 2
+TaskHandle_t Game_Logic_Task_Handle;
+void Game_Logic_Task(void *pvParameters);
 
-char *buffer1[128] = {"qwudhuqhdhqwudhqhdu"};
+//输入处理任务
+#define INPUT_TASK_STACK_SIZE 256
+#define INPUT_TASK_PRIORITY 3
+TaskHandle_t Input_Task_Handle;
+void Input_Task(void *pvParameters);
+
+// 启动
 QueueHandle_t queue1;
 QueueHandle_t queue2;
 QueueHandle_t lvgl_mutex;
@@ -47,6 +57,13 @@ float accZ;
 float gyroX;
 float gyroY;
 float gyroZ;
+
+extern GameState_t current_game_state;     // 现在的游戏状态
+extern const Level_t *current_level_data;  // 关卡数
+extern GamePlayer_t current_player1_state; // 冰人状态
+extern GamePlayer_t current_player2_state; // 火人状态
+extern uint32_t current_game_score;        // 游戏分数
+extern uint32_t remaining_game_time_sec;   // 剩余游戏时间
 typedef struct
 {
     uint8_t Player_ID;
@@ -123,6 +140,22 @@ void Start_Task(void *pvParameters)
                 (UBaseType_t)START_TASK3_PRIORITY,
                 (TaskHandle_t *)&Start_Task3_Handle);
 
+        // 创建游戏逻辑任务
+    xTaskCreate((TaskFunction_t)Game_Logic_Task,
+                (char *)"Game_Logic_Task",
+                (configSTACK_DEPTH_TYPE)GAME_LOGIC_TASK_STACK_SIZE,
+                (void *)NULL,
+                (UBaseType_t)GAME_LOGIC_TASK_PRIORITY,
+                (TaskHandle_t *)&Game_Logic_Task_Handle);
+    
+        // 创建输入处理任务
+    xTaskCreate((TaskFunction_t)Input_Task,
+                (char *)"Input_Task",
+                (configSTACK_DEPTH_TYPE)INPUT_TASK_STACK_SIZE,
+                (void *)NULL,
+                (UBaseType_t)INPUT_TASK_PRIORITY,
+                (TaskHandle_t *)&Input_Task_Handle);
+
     // 删除启动任务(只要执行一次)
     vTaskDelete(NULL);
     taskEXIT_CRITICAL();
@@ -133,10 +166,11 @@ void LvHandler_Task(void *pvParameters)
 	vTaskDelay(pdMS_TO_TICKS(100));
     create_home_screen();
     create_game_win_screen();
+    create_game_play_screen();
+    
     xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
     lv_disp_load_scr(Home_Screen);
     Current_State = UI_STATE_START;
-    create_game_play_screen();
     //lv_disp_load_scr(game_play_screen);
     xSemaphoreGive(lvgl_mutex);
 		while (1)
@@ -145,15 +179,40 @@ void LvHandler_Task(void *pvParameters)
         lv_task_handler();
         xSemaphoreGive(lvgl_mutex);
         vTaskDelay(pdMS_TO_TICKS(5));
-                // 添加临时测试代码来切换界面
-         static uint8_t test_state = 0;
-        if (++test_state % 100 == 0) {  // 每500ms切换一次
-             if (test_state/100 % 3 == 0)
-                 lv_disp_load_scr(Home_Screen);
-             else if (test_state/100 % 3 == 1)
-                 lv_disp_load_scr(game_win_screen);
+        static bool game_initialized = false;
+//                // 添加临时测试代码来切换界面
+//         static uint8_t test_state = 0;
+//        if (++test_state % 100 == 0) {  // 每500ms切换一次
+//             if (test_state/100 % 3 == 0)
+//                 lv_disp_load_scr(Home_Screen);
+//             else if (test_state/100 % 3 == 1)
+//                 lv_disp_load_scr(game_win_screen);
+        if (!game_initialized) 
+        {
+            // 切换到游戏界面
+            xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
+            lv_disp_load_scr(game_play_screen);
+            xSemaphoreGive(lvgl_mutex);
+            
+            // 初始化第一关
+            if (Game_LoadLevel(1)) 
+            {
+                // 绘制地图
+                game_screen_draw_map(current_level_data);
+                
+                // 显示玩家
+                game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state);
+                
+                // 更新UI
+                game_screen_update_ui_overlay(current_game_score, 
+                                              current_player1_state.health, 
+                                              current_player2_state.health, 
+                                              remaining_game_time_sec);
+                game_initialized = true;
+            }
 
-         }
+//         
+        }   
     }
 }
 
@@ -197,7 +256,40 @@ void Task3(void *pvParameters)
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
+void Game_Logic_Task(void *pvParameters)
+{
+    if (Game_LoadLevel(1)) 
+    {
+        // 加载成功后绘制地图
+        game_screen_draw_map(current_level_data);
+        
+        // 更新玩家显示
+        game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state);
+    }
+    while (1)
+    {
+        Game_Update();
+        // 更新UI
+        game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state);
+        game_screen_update_ui_overlay(current_game_score, 
+                                      current_player1_state.health, 
+                                      current_player2_state.health, 
+                                      remaining_game_time_sec);
+        
+        vTaskDelay(pdMS_TO_TICKS(100)); // 100ms更新一次
+    }
+    
 
+}
+
+void Input_Task(void *pvParameters)
+{
+    while (1)
+    {
+        my_printf(&huart1, "task4OK\r\n");
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
 void vApplicationTickHook(void)
 {
     lv_tick_inc(1);
