@@ -58,10 +58,10 @@ float gyroX;
 float gyroY;
 float gyroZ;
 
-extern GameState_t current_game_state;     // ç°åœ¨çš„æ¸¸æˆçŠ¶æ€
-extern const Level_t *current_level_data;  // å…³å¡æ•°
-extern GamePlayer_t current_player1_state; // å†°äººçŠ¶æ€
-extern GamePlayer_t current_player2_state; // ç«äººçŠ¶æ€
+extern GameState_t current_game_state;     // ç°åœ¨çš„æ¸¸æˆçŠ¶æ€?
+extern const Level_t *current_level_data;  // å…³å¡æ•?
+extern GamePlayer_t current_player1_state; // å†°äººçŠ¶æ€?
+extern GamePlayer_t current_player2_state; // ç«äººçŠ¶æ€?
 extern uint32_t current_game_score;        // æ¸¸æˆåˆ†æ•°
 extern uint32_t remaining_game_time_sec;   // å‰©ä½™æ¸¸æˆæ—¶é—´
 typedef struct
@@ -109,7 +109,7 @@ void FreeRTOS_Start()
                 (void *)NULL,
                 (UBaseType_t)START_TASK_PRIORITY,
                 (TaskHandle_t *)&Start_Task_Handle);
-    // å¯åŠ¨è°ƒåº¦å™¨ è‡ªåŠ¨åˆ›å»ºç©ºé—²ä»»åŠ¡
+    // å¯åŠ¨è°ƒåº¦å™? è‡ªåŠ¨åˆ›å»ºç©ºé—²ä»»åŠ¡
     vTaskStartScheduler();
 }
 
@@ -167,8 +167,9 @@ void LvHandler_Task(void *pvParameters)
     create_home_screen();
     create_game_win_screen();
     create_game_play_screen();
-    
+    create_select_screen();
     xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
+    static UI_STATE_t last_state = UI_STATE_START;
     lv_disp_load_scr(Home_Screen);
     Current_State = UI_STATE_START;
     //lv_disp_load_scr(game_play_screen);
@@ -179,67 +180,102 @@ void LvHandler_Task(void *pvParameters)
         lv_task_handler();
         xSemaphoreGive(lvgl_mutex);
         vTaskDelay(pdMS_TO_TICKS(5));
-        static bool game_initialized = false;
-//                // æ·»åŠ ä¸´æ—¶æµ‹è¯•ä»£ç æ¥åˆ‡æ¢ç•Œé¢
+//        static bool game_initialized = false;
+//                // æ·»åŠ ä¸´æ—¶æµ‹è¯•ä»£ç æ¥åˆ‡æ¢ç•Œé?
 //         static uint8_t test_state = 0;
-//        if (++test_state % 100 == 0) {  // æ¯500msåˆ‡æ¢ä¸€æ¬¡
+//        if (++test_state % 100 == 0) {  // æ¯?500msåˆ‡æ¢ä¸€æ¬?
 //             if (test_state/100 % 3 == 0)
 //                 lv_disp_load_scr(Home_Screen);
 //             else if (test_state/100 % 3 == 1)
 //                 lv_disp_load_scr(game_win_screen);
-        if (!game_initialized) 
-        {
-            // åˆ‡æ¢åˆ°æ¸¸æˆç•Œé¢
-            xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
-            lv_disp_load_scr(game_play_screen);
-            xSemaphoreGive(lvgl_mutex);
-            
-            // åˆå§‹åŒ–ç¬¬ä¸€å…³
-            if (Game_LoadLevel(1)) 
-            {
-                // ç»˜åˆ¶åœ°å›¾
-                game_screen_draw_map(current_level_data);
-                
-                // æ˜¾ç¤ºç©å®¶
-                game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state);
-                
-                // æ›´æ–°UI
-                game_screen_update_ui_overlay(current_game_score, 
-                                              current_player1_state.health, 
-                                              current_player2_state.health, 
-                                              remaining_game_time_sec);
-                game_initialized = true;
-            }
+// --- ÆÁÄ»Ë¢ĞÂÂß¼­£ºÖ»ÓĞµ±UI×´Ì¬·¢Éú±ä»¯Ê±²ÅÖØĞÂ´´½¨ÆÁÄ» ---
+    // Õâ¸ö²¿·Ö±ØĞëÔÚËùÓĞ¿ÉÄÜĞŞ¸Ä Current_State µÄÂß¼­Ö®ºóÖ´ĞĞ
+    if (Current_State != last_state)
+    {
+        
 
-//         
-        }   
+        switch (Current_State)
+        {
+            case UI_STATE_START:
+                create_home_screen(); // È·±£ home_screen ¶ÔÏóÒÑ´´½¨
+                lv_disp_load_scr(Home_Screen); // ¼ÓÔØÖ÷Ò³Ãæ
+                break;
+            case UI_STATE_SELECT:
+                create_select_screen(); // È·±£ select_screen ¶ÔÏóÒÑ´´½¨²¢ÄÚÈİÒÑ¸üĞÂ
+                lv_disp_load_scr(Select_Screen); // ¼ÓÔØÑ¡Ôñ½çÃæ
+                break;
+            case UI_STATE_IN_GAMME:
+                create_game_play_screen(); // È·±£ game_play_screen ¶ÔÏóÒÑ´´½¨
+                lv_disp_load_scr(game_play_screen); // ¼ÓÔØÓÎÏ·½çÃæ
+                break;
+            // È·±£´Ë´¦¸²¸ÇËùÓĞUI_STATE_tÃ¶¾ÙÖµ£¬ÒÔ±ÜÃâÎ´Öª×´Ì¬µ¼ÖÂÆÁÄ»¿Õ°×
+        }
     }
+     if (Current_State == UI_STATE_IN_GAMME)
+        {
+            xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
+            // ¸üĞÂ¶¯Ì¬ÔªËØ£¨Íæ¼ÒÎ»ÖÃ¡¢·ÖÊıµÈ£©¡£ÕâĞ©º¯ÊıÖ±½Ó²Ù×÷ÓÎÏ·ÆÁÄ»ÉÏµÄLVGL¶ÔÏó¡£
+            game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state);
+            // ¸üĞÂUI¸²¸Ç²ã£¨ÀıÈç·ÖÊı¡¢ÉúÃüÖµÏÔÊ¾£©
+            game_screen_update_ui_overlay(current_game_score,
+                                          current_player1_state.health,
+                                          current_player2_state.health,
+                                          remaining_game_time_sec);
+            xSemaphoreGive(lvgl_mutex);
+        }
+    
+    
+    last_state = Current_State;
+    
+    // LVGL²Ù×÷Íê³ÉºóÊÍ·Å»¥³âÁ¿
+    xSemaphoreGive(lvgl_mutex);
+}
+
+// ÎŞÂÛ×´Ì¬ÊÇ·ñ¸Ä±ä£¬Èç¹ûµ±Ç°ÊÇÓÎÏ·×´Ì¬£¬¶¼ĞèÒª¸üĞÂÓÎÏ·ÄÚ¶¯Ì¬ÔªËØ
+        if (Current_State == UI_STATE_IN_GAMME)
+    {
+    // ÔÚ¸üĞÂ¶¯Ì¬ÔªËØÇ°»ñÈ¡»¥³âÁ¿
+    xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
+
+    // ¸üĞÂ¶¯Ì¬ÔªËØ£¨Íæ¼ÒÎ»ÖÃ¡¢·ÖÊıµÈ£©¡£ÕâĞ©º¯ÊıÓ¦¸ÃÖ±½Ó²Ù×÷ÓÎÏ·ÆÁÄ»ÉÏµÄLVGL¶ÔÏó¡£
+    game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state);
+    
+    // ¸üĞÂUI¸²¸Ç²ã
+    game_screen_update_ui_overlay(current_game_score, 
+                                  current_player1_state.health, 
+                                  current_player2_state.health, 
+                                  remaining_game_time_sec);
+    
+    // ¸üĞÂÍê³ÉºóÊÍ·Å»¥³âÁ¿
+    xSemaphoreGive(lvgl_mutex);
+     }
 }
 
 void Task2(void *pvParameters)
 {
     my_printf(&huart1, "OK111\r\n");
-    MPU6050_Init();
-    if (MPU6050_Init() != HAL_OK)
-    {
-        my_printf(&huart1, "MPU6050 Init Failed!\r\n");
-    }
+//    MPU6050_Init();
+//    if (MPU6050_Init() != HAL_OK)
+//    {
+//        my_printf(&huart1, "MPU6050 Init Failed!\r\n");
+//    }
     while (1)
     {
 
-        MPU6050_Read_All();
-        // éµæ’³åµƒæˆæ’³åš­é’é¢è¦†é™ï¿½
-        my_printf(&huart1, "Acc [g]: %.2f, %.2f, %.2f\t", Ax, Ay, Az);
-        my_printf(&huart1, "Gyro [deg/s]: %.2f, %.2f, %.2f\t", Gx, Gy, Gz);
-        my_printf(&huart1, "Temp: %.2f C\r\n", Temperature);
-        //					handlePlayerMovement(playerId, accX, accY, accZ, gyroX, gyroY, gyroZ);//æ©æ„¬å§©é’ã‚†æŸ‡
-        //			        if(NRF24L01_RxPacket(rx_buf)==0X00)  //NRF24L01å¦¯â€³æ½¡éºãƒ¦æ•¹éç‰ˆåµéªè·ºå½é‚î…Ÿæ§¸éšï¸½å¸´é€èˆµåšé”?
-        //						{
-        //								my_printf(&huart1,"GZ");
-        //						}
-        //						else
-        //						{
-        //							my_printf(&huart1,"GG");
+		
+//			MPU6050_Read_All();
+//        // éµæ’³åµƒæˆæ’³åš­é’é¢è¦†é™ï¿?
+//        my_printf(&huart1, "Acc [g]: %.2f, %.2f, %.2f\t", Ax, Ay, Az);
+//        my_printf(&huart1, "Gyro [deg/s]: %.2f, %.2f, %.2f\t", Gx, Gy, Gz);
+//        my_printf(&huart1, "Temp: %.2f C\r\n", Temperature);
+//        //					handlePlayerMovement(playerId, accX, accY, accZ, gyroX, gyroY, gyroZ);//æ©æ„¬å§©é’ã‚†æŸ‡
+//        //			        if(NRF24L01_RxPacket(rx_buf)==0X00)  //NRF24L01å¦¯â€³æ½¡éºãƒ¦æ•¹éç‰ˆåµéªè·ºå½é‚î…Ÿæ§¸éšï¸½å¸´é€èˆµåšé??
+//        //						{
+//        //								my_printf(&huart1,"GZ");
+//        //						}
+//        //						else
+//        //						{
+//        //							my_printf(&huart1,"GG");
         //						}
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
@@ -260,7 +296,7 @@ void Game_Logic_Task(void *pvParameters)
 {
     if (Game_LoadLevel(1)) 
     {
-        // åŠ è½½æˆåŠŸåç»˜åˆ¶åœ°å›¾
+        // åŠ è½½æˆåŠŸåç»˜åˆ¶åœ°å›?
         game_screen_draw_map(current_level_data);
         
         // æ›´æ–°ç©å®¶æ˜¾ç¤º
@@ -276,7 +312,7 @@ void Game_Logic_Task(void *pvParameters)
                                       current_player2_state.health, 
                                       remaining_game_time_sec);
         
-        vTaskDelay(pdMS_TO_TICKS(100)); // 100msæ›´æ–°ä¸€æ¬¡
+        vTaskDelay(pdMS_TO_TICKS(100)); // 100msæ›´æ–°ä¸€æ¬?
     }
     
 
@@ -287,7 +323,8 @@ void Input_Task(void *pvParameters)
     while (1)
     {
         my_printf(&huart1, "task4OK\r\n");
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        key_proc();
+        vTaskDelay(pdMS_TO_TICKS(500));
     }
 }
 void vApplicationTickHook(void)

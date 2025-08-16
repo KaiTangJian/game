@@ -3,5 +3,5 @@
 #include "mydefine.h"
 
 void key_proc(void);
-
+uint8_t key_read();
 #endif
