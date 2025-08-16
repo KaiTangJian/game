@@ -49,6 +49,7 @@ game\key_app.o: ..\APP\USART_APP.h
 game\key_app.o: ..\APP\Scheduler.h
 game\key_app.o: ..\APP\MPU6050_APP.h
 game\key_app.o: ../Core/Inc/I2C.h
+game\key_app.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdbool.h
 game\key_app.o: ..\APP\Lcd.h
 game\key_app.o: ../lvgl/lvgl.h
 game\key_app.o: ../lvgl/src/misc/lv_log.h
@@ -57,7 +58,6 @@ game\key_app.o: ../lvgl/src/misc/../lv_conf_kconfig.h
 game\key_app.o: ../lvgl/examples/porting/../../lv_conf.h
 game\key_app.o: ../lvgl/src/misc/lv_types.h
 game\key_app.o: ../lvgl/src/misc/lv_timer.h
-game\key_app.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdbool.h
 game\key_app.o: ../lvgl/src/misc/lv_math.h
 game\key_app.o: ../lvgl/src/misc/lv_mem.h
 game\key_app.o: ../lvgl/src/misc/lv_async.h

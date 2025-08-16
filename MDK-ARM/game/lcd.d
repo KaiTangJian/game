@@ -50,6 +50,7 @@ game\lcd.o: ..\APP\USART_APP.h
 game\lcd.o: ..\APP\Scheduler.h
 game\lcd.o: ..\APP\MPU6050_APP.h
 game\lcd.o: ../Core/Inc/I2C.h
+game\lcd.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdbool.h
 game\lcd.o: ..\APP\Lcd.h
 game\lcd.o: ../lvgl/lvgl.h
 game\lcd.o: ../lvgl/src/misc/lv_log.h
@@ -58,7 +59,6 @@ game\lcd.o: ../lvgl/src/misc/../lv_conf_kconfig.h
 game\lcd.o: ../lvgl/examples/porting/../../lv_conf.h
 game\lcd.o: ../lvgl/src/misc/lv_types.h
 game\lcd.o: ../lvgl/src/misc/lv_timer.h
-game\lcd.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdbool.h
 game\lcd.o: ../lvgl/src/misc/lv_math.h
 game\lcd.o: ../lvgl/src/misc/lv_mem.h
 game\lcd.o: ../lvgl/src/misc/lv_async.h

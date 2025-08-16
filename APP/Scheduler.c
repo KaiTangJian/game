@@ -31,7 +31,7 @@ TaskHandle_t Start_Task3_Handle;
 void Task3(void *pvParameters);
 
 //æ¸¸æˆé€»è¾‘ä»»åŠ¡
-#define GAME_LOGIC_TASK_STACK_SIZE 512
+#define GAME_LOGIC_TASK_STACK_SIZE 1024
 #define GAME_LOGIC_TASK_PRIORITY 2
 TaskHandle_t Game_Logic_Task_Handle;
 void Game_Logic_Task(void *pvParameters);
@@ -46,8 +46,6 @@ void Input_Task(void *pvParameters);
 QueueHandle_t queue1;
 QueueHandle_t queue2;
 QueueHandle_t lvgl_mutex;
-uint8_t tx_buf[8];
-uint8_t rx_buf[8];
 uint8_t Mode = 0;
 uint8_t Tx_cnt;
 uint8_t playerId;
@@ -164,10 +162,12 @@ void Start_Task(void *pvParameters)
 void LvHandler_Task(void *pvParameters)
 {
 	vTaskDelay(pdMS_TO_TICKS(100));
-    create_home_screen();
+    
+		create_home_screen();
     create_game_win_screen();
     create_game_play_screen();
     create_select_screen();
+	
     xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
     static UI_STATE_t last_state = UI_STATE_START;
     lv_disp_load_scr(Home_Screen);
@@ -180,19 +180,10 @@ void LvHandler_Task(void *pvParameters)
         lv_task_handler();
         xSemaphoreGive(lvgl_mutex);
         vTaskDelay(pdMS_TO_TICKS(5));
-//        static bool game_initialized = false;
-//                // æ·»åŠ ä¸´æ—¶æµ‹è¯•ä»£ç æ¥åˆ‡æ¢ç•Œé?
-//         static uint8_t test_state = 0;
-//        if (++test_state % 100 == 0) {  // æ¯?500msåˆ‡æ¢ä¸€æ¬?
-//             if (test_state/100 % 3 == 0)
-//                 lv_disp_load_scr(Home_Screen);
-//             else if (test_state/100 % 3 == 1)
-//                 lv_disp_load_scr(game_win_screen);
-// --- ÆÁÄ»Ë¢ĞÂÂß¼­£ºÖ»ÓĞµ±UI×´Ì¬·¢Éú±ä»¯Ê±²ÅÖØĞÂ´´½¨ÆÁÄ» ---
-    // Õâ¸ö²¿·Ö±ØĞëÔÚËùÓĞ¿ÉÄÜĞŞ¸Ä Current_State µÄÂß¼­Ö®ºóÖ´ĞĞ
+
     if (Current_State != last_state)
     {
-        
+        xSemaphoreTake(lvgl_mutex, portMAX_DELAY); // å±å¹•åŠ è½½å‰è·å–äº’æ–¥é”
 
         switch (Current_State)
         {
@@ -205,78 +196,41 @@ void LvHandler_Task(void *pvParameters)
                 lv_disp_load_scr(Select_Screen); // ¼ÓÔØÑ¡Ôñ½çÃæ
                 break;
             case UI_STATE_IN_GAMME:
-                create_game_play_screen(); // È·±£ game_play_screen ¶ÔÏóÒÑ´´½¨
+               my_printf(&huart1, "LvHandler_Task: Attempting to load game_play_screen...\r\n"); // è¿™ä¸ªæ‰“å°åº”è¯¥ä¼šå‡ºç°  
+							create_game_play_screen(); // È·±£ game_play_screen ¶ÔÏóÒÑ´´½¨
                 lv_disp_load_scr(game_play_screen); // ¼ÓÔØÓÎÏ·½çÃæ
+						my_printf(&huart1, "LvHandler_Task: game_play_screen loaded. Releasing mutex...\r\n"); // å¦‚æœå¡ä½ï¼Œè¿™ä¸ªä¸ä¼šæ‰“å°
                 break;
-            // È·±£´Ë´¦¸²¸ÇËùÓĞUI_STATE_tÃ¶¾ÙÖµ£¬ÒÔ±ÜÃâÎ´Öª×´Ì¬µ¼ÖÂÆÁÄ»¿Õ°×
+            
         }
     }
-     if (Current_State == UI_STATE_IN_GAMME)
-        {
-            xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
-            // ¸üĞÂ¶¯Ì¬ÔªËØ£¨Íæ¼ÒÎ»ÖÃ¡¢·ÖÊıµÈ£©¡£ÕâĞ©º¯ÊıÖ±½Ó²Ù×÷ÓÎÏ·ÆÁÄ»ÉÏµÄLVGL¶ÔÏó¡£
-            game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state);
-            // ¸üĞÂUI¸²¸Ç²ã£¨ÀıÈç·ÖÊı¡¢ÉúÃüÖµÏÔÊ¾£©
-            game_screen_update_ui_overlay(current_game_score,
-                                          current_player1_state.health,
-                                          current_player2_state.health,
-                                          remaining_game_time_sec);
-            xSemaphoreGive(lvgl_mutex);
-        }
+		xSemaphoreGive(lvgl_mutex); // å±å¹•åŠ è½½åé‡Šæ”¾äº’æ–¥é”
+//     if (Current_State == UI_STATE_IN_GAMME)
+//        {
+//            xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
+//            // ¸üĞÂ¶¯Ì¬ÔªËØ£¨Íæ¼ÒÎ»ÖÃ¡¢·ÖÊıµÈ£©¡£ÕâĞ©º¯ÊıÖ±½Ó²Ù×÷ÓÎÏ·ÆÁÄ»ÉÏµÄLVGL¶ÔÏó¡£
+//            game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state);
+//            // ¸üĞÂUI¸²¸Ç²ã£¨ÀıÈç·ÖÊı¡¢ÉúÃüÖµÏÔÊ¾£©
+//            game_screen_update_ui_overlay(current_game_score,
+//                                          current_player1_state.health,
+//                                          current_player2_state.health,
+//                                          remaining_game_time_sec);
+//            xSemaphoreGive(lvgl_mutex);
+//        }
     
     
-    last_state = Current_State;
-    
-    // LVGL²Ù×÷Íê³ÉºóÊÍ·Å»¥³âÁ¿
-    xSemaphoreGive(lvgl_mutex);
-}
+    last_state = Current_State;   
+		}
 
-// ÎŞÂÛ×´Ì¬ÊÇ·ñ¸Ä±ä£¬Èç¹ûµ±Ç°ÊÇÓÎÏ·×´Ì¬£¬¶¼ĞèÒª¸üĞÂÓÎÏ·ÄÚ¶¯Ì¬ÔªËØ
-        if (Current_State == UI_STATE_IN_GAMME)
-    {
-    // ÔÚ¸üĞÂ¶¯Ì¬ÔªËØÇ°»ñÈ¡»¥³âÁ¿
-    xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
-
-    // ¸üĞÂ¶¯Ì¬ÔªËØ£¨Íæ¼ÒÎ»ÖÃ¡¢·ÖÊıµÈ£©¡£ÕâĞ©º¯ÊıÓ¦¸ÃÖ±½Ó²Ù×÷ÓÎÏ·ÆÁÄ»ÉÏµÄLVGL¶ÔÏó¡£
-    game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state);
-    
-    // ¸üĞÂUI¸²¸Ç²ã
-    game_screen_update_ui_overlay(current_game_score, 
-                                  current_player1_state.health, 
-                                  current_player2_state.health, 
-                                  remaining_game_time_sec);
-    
-    // ¸üĞÂÍê³ÉºóÊÍ·Å»¥³âÁ¿
-    xSemaphoreGive(lvgl_mutex);
-     }
 }
 
 void Task2(void *pvParameters)
 {
     my_printf(&huart1, "OK111\r\n");
-//    MPU6050_Init();
-//    if (MPU6050_Init() != HAL_OK)
-//    {
-//        my_printf(&huart1, "MPU6050 Init Failed!\r\n");
-//    }
     while (1)
     {
 
 		
-//			MPU6050_Read_All();
-//        // éµæ’³åµƒæˆæ’³åš­é’é¢è¦†é™ï¿?
-//        my_printf(&huart1, "Acc [g]: %.2f, %.2f, %.2f\t", Ax, Ay, Az);
-//        my_printf(&huart1, "Gyro [deg/s]: %.2f, %.2f, %.2f\t", Gx, Gy, Gz);
-//        my_printf(&huart1, "Temp: %.2f C\r\n", Temperature);
-//        //					handlePlayerMovement(playerId, accX, accY, accZ, gyroX, gyroY, gyroZ);//æ©æ„¬å§©é’ã‚†æŸ‡
-//        //			        if(NRF24L01_RxPacket(rx_buf)==0X00)  //NRF24L01å¦¯â€³æ½¡éºãƒ¦æ•¹éç‰ˆåµéªè·ºå½é‚î…Ÿæ§¸éšï¸½å¸´é€èˆµåšé??
-//        //						{
-//        //								my_printf(&huart1,"GZ");
-//        //						}
-//        //						else
-//        //						{
-//        //							my_printf(&huart1,"GG");
-        //						}
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
@@ -294,25 +248,103 @@ void Task3(void *pvParameters)
 }
 void Game_Logic_Task(void *pvParameters)
 {
-    if (Game_LoadLevel(1)) 
+  bool game_initialized_for_current_level = false;  
+//	if (Game_LoadLevel(1)) 
+//    {
+//        // åŠ è½½æˆåŠŸåç»˜åˆ¶åœ°å›?
+//        game_screen_draw_map(current_level_data);
+//        
+//        // æ›´æ–°ç©å®¶æ˜¾ç¤º
+//        game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state);
+//    }
+//    while (1)
+//    {
+//        Game_Update();
+//        // æ›´æ–°UI
+//        game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state);
+//        game_screen_update_ui_overlay(current_game_score, 
+//                                      current_player1_state.health, 
+//                                      current_player2_state.health, 
+//                                      remaining_game_time_sec);
+//        
+//        vTaskDelay(pdMS_TO_TICKS(100)); // 100msæ›´æ–°ä¸€æ¬?
+//    }
+ while (1)
     {
-        // åŠ è½½æˆåŠŸåç»˜åˆ¶åœ°å›?
-        game_screen_draw_map(current_level_data);
+        // åªæœ‰å½“ UI çŠ¶æ€ä¸º UI_STATE_IN_GAMME æ—¶ï¼Œæ‰æ‰§è¡Œæ¸¸æˆé€»è¾‘å’Œ UI æ›´æ–°
+        if (Current_State == UI_STATE_IN_GAMME)
+        {
+            // *******************************************************************
+            // 1. æ¸¸æˆåˆå§‹åŒ–ï¼ˆåœ°å›¾ç»˜åˆ¶ã€ç©å®¶åˆå§‹ä½ç½®ç­‰ï¼‰
+            //    ä»…åœ¨é¦–æ¬¡è¿›å…¥ UI_STATE_IN_GAMME æ—¶æ‰§è¡Œ
+            // *******************************************************************
+            if (!game_initialized_for_current_level)
+            {
+//                my_printf(&huart1, "Game_Logic_Task: Entering game state, attempting to load level and draw map.\r\n");
+//                if (Game_LoadLevel(1)) // åŠ è½½æ¸¸æˆå…³å¡æ•°æ®ï¼ˆä¾‹å¦‚å…³å¡1ï¼‰
+//                {
+//                    // ç»˜åˆ¶åœ°å›¾å’Œæ›´æ–°ç©å®¶æ˜¾ç¤ºï¼Œéœ€è¦äº’æ–¥é”ä¿æŠ¤ LVGL æ“ä½œ
+//                    xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
+//                    game_screen_draw_map(current_level_data); // ç»˜åˆ¶åœ°å›¾
+//                    // æ›´æ–°ç©å®¶æ˜¾ç¤ºï¼Œç¡®ä¿ä¸¤ä¸ªç©å®¶éƒ½å‡ºç°
+//                    game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state);
+//                    xSemaphoreGive(lvgl_mutex);
+
+//                    game_initialized_for_current_level = true; // æ ‡è®°ä¸ºå·²åˆå§‹åŒ–
+//                    my_printf(&huart1, "Game_Logic_Task: Game screen initialized successfully.\r\n");
+//                }
+//                else
+//                {
+//                    my_printf(&huart1, "Game_Logic_Task: Game_LoadLevel failed! Cannot initialize game screen.\r\n");
+//                    // é”™è¯¯å¤„ç†ï¼šä¾‹å¦‚å¯ä»¥åˆ‡æ¢å›ä¸»å±å¹•æˆ–æ˜¾ç¤ºé”™è¯¯ä¿¡æ¯
+//                    // xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
+//                    // Current_State = UI_STATE_START; // è¿”å›å¼€å§‹ç•Œé¢
+//                    // xSemaphoreGive(lvgl_mutex);
+//                }
+							if (Game_LoadLevel(1))
+							{
+            my_printf(&huart1, "Game_Logic_Task: Level loaded successfully. Taking mutex...\r\n");
+            //xSemaphoreTake(lvgl_mutex, portMAX_DELAY); // <-- å¦‚æœå¡åœ¨è¿™é‡Œï¼Œè¯´æ˜æœ‰å…¶ä»–ä»»åŠ¡æŒæœ‰äº’æ–¥é‡ä¸”ä¸é‡Šæ”¾
+            my_printf(&huart1, "Game_Logic_Task: Mutex taken. Calling draw_map...\r\n");
+            game_screen_draw_map(current_level_data); // <-- å¦‚æœå¡åœ¨è¿™é‡Œï¼Œè¯´æ˜ draw_map å†…éƒ¨æœ‰é—®é¢˜ï¼ˆå¦‚æ— é™å¾ªç¯æˆ–å†…éƒ¨å°è¯•å†æ¬¡è·å–äº’æ–¥é‡ï¼‰
+            my_printf(&huart1, "Game_Logic_Task: draw_map finished. Calling update_dynamic_elements...\r\n");
+            game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state); // <-- å¦‚æœå¡åœ¨è¿™é‡Œï¼Œè¯´æ˜ update_dynamic_elements å†…éƒ¨æœ‰é—®é¢˜
+            my_printf(&huart1, "Game_Logic_Task: update_dynamic_elements finished. Releasing mutex...\r\n");
+            //xSemaphoreGive(lvgl_mutex);
+            my_printf(&huart1, "Game_Logic_Task: Mutex released. Initialisation complete.\r\n");
+            
+            game_initialized_for_current_level = true;
+            my_printf(&huart1, "Game_Logic_Task: Game screen initialized successfully.\r\n"); 
+							}
+        else
+        {
+            my_printf(&huart1, "Game_Logic_Task: Game_LoadLevel failed! Cannot initialize game screen.\r\n");
+        }
+            }
+
+            // *******************************************************************
+            // 2. æŒç»­æ‰§è¡Œæ¸¸æˆé€»è¾‘æ›´æ–° (ä¾‹å¦‚ç‰©ç†æ¨¡æ‹Ÿã€AIã€ç¢°æ’æ£€æµ‹ç­‰)
+            // *******************************************************************
+            Game_Update();
+            
+            // *******************************************************************
+            // 3. æŒç»­æ›´æ–°æ¸¸æˆå†…çš„åŠ¨æ€ UI å…ƒç´ 
+            //    è¿™äº›æ›´æ–°æ“ä½œä¹Ÿéœ€è¦äº’æ–¥é”ä¿æŠ¤ã€‚
+            // *******************************************************************
+            xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
+            game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state); // æ›´æ–°ç©å®¶ä½ç½®/åŠ¨ç”»
+            game_screen_update_ui_overlay(current_game_score, // æ›´æ–°åˆ†æ•°ã€è¡€é‡ã€æ—¶é—´ç­‰å åŠ ä¿¡æ¯
+                                          current_player1_state.health, 
+                                          current_player2_state.health, 
+                                          remaining_game_time_sec);
+            xSemaphoreGive(lvgl_mutex);
+        }
+        else // å¦‚æœå½“å‰ UI çŠ¶æ€ä¸æ˜¯æ¸¸æˆçŠ¶æ€ï¼Œåˆ™é‡ç½®åˆå§‹åŒ–æ ‡å¿—
+        {
+            game_initialized_for_current_level = false;
+        }
         
-        // æ›´æ–°ç©å®¶æ˜¾ç¤º
-        game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state);
-    }
-    while (1)
-    {
-        Game_Update();
-        // æ›´æ–°UI
-        game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state);
-        game_screen_update_ui_overlay(current_game_score, 
-                                      current_player1_state.health, 
-                                      current_player2_state.health, 
-                                      remaining_game_time_sec);
-        
-        vTaskDelay(pdMS_TO_TICKS(100)); // 100msæ›´æ–°ä¸€æ¬?
+        vTaskDelay(pdMS_TO_TICKS(100)); // æ¸¸æˆé€»è¾‘å’Œ UI æ›´æ–°é¢‘ç‡ï¼Œå¯æ ¹æ®æ¸¸æˆæµç•…åº¦è°ƒæ•´
     }
     
 

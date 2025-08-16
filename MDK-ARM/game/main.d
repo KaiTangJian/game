@@ -54,6 +54,7 @@ game\main.o: ../APP/mydefine.h
 game\main.o: ../APP/USART_APP.h
 game\main.o: ../APP/Scheduler.h
 game\main.o: ../APP/MPU6050_APP.h
+game\main.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdbool.h
 game\main.o: ../APP/Lcd.h
 game\main.o: ../lvgl/lvgl.h
 game\main.o: ../lvgl/src/misc/lv_log.h
@@ -62,7 +63,6 @@ game\main.o: ../lvgl/src/misc/../lv_conf_kconfig.h
 game\main.o: ../lvgl/examples/porting/../../lv_conf.h
 game\main.o: ../lvgl/src/misc/lv_types.h
 game\main.o: ../lvgl/src/misc/lv_timer.h
-game\main.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdbool.h
 game\main.o: ../lvgl/src/misc/lv_math.h
 game\main.o: ../lvgl/src/misc/lv_mem.h
 game\main.o: ../lvgl/src/misc/lv_async.h
