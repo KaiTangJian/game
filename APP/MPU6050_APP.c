@@ -19,10 +19,20 @@ HAL_StatusTypeDef MPU6050_Init_Single(uint16_t device_addr)
     {
         return HAL_ERROR;
     }
-    if (check != 0x68)
-    {
+    if(device_addr == MPU6050_PLAYER1_ADDR)
+		{
+				if (check != 0x68)
+			{
         return HAL_ERROR; 
-    }
+			}
+		}
+		else
+		{
+				if (check != 0x70)//新的mpu报0x70
+			{
+        return HAL_ERROR; 
+			}
+		}
    
     // 配置电源管理
     data = 0x00;
