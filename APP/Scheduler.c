@@ -154,7 +154,7 @@ void Start_Task(void *pvParameters)
                 (UBaseType_t)INPUT_TASK_PRIORITY,
                 (TaskHandle_t *)&Input_Task_Handle);
 
-    // 删除启动任务(只要执行一次)
+    // 删除启动任务(只要执行一�?)
     vTaskDelete(NULL);
     taskEXIT_CRITICAL();
 }
@@ -196,10 +196,10 @@ void LvHandler_Task(void *pvParameters)
                 lv_disp_load_scr(Select_Screen); // ����ѡ�����
                 break;
             case UI_STATE_IN_GAMME:
-               my_printf(&huart1, "LvHandler_Task: Attempting to load game_play_screen...\r\n"); // 这个打印应该会出现  
+               my_printf(&huart1, "LvHandler_Task: Attempting to load game_play_screen...\r\n"); // 这个打印应该会出�?  
 							create_game_play_screen(); // ȷ�� game_play_screen �����Ѵ���
                 lv_disp_load_scr(game_play_screen); // ������Ϸ����
-						my_printf(&huart1, "LvHandler_Task: game_play_screen loaded. Releasing mutex...\r\n"); // 如果卡住，这个不会打印
+						my_printf(&huart1, "LvHandler_Task: game_play_screen loaded. Releasing mutex...\r\n"); // 如果卡住，这个不会打�?
                 break;
             
         }
@@ -271,17 +271,17 @@ void Game_Logic_Task(void *pvParameters)
 //    }
  while (1)
     {
-        // 只有当 UI 状态为 UI_STATE_IN_GAMME 时，才执行游戏逻辑和 UI 更新
+        // 只有�? UI 状态为 UI_STATE_IN_GAMME 时，才执行游戏逻辑�? UI 更新
         if (Current_State == UI_STATE_IN_GAMME)
         {
             // *******************************************************************
-            // 1. 游戏初始化（地图绘制、玩家初始位置等）
-            //    仅在首次进入 UI_STATE_IN_GAMME 时执行
+            // 1. 游戏初始化（地图绘制、玩家初始位置等�?
+            //    仅在首次进入 UI_STATE_IN_GAMME 时执�?
             // *******************************************************************
             if (!game_initialized_for_current_level)
             {
 //                my_printf(&huart1, "Game_Logic_Task: Entering game state, attempting to load level and draw map.\r\n");
-//                if (Game_LoadLevel(1)) // 加载游戏关卡数据（例如关卡1）
+//                if (Game_LoadLevel(1)) // 加载游戏关卡数据（例如关�?1�?
 //                {
 //                    // 绘制地图和更新玩家显示，需要互斥锁保护 LVGL 操作
 //                    xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
@@ -290,7 +290,7 @@ void Game_Logic_Task(void *pvParameters)
 //                    game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state);
 //                    xSemaphoreGive(lvgl_mutex);
 
-//                    game_initialized_for_current_level = true; // 标记为已初始化
+//                    game_initialized_for_current_level = true; // 标记为已初始�?
 //                    my_printf(&huart1, "Game_Logic_Task: Game screen initialized successfully.\r\n");
 //                }
 //                else
@@ -298,17 +298,17 @@ void Game_Logic_Task(void *pvParameters)
 //                    my_printf(&huart1, "Game_Logic_Task: Game_LoadLevel failed! Cannot initialize game screen.\r\n");
 //                    // 错误处理：例如可以切换回主屏幕或显示错误信息
 //                    // xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
-//                    // Current_State = UI_STATE_START; // 返回开始界面
+//                    // Current_State = UI_STATE_START; // 返回开始界�?
 //                    // xSemaphoreGive(lvgl_mutex);
 //                }
 							if (Game_LoadLevel(1))
 							{
             my_printf(&huart1, "Game_Logic_Task: Level loaded successfully. Taking mutex...\r\n");
-            //xSemaphoreTake(lvgl_mutex, portMAX_DELAY); // <-- 如果卡在这里，说明有其他任务持有互斥量且不释放
+            //xSemaphoreTake(lvgl_mutex, portMAX_DELAY); // <-- 如果卡在这里，说明有其他任务持有互斥量且不释�?
             my_printf(&huart1, "Game_Logic_Task: Mutex taken. Calling draw_map...\r\n");
-            game_screen_draw_map(current_level_data); // <-- 如果卡在这里，说明 draw_map 内部有问题（如无限循环或内部尝试再次获取互斥量）
+            game_screen_draw_map(current_level_data); // <-- 如果卡在这里，说�? draw_map 内部有问题（如无限循环或内部尝试再次获取互斥量）
             my_printf(&huart1, "Game_Logic_Task: draw_map finished. Calling update_dynamic_elements...\r\n");
-            game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state); // <-- 如果卡在这里，说明 update_dynamic_elements 内部有问题
+            game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state); // <-- 如果卡在这里，说�? update_dynamic_elements 内部有问�?
             my_printf(&huart1, "Game_Logic_Task: update_dynamic_elements finished. Releasing mutex...\r\n");
             //xSemaphoreGive(lvgl_mutex);
             my_printf(&huart1, "Game_Logic_Task: Mutex released. Initialisation complete.\r\n");
@@ -328,8 +328,8 @@ void Game_Logic_Task(void *pvParameters)
             Game_Update();
             
             // *******************************************************************
-            // 3. 持续更新游戏内的动态 UI 元素
-            //    这些更新操作也需要互斥锁保护。
+            // 3. 持续更新游戏内的动�? UI 元素
+            //    这些更新操作也需要互斥锁保护�?
             // *******************************************************************
             xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
             game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state); // 更新玩家位置/动画
@@ -344,7 +344,7 @@ void Game_Logic_Task(void *pvParameters)
             game_initialized_for_current_level = false;
         }
         
-        vTaskDelay(pdMS_TO_TICKS(100)); // 游戏逻辑和 UI 更新频率，可根据游戏流畅度调整
+        vTaskDelay(pdMS_TO_TICKS(100)); // 游戏逻辑�? UI 更新频率，可根据游戏流畅度调�?
     }
     
 
@@ -352,10 +352,12 @@ void Game_Logic_Task(void *pvParameters)
 
 void Input_Task(void *pvParameters)
 {
+   MPU6050_Dual_Init();
     while (1)
     {
         my_printf(&huart1, "task4OK\r\n");
         key_proc();
+        
         vTaskDelay(pdMS_TO_TICKS(500));
     }
 }

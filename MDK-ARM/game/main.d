@@ -55,7 +55,8 @@ game\main.o: ../APP/USART_APP.h
 game\main.o: ../APP/Scheduler.h
 game\main.o: ../APP/MPU6050_APP.h
 game\main.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdbool.h
-game\main.o: ../APP/Lcd.h
+game\main.o: ../APP/Game_Manager.h
+game\main.o: ../APP/Game_Data.h
 game\main.o: ../lvgl/lvgl.h
 game\main.o: ../lvgl/src/misc/lv_log.h
 game\main.o: ../lvgl/src/misc/../lv_conf_internal.h
@@ -174,6 +175,7 @@ game\main.o: ../lvgl/src/extra/libs/sjpg/lv_sjpg.h
 game\main.o: ../lvgl/src/extra/libs/freetype/lv_freetype.h
 game\main.o: ../lvgl/src/extra/libs/rlottie/lv_rlottie.h
 game\main.o: ../lvgl/src/extra/libs/ffmpeg/lv_ffmpeg.h
+game\main.o: ../APP/Lcd.h
 game\main.o: ../lvgl/examples/porting/lv_port_disp.h
 game\main.o: ../APP/NRF24L01.h
 game\main.o: ../APP/Bright_APP.h

@@ -51,7 +51,8 @@ game\usart_app.o: ..\APP\Scheduler.h
 game\usart_app.o: ..\APP\MPU6050_APP.h
 game\usart_app.o: ../Core/Inc/I2C.h
 game\usart_app.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdbool.h
-game\usart_app.o: ..\APP\Lcd.h
+game\usart_app.o: ..\APP\Game_Manager.h
+game\usart_app.o: ..\APP\Game_Data.h
 game\usart_app.o: ../lvgl/lvgl.h
 game\usart_app.o: ../lvgl/src/misc/lv_log.h
 game\usart_app.o: ../lvgl/src/misc/../lv_conf_internal.h
@@ -170,4 +171,5 @@ game\usart_app.o: ../lvgl/src/extra/libs/sjpg/lv_sjpg.h
 game\usart_app.o: ../lvgl/src/extra/libs/freetype/lv_freetype.h
 game\usart_app.o: ../lvgl/src/extra/libs/rlottie/lv_rlottie.h
 game\usart_app.o: ../lvgl/src/extra/libs/ffmpeg/lv_ffmpeg.h
+game\usart_app.o: ..\APP\Lcd.h
 game\usart_app.o: ../lvgl/examples/porting/lv_port_disp.h

@@ -59,7 +59,8 @@ game\scheduler.o: ..\APP\Scheduler.h
 game\scheduler.o: ..\APP\MPU6050_APP.h
 game\scheduler.o: ../Core/Inc/I2C.h
 game\scheduler.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdbool.h
-game\scheduler.o: ..\APP\Lcd.h
+game\scheduler.o: ..\APP\Game_Manager.h
+game\scheduler.o: ..\APP\Game_Data.h
 game\scheduler.o: ../lvgl/lvgl.h
 game\scheduler.o: ../lvgl/src/misc/lv_log.h
 game\scheduler.o: ../lvgl/src/misc/../lv_conf_internal.h
@@ -178,11 +179,10 @@ game\scheduler.o: ../lvgl/src/extra/libs/sjpg/lv_sjpg.h
 game\scheduler.o: ../lvgl/src/extra/libs/freetype/lv_freetype.h
 game\scheduler.o: ../lvgl/src/extra/libs/rlottie/lv_rlottie.h
 game\scheduler.o: ../lvgl/src/extra/libs/ffmpeg/lv_ffmpeg.h
+game\scheduler.o: ..\APP\Lcd.h
 game\scheduler.o: ../lvgl/examples/porting/lv_port_disp.h
 game\scheduler.o: ../FreeRTOS/include/queue.h
 game\scheduler.o: ../FreeRTOS/include/semphr.h
 game\scheduler.o: ..\APP\Bright_APP.h
 game\scheduler.o: ../Core/Inc/adc.h
 game\scheduler.o: ..\APP\UI_Manager.h
-game\scheduler.o: ..\APP\Game_Manager.h
-game\scheduler.o: ..\APP\Game_Data.h
