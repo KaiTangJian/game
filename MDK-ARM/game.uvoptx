@@ -157,18 +157,18 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>355</LineNumber>
+          <LineNumber>4168</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134237984</Address>
+          <Address>134388626</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\APP\Scheduler.c</Filename>
+          <Filename>C:\Users\71551\Desktop\STM32PROJECT\game (3)\FreeRTOS\source\tasks.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\game\../APP/Scheduler.c\355</Expression>
+          <Expression>\\game\../FreeRTOS/source/tasks.c\4168</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -205,6 +205,14 @@
           <ItemText>temp</ItemText>
         </Ww>
       </WatchWindow2>
+      <MemoryWindow1>
+        <Mm>
+          <WinNumber>1</WinNumber>
+          <SubType>0</SubType>
+          <ItemText>0x20004140</ItemText>
+          <AccSizeX>0</AccSizeX>
+        </Mm>
+      </MemoryWindow1>
       <Tracepoint>
         <THDelay>0</THDelay>
       </Tracepoint>
