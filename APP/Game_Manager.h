@@ -3,6 +3,7 @@
 #include "gpio.h"
 #include "Game_Data.h"
 #include "lvgl.h"
+#include "USART_APP.h"
 typedef enum
 {
     GAME_STATE_LOADING,

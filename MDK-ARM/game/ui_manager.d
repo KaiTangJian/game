@@ -162,3 +162,16 @@ game\ui_manager.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 game\ui_manager.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 game\ui_manager.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 game\ui_manager.o: ..\APP\Game_Data.h
+game\ui_manager.o: ..\APP\USART_APP.h
+game\ui_manager.o: ..\APP\mydefine.h
+game\ui_manager.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdio.h
+game\ui_manager.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\math.h
+game\ui_manager.o: ..\APP\KEY_APP.h
+game\ui_manager.o: ..\APP\mydefine.h
+game\ui_manager.o: ..\APP\USART_APP.h
+game\ui_manager.o: ..\APP\Scheduler.h
+game\ui_manager.o: ..\APP\MPU6050_APP.h
+game\ui_manager.o: ../Core/Inc/I2C.h
+game\ui_manager.o: ..\APP\Game_Manager.h
+game\ui_manager.o: ..\APP\Lcd.h
+game\ui_manager.o: ../lvgl/examples/porting/lv_port_disp.h

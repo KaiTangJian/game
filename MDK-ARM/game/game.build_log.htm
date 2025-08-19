@@ -27,16 +27,26 @@ Project File Date:  08/16/2025
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin'
 Build target 'game'
+compiling Bright_APP.c...
+compiling Game_Manager.c...
+compiling KEY_APP.c...
+..\APP\KEY_APP.c(82): warning:  #1-D: last line of file ends without a newline
+  }
+..\APP\KEY_APP.c: 1 warning, 0 errors
 compiling Scheduler.c...
-..\APP\Game_Manager.h(26): warning:  #1-D: last line of file ends without a newline
-  #endif
 ..\APP\Scheduler.c(212): warning:  #177-D: variable "queue1_result"  was declared but never referenced
       uint8_t queue1_result = 0;
 ..\APP\Scheduler.c(213): warning:  #177-D: variable "result"  was declared but never referenced
       BaseType_t result = pdFALSE;
-..\APP\Scheduler.c: 3 warnings, 0 errors
+..\APP\Scheduler.c: 2 warnings, 0 errors
+compiling main.c...
+compiling MPU6050_APP.c...
+compiling USART_APP.c...
+compiling UI_Manager.c...
+compiling Lcd.c...
+compiling lv_port_disp.c...
 linking...
-Program Size: Code=171614 RO-data=48090 RW-data=768 ZI-data=97232  
+Program Size: Code=172276 RO-data=48088 RW-data=768 ZI-data=97232  
 FromELF: creating hex file...
 "game\game.axf" - 0 Error(s), 3 Warning(s).
 
@@ -60,7 +70,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE@5.1.2
-Build Time Elapsed:  00:00:13
+Build Time Elapsed:  00:00:17
 </pre>
 </body>
 </html>

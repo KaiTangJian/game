@@ -1,7 +1,7 @@
 #include "UI_Manager.h"
 
 UI_STATE_t Current_State = UI_STATE_START; // 现在的ui界面
-int Select_Number = 1;                     // 当前选择的关�?
+int Select_Number = 1;                     // 当前选择的关卡
 lv_obj_t *Home_Screen;
 lv_obj_t *Select_Screen;
 lv_obj_t *Select_Label;

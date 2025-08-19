@@ -161,3 +161,16 @@ game\game_manager.o: ../lvgl/src/extra/libs/sjpg/lv_sjpg.h
 game\game_manager.o: ../lvgl/src/extra/libs/freetype/lv_freetype.h
 game\game_manager.o: ../lvgl/src/extra/libs/rlottie/lv_rlottie.h
 game\game_manager.o: ../lvgl/src/extra/libs/ffmpeg/lv_ffmpeg.h
+game\game_manager.o: ..\APP\USART_APP.h
+game\game_manager.o: ..\APP\mydefine.h
+game\game_manager.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdio.h
+game\game_manager.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\math.h
+game\game_manager.o: ..\APP\KEY_APP.h
+game\game_manager.o: ..\APP\mydefine.h
+game\game_manager.o: ..\APP\USART_APP.h
+game\game_manager.o: ..\APP\Scheduler.h
+game\game_manager.o: ..\APP\MPU6050_APP.h
+game\game_manager.o: ../Core/Inc/I2C.h
+game\game_manager.o: ..\APP\Game_Manager.h
+game\game_manager.o: ..\APP\Lcd.h
+game\game_manager.o: ../lvgl/examples/porting/lv_port_disp.h

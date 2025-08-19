@@ -92,13 +92,13 @@ void FreeRTOS_Start()
                 (void *)NULL,
                 (UBaseType_t)START_TASK_PRIORITY,
                 (TaskHandle_t *)&Start_Task_Handle);
-    // 启动调度�? 自动创建空闲任务
+    // 启动调度
     vTaskStartScheduler();
 }
 
 void Start_Task(void *pvParameters)
 {
-    // 创建任务1
+    // 创建lvgl任务
     taskENTER_CRITICAL();
     xTaskCreate((TaskFunction_t)LvHandler_Task,
                 (char *)"LvHandler_Task",
@@ -148,7 +148,7 @@ void LvHandler_Task(void *pvParameters)
 {
 	vTaskDelay(pdMS_TO_TICKS(100));
     
-		create_home_screen();
+	create_home_screen();
     create_game_win_screen();
     create_game_play_screen();
     create_select_screen();
@@ -173,18 +173,18 @@ void LvHandler_Task(void *pvParameters)
         switch (Current_State)
         {
             case UI_STATE_START:
-                create_home_screen(); // ȷ�� home_screen �����Ѵ���
-                lv_disp_load_scr(Home_Screen); // ������ҳ��
+                create_home_screen(); 
+                lv_disp_load_scr(Home_Screen); 
                 break;
             case UI_STATE_SELECT:
-                create_select_screen(); // ȷ�� select_screen �����Ѵ����������Ѹ���
-                lv_disp_load_scr(Select_Screen); // ����ѡ�����
+                create_select_screen(); 
+                lv_disp_load_scr(Select_Screen); 
                 break;
             case UI_STATE_IN_GAMME:
-               my_printf(&huart1, "LvHandler_Task: Attempting to load game_play_screen...\r\n"); // 这个打印应该会出�?  
-							create_game_play_screen(); // ȷ�� game_play_screen �����Ѵ���
-                lv_disp_load_scr(game_play_screen); // ������Ϸ����
-						my_printf(&huart1, "LvHandler_Task: game_play_screen loaded. Releasing mutex...\r\n"); // 如果卡住，这个不会打�?
+                my_printf(&huart1, "LvHandler_Task: Attempting to load game_play_screen...\r\n");   
+				create_game_play_screen(); 
+                lv_disp_load_scr(game_play_screen); 
+				my_printf(&huart1, "LvHandler_Task: game_play_screen loaded. Releasing mutex...\r\n");
                 break;
             
         }
