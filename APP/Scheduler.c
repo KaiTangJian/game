@@ -56,8 +56,8 @@ float gyroX;
 float gyroY;
 float gyroZ;
 
-extern GameState_t current_game_state;     // 现在的游戏状�?
-extern const Level_t *current_level_data;  // 关卡�?
+extern GameState_t current_game_state;     // 现在的游戏状�??
+extern const Level_t *current_level_data;  // 关卡�??
 extern GamePlayer_t current_player1_state; // 冰人状�?
 extern GamePlayer_t current_player2_state; // 火人状�?
 extern uint32_t current_game_score;        // 游戏分数
@@ -139,7 +139,7 @@ void Start_Task(void *pvParameters)
                 (UBaseType_t)INPUT_TASK_PRIORITY,
                 (TaskHandle_t *)&Input_Task_Handle);
 
-    // 删除启动任务(只要执行一�?)
+    // 删除启动任务(只要执行一�??)
     vTaskDelete(NULL);
     taskEXIT_CRITICAL();
 }
@@ -181,11 +181,21 @@ void LvHandler_Task(void *pvParameters)
                 lv_disp_load_scr(Select_Screen); 
                 break;
             case UI_STATE_IN_GAMME:
-                my_printf(&huart1, "LvHandler_Task: Attempting to load game_play_screen...\r\n");   
-				create_game_play_screen(); 
+                //my_printf(&huart1, "LvHandler_Task: Attempting to load game_play_screen...\r\n");   
+								create_game_play_screen(); 
                 lv_disp_load_scr(game_play_screen); 
-				my_printf(&huart1, "LvHandler_Task: game_play_screen loaded. Releasing mutex...\r\n");
+								//my_printf(&huart1, "LvHandler_Task: game_play_screen loaded. Releasing mutex...\r\n");
                 break;
+						case UI_STATE_WON:
+								create_game_win_screen();
+						lv_disp_load_scr(game_win_screen);
+						
+						break;
+						case UI_STATE_LOSE:
+								create_game_lose_screen();
+						lv_disp_load_scr(game_lose_screen);
+						break;
+						
             
         }
         xSemaphoreGive(lvgl_mutex);
@@ -223,26 +233,26 @@ void Game_Logic_Task(void *pvParameters)
   bool game_initialized_for_current_level = false;  
      while (1)
     {
-        // 只有�? UI 状态为 UI_STATE_IN_GAMME 时，才执行游戏逻辑�? UI 更新
+        // 只有�?? UI 状态为 UI_STATE_IN_GAMME 时，才执行游戏逻辑�?? UI 更新
         if (Current_State == UI_STATE_IN_GAMME)
         {
 
             if (!game_initialized_for_current_level)
             {
-					if (Game_LoadLevel(1))
+					if (Game_LoadLevel(Select_Number))
 		        {
-                    my_printf(&huart1, "Game_Logic_Task: Level loaded successfully. Taking mutex...\r\n");
-            //xSemaphoreTake(lvgl_mutex, portMAX_DELAY); // <-- 如果卡在这里，说明有其他任务持有互斥量且不释�?
-                    my_printf(&huart1, "Game_Logic_Task: Mutex taken. Calling draw_map...\r\n");
-                    game_screen_draw_map(current_level_data); // <-- 如果卡在这里，说�? draw_map 内部有问题（如无限循环或内部尝试再次获取互斥量）
-                    my_printf(&huart1, "Game_Logic_Task: draw_map finished. Calling update_dynamic_elements...\r\n");
-                    game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state); // <-- 如果卡在这里，说�? update_dynamic_elements 内部有问�?
-                    my_printf(&huart1, "Game_Logic_Task: update_dynamic_elements finished. Releasing mutex...\r\n");
+                    
+            //xSemaphoreTake(lvgl_mutex, portMAX_DELAY); // <-- 如果卡在这里，说明有其他任务持有互斥量且不释�??
+                    
+                    game_screen_draw_map(current_level_data); // <-- 如果卡在这里，说�?? draw_map 内部有问题（如无限循环或内部尝试再次获取互斥量）
+                    
+                    game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state); // <-- 如果卡在这里，说�?? update_dynamic_elements 内部有问�??
+                    
             //xSemaphoreGive(lvgl_mutex);
-                    my_printf(&huart1, "Game_Logic_Task: Mutex released. Initialisation complete.\r\n");
+                    
             
                     game_initialized_for_current_level = true;
-                    my_printf(&huart1, "Game_Logic_Task: Game screen initialized successfully.\r\n"); 
+                     
 				}
         else
         {
@@ -275,7 +285,7 @@ void Game_Logic_Task(void *pvParameters)
             game_initialized_for_current_level = false;
         }
         
-        vTaskDelay(pdMS_TO_TICKS(200)); // 游戏逻辑�? UI 更新频率，可根据游戏流畅度调�?
+        vTaskDelay(pdMS_TO_TICKS(200)); // 游戏逻辑�?? UI 更新频率，可根据游戏流畅度调�??
     }
     
 

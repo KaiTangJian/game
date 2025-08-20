@@ -16,9 +16,9 @@ typedef enum {
     TILE_TYPE_NORMAL,   // 正常地面
 	TILE_TYPE_AIR,		//空气
     TILE_TYPE_EXIT,     // 出口
-    TILE_TYPE_COLLECTIBLE_FIRE_GEM, // 火宝�?
-    TILE_TYPE_COLLECTIBLE_ICE_GEM,  // 冰宝�?
-    TILE_TYPE_DOOR,     // 待打开的出�?
+    TILE_TYPE_COLLECTIBLE_FIRE_GEM, // 火宝
+    TILE_TYPE_COLLECTIBLE_ICE_GEM,  // 冰宝
+    TILE_TYPE_DOOR,     // 待打开的出口
     // ... more types as needed
 } TileType_t;
 

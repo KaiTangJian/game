@@ -175,3 +175,4 @@ game\ui_manager.o: ../Core/Inc/I2C.h
 game\ui_manager.o: ..\APP\Game_Manager.h
 game\ui_manager.o: ..\APP\Lcd.h
 game\ui_manager.o: ../lvgl/examples/porting/lv_port_disp.h
+game\ui_manager.o: ..\APP\UI_Manager.h

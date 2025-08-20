@@ -4,6 +4,7 @@
 #include "Game_Data.h"
 #include "lvgl.h"
 #include "USART_APP.h"
+#include "UI_Manager.h"
 typedef enum
 {
     GAME_STATE_LOADING,

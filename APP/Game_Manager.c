@@ -162,7 +162,18 @@ void Game_Update(void)
      for (int i = 0; i < 2; ++i) 
      {
         GamePlayer_t *player = (i == 0) ? &current_player1_state : &current_player2_state;
-        if (!player->on_ground) {
+            // 新增：每帧都检测脚下是否还有地面
+        int below_y = (int)(player->pos.y + 1);
+        if (player->on_ground) 
+        {
+            if (below_y >= MAP_HEIGHT ||current_level_data->map_data[below_y][(int)player->pos.x] != TILE_TYPE_WALL) 
+            {
+            // 脚下不是墙体，掉下去
+            player->on_ground = false;
+            }
+        }
+        if (!player->on_ground) 
+        {
             player->vertical_velocity += 0.3f; // 重力加速度
             float new_y = player->pos.y + player->vertical_velocity * 0.1f; // 0.1f为时间步长
 
@@ -187,7 +198,7 @@ void Game_Update(void)
     // 2. 检查游戏胜利条件
     if (p1_current_tile == TILE_TYPE_EXIT && p2_current_tile == TILE_TYPE_EXIT)
     {
-        current_game_state = GAME_STATE_WON;
+        Current_State = UI_STATE_WON;
     }
 
    
@@ -195,6 +206,6 @@ void Game_Update(void)
     // 4. 检查游戏失败条件 (除了时间用尽)
     if (current_player1_state.health <= 0 || current_player2_state.health <= 0)
     {
-        current_game_state = GAME_STATE_LOST;
+        Current_State = UI_STATE_LOSE;
     }
 }

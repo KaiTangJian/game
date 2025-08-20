@@ -174,4 +174,6 @@ game\mpu6050_app.o: ..\APP\Scheduler.h
 game\mpu6050_app.o: ..\APP\MPU6050_APP.h
 game\mpu6050_app.o: ..\APP\Lcd.h
 game\mpu6050_app.o: ../lvgl/examples/porting/lv_port_disp.h
+game\mpu6050_app.o: ..\APP\UI_Manager.h
+game\mpu6050_app.o: ..\APP\Game_Manager.h
 game\mpu6050_app.o: ..\APP\nrf24L01.h

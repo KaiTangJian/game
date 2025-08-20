@@ -171,5 +171,7 @@ game\usart_app.o: ../lvgl/src/extra/libs/sjpg/lv_sjpg.h
 game\usart_app.o: ../lvgl/src/extra/libs/freetype/lv_freetype.h
 game\usart_app.o: ../lvgl/src/extra/libs/rlottie/lv_rlottie.h
 game\usart_app.o: ../lvgl/src/extra/libs/ffmpeg/lv_ffmpeg.h
+game\usart_app.o: ..\APP\UI_Manager.h
+game\usart_app.o: ..\APP\Game_Manager.h
 game\usart_app.o: ..\APP\Lcd.h
 game\usart_app.o: ../lvgl/examples/porting/lv_port_disp.h

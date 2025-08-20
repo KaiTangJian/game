@@ -70,9 +70,9 @@ void create_game_play_screen(void)
         player1_obj = lv_obj_create(game_play_screen);
         lv_obj_set_size(player1_obj, TILE_SIZE, TILE_SIZE);
         lv_obj_set_style_bg_color(player1_obj, lv_color_hex(0x0000), LV_PART_MAIN); // ?????
-        lv_obj_set_style_border_width(player1_obj, 0, LV_PART_MAIN);                  // ????
+        lv_obj_set_style_border_width(player1_obj, 0, LV_PART_MAIN);                // ????
         lv_obj_clear_flag(player1_obj, LV_OBJ_FLAG_SCROLLABLE);
-        //lv_obj_add_flag(player1_obj, LV_OBJ_FLAG_HIDDEN); // ???????
+        // lv_obj_add_flag(player1_obj, LV_OBJ_FLAG_HIDDEN); // ???????
 
         // ?????????? (???? - ????????)
         player2_obj = lv_obj_create(game_play_screen);
@@ -80,7 +80,7 @@ void create_game_play_screen(void)
         lv_obj_set_style_bg_color(player2_obj, lv_color_hex(0xFF4500), LV_PART_MAIN); // ????
         lv_obj_set_style_border_width(player2_obj, 0, LV_PART_MAIN);                  // ????
         lv_obj_clear_flag(player2_obj, LV_OBJ_FLAG_SCROLLABLE);
-       // lv_obj_add_flag(player2_obj, LV_OBJ_FLAG_HIDDEN); // ???????
+        // lv_obj_add_flag(player2_obj, LV_OBJ_FLAG_HIDDEN); // ???????
 
         // ???? UI ????? (?÷????????????)
         score_label = lv_label_create(game_play_screen);
@@ -126,8 +126,8 @@ void game_screen_draw_map(const Level_t *level_data)
         for (int x = 0; x < MAP_WIDTH; x++)
         {
             TileType_t tile = (TileType_t)level_data->map_data[y][x];
-            //lv_color_t tile_color = lv_color_hex(0x333333); // ???????????? TILE_TYPE_NORMAL ????????
-            lv_color_t tile_color = lv_color_make(51, 51, 51); // 手动指定RGB�?
+            // lv_color_t tile_color = lv_color_hex(0x333333); // ???????????? TILE_TYPE_NORMAL ????????
+            lv_color_t tile_color = lv_color_make(51, 51, 51); // 手动指定RGB�?
             switch (tile)
             {
             case TILE_TYPE_WALL:
@@ -137,7 +137,7 @@ void game_screen_draw_map(const Level_t *level_data)
                 tile_color = lv_color_hex(0xF800); // 红色
                 break;
             case TILE_TYPE_ICE:
-                tile_color = lv_color_hex(0x001F); // 浅蓝�?
+                tile_color = lv_color_hex(0x001F); // 浅蓝�?
                 break;
             case TILE_TYPE_EXIT:
                 tile_color = lv_color_hex(0x07E0); // 绿色
@@ -149,9 +149,9 @@ void game_screen_draw_map(const Level_t *level_data)
             }
             // 设置绘图描述符的背景颜色
             rect_dsc.bg_color = tile_color;
-            // 如果不需要边框，确保边框宽度�?0
+            // 如果不需要边框，确保边框宽度�?0
             rect_dsc.border_width = 0;
-            // 如果不需要圆角，确保圆角半径�?0
+            // 如果不需要圆角，确保圆角半径�?0
             rect_dsc.radius = 0;
             // ????????????????
             lv_canvas_draw_rect(map_canvas, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, &rect_dsc);
@@ -161,38 +161,24 @@ void game_screen_draw_map(const Level_t *level_data)
 }
 
 /**
- * @brief 动态元素更�?
+ * @brief 动态元素更�?
  * @param p1 ????????????
  * @param p2 ????????????
  */
 void game_screen_update_dynamic_elements(const GamePlayer_t *p1, const GamePlayer_t *p2)
 {
-//    // ???±???λ??
-//    if (player1_obj)
-//    {
-//        lv_obj_set_pos(player1_obj, (int)p1->pos.x * TILE_SIZE, (int)p1->pos.y * TILE_SIZE);
-//        lv_obj_clear_flag(player1_obj, LV_OBJ_FLAG_HIDDEN); // ????????
-//    }
 
-//    // ???????λ??
-//    if (player2_obj)
-//    {
-//        lv_obj_set_pos(player2_obj, (int)p2->pos.x * TILE_SIZE, (int)p2->pos.y * TILE_SIZE);
-//        lv_obj_clear_flag(player2_obj, LV_OBJ_FLAG_HIDDEN); // ????????
-//    }
-//    // ??????????????????�????
-	    // 冰人位置更新
     if (player1_obj)
     {
-        // 获取地图画布的屏幕坐�?
+        // 获取地图画布的屏幕坐�?
         lv_coord_t canvas_x = lv_obj_get_x(map_canvas);
         lv_coord_t canvas_y = lv_obj_get_y(map_canvas);
-        
+
         // 计算玩家相对于地图画布的坐标
         lv_coord_t player_x = (int)p1->pos.x * TILE_SIZE;
         lv_coord_t player_y = (int)p1->pos.y * TILE_SIZE;
-        
-        // 设置玩家在屏幕上的绝对位�?
+
+        // 设置玩家在屏幕上的绝对位�?
         lv_obj_set_pos(player1_obj, canvas_x + player_x, canvas_y + player_y);
         lv_obj_clear_flag(player1_obj, LV_OBJ_FLAG_HIDDEN); // 显示冰人
     }
@@ -200,15 +186,15 @@ void game_screen_update_dynamic_elements(const GamePlayer_t *p1, const GamePlaye
     // 火人位置更新
     if (player2_obj)
     {
-        // 获取地图画布的屏幕坐�?
+        // 获取地图画布的屏幕坐�?
         lv_coord_t canvas_x = lv_obj_get_x(map_canvas);
         lv_coord_t canvas_y = lv_obj_get_y(map_canvas);
-        
+
         // 计算玩家相对于地图画布的坐标
         lv_coord_t player_x = (int)p2->pos.x * TILE_SIZE;
         lv_coord_t player_y = (int)p2->pos.y * TILE_SIZE;
-        
-        // 设置玩家在屏幕上的绝对位�?
+
+        // 设置玩家在屏幕上的绝对位�?
         lv_obj_set_pos(player2_obj, canvas_x + player_x, canvas_y + player_y);
         lv_obj_clear_flag(player2_obj, LV_OBJ_FLAG_HIDDEN); // 显示火人
     }
@@ -268,17 +254,65 @@ void create_game_lose_screen(void)
     }
 }
 
+// ...existing code...
+lv_obj_t *level_labels[5] = {NULL}; // 全局声明
+
 void create_select_screen()
 {
     if (Select_Screen == NULL)
     {
         Select_Screen = lv_obj_create(NULL);
-        lv_obj_set_style_bg_color(Select_Screen, lv_color_hex(0xAA0000), LV_PART_MAIN); // ???????
+        lv_obj_set_style_bg_color(Select_Screen, lv_color_hex(0xAA0000), LV_PART_MAIN);
         lv_obj_set_style_text_color(Select_Screen, lv_color_white(), LV_PART_MAIN);
         lv_obj_clear_flag(Select_Screen, LV_OBJ_FLAG_SCROLLABLE);
 
-        lv_obj_t *label = lv_label_create(Select_Screen);
-        lv_label_set_text(label, "GAME SELECT!\nTry again!");
-        lv_obj_center(label);
+        lv_obj_t *title = lv_label_create(Select_Screen);
+        lv_label_set_text(title, "SELECT LEVEL");
+        lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 30);
+
+        for (int i = 0; i < 5; ++i)
+        {
+            level_labels[i] = lv_label_create(Select_Screen);
+            char buf[16];
+            snprintf(buf, sizeof(buf), "Level %d", i + 1);
+            lv_label_set_text(level_labels[i], buf);
+
+            if (Select_Number == i + 1)
+            {
+                lv_obj_set_style_text_color(level_labels[i], lv_color_hex(0xFFFF00), LV_PART_MAIN);
+                //lv_obj_set_style_text_font(level_labels[i], &lv_font_montserrat_24, LV_PART_MAIN);
+            }
+            else
+            {
+                lv_obj_set_style_text_color(level_labels[i], lv_color_white(), LV_PART_MAIN);
+                //lv_obj_set_style_text_font(level_labels[i], &lv_font_montserrat_18, LV_PART_MAIN);
+            }
+            lv_obj_align(level_labels[i], LV_ALIGN_TOP_MID, 0, 80 + i * 40);
+        }
+
+        lv_obj_t *hint = lv_label_create(Select_Screen);
+        lv_label_set_text(hint, "Use Up/Down to select, Enter to confirm");
+        lv_obj_align(hint, LV_ALIGN_BOTTOM_MID, 0, -20);
+    }
+}
+
+// 新增：只更新label高亮
+void update_level_labels_highlight(void)
+{
+    for (int i = 0; i < 5; ++i)
+    {
+        if (level_labels[i])
+        {
+            if (Select_Number == i + 1)
+            {
+                lv_obj_set_style_text_color(level_labels[i], lv_color_hex(0xFFFF00), LV_PART_MAIN);
+                //lv_obj_set_style_text_font(level_labels[i], &lv_font_montserrat_24, LV_PART_MAIN);
+            }
+            else
+            {
+                lv_obj_set_style_text_color(level_labels[i], lv_color_white(), LV_PART_MAIN);
+                //lv_obj_set_style_text_font(level_labels[i], &lv_font_montserrat_18, LV_PART_MAIN);
+            }
+        }
     }
 }

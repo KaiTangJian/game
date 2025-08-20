@@ -171,6 +171,8 @@ game\lcd.o: ../lvgl/src/extra/libs/sjpg/lv_sjpg.h
 game\lcd.o: ../lvgl/src/extra/libs/freetype/lv_freetype.h
 game\lcd.o: ../lvgl/src/extra/libs/rlottie/lv_rlottie.h
 game\lcd.o: ../lvgl/src/extra/libs/ffmpeg/lv_ffmpeg.h
+game\lcd.o: ..\APP\UI_Manager.h
+game\lcd.o: ..\APP\Game_Manager.h
 game\lcd.o: ..\APP\Lcd.h
 game\lcd.o: ../lvgl/examples/porting/lv_port_disp.h
 game\lcd.o: ..\APP\font.h
