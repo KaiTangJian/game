@@ -1,10 +1,23 @@
 #include "Game_Manager.h"
-GameState_t current_game_state;     // 当前游戏状�?
+GameState_t current_game_state;     // 当前游戏状态
 const Level_t *current_level_data;  // 当前关卡数据
-GamePlayer_t current_player1_state; // 冰人的当前状�?
-GamePlayer_t current_player2_state; // 火人的当前状�?
+GamePlayer_t current_player1_state; // 冰人的当前状态
+GamePlayer_t current_player2_state; // 火人的当前状态
 uint32_t current_game_score;        // 当前游戏分数
-uint32_t remaining_game_time_sec;   // 剩余游戏时间（秒�?
+uint32_t remaining_game_time_sec;   // 剩余游戏时间
+
+#define MAX_GEMS_PER_LEVEL 8
+
+typedef struct 
+{
+    uint8_t x;
+    uint8_t y;
+    TileType_t type;
+    bool collected;
+} GemInfo_t;
+
+static GemInfo_t gems[MAX_GEMS_PER_LEVEL];
+static uint8_t gem_count = 0;
 
 static bool is_move_valid(const GamePlayer_t *player, int8_t dx, int8_t dy)
 {
@@ -31,20 +44,16 @@ static bool is_move_valid(const GamePlayer_t *player, int8_t dx, int8_t dy)
 
     // 4. 特定玩家类型与危险地形的交互检�?
     if (player->type == PLAYER_TYPE_ICE)
-    { // 如果是冰�?
-        // 冰人不能进入岩浆或火焰瓦�?
-        // TODO: 定义 TILE_TYPE_LAVA，目前你�? TileType_t 中只�? FIRE/ICE/NORMAL/EXIT...
-        // 假设 TILE_TYPE_LAVA 是存在的
+    { // 如果是冰人
+        // 冰人不能进入岩浆
         if (target_tile == TILE_TYPE_FIRE)
         {
             return false;
         }
     }
     else
-    { // 如果是火�? (PLAYER_TYPE_FIRE)
-        // 火人不能进入水域或冰川瓦�?
-        // TODO: 定义 TILE_TYPE_WATER，目前你�? TileType_t 中只�? FIRE/ICE/NORMAL/EXIT...
-        // 假设 TILE_TYPE_WATER 是存在的
+    { // 如果是 (PLAYER_TYPE_FIRE)
+        // 火人不能进入水域
         if (target_tile == TILE_TYPE_ICE)
         {
             return false;
@@ -127,7 +136,24 @@ bool Game_LoadLevel(uint8_t level_id)
     current_player2_state.vertical_velocity = 0.0f;
     current_player2_state.on_ground = false;
     current_player2_state.is_jumping = false;
-    // ...相同属性初始化...
+    
+    //宝石相关
+     gem_count = 0;
+    for (uint8_t y = 0; y < MAP_HEIGHT; ++y) 
+    {
+        for (uint8_t x = 0; x < MAP_WIDTH; ++x) 
+        {
+            TileType_t t = (TileType_t)current_level_data->map_data[y][x];
+            if ((t == TILE_TYPE_COLLECTIBLE_FIRE_GEM || t == TILE_TYPE_COLLECTIBLE_ICE_GEM) && gem_count < MAX_GEMS_PER_LEVEL) 
+            {
+                gems[gem_count].x = x;
+                gems[gem_count].y = y;
+                gems[gem_count].type = t;
+                gems[gem_count].collected = false;
+                gem_count++;
+            }
+        }
+    }
 
     // 重置全局游戏状态
     current_game_score = 0;
@@ -142,7 +168,7 @@ void Game_Update(void)
     TileType_t p1_current_tile = (TileType_t)current_level_data->map_data[(int)current_player1_state.pos.y][(int)current_player1_state.pos.x];
     if (current_player1_state.type == PLAYER_TYPE_ICE)
     {
-        // TODO: 定义 TILE_TYPE_LAVA
+        
         if (p1_current_tile == TILE_TYPE_FIRE)
         {
             current_player1_state.health--;
@@ -191,7 +217,42 @@ void Game_Update(void)
                 player->pos.y = new_y;
             }
         }
-        my_printf(&huart1, "Update: y=%.2f on_ground=%d is_jumping=%d v=%.2f\r\n", player->pos.y, player->on_ground, player->is_jumping, player->vertical_velocity);
+        
+    }
+    // 冰人
+    uint8_t p1x = (uint8_t)current_player1_state.pos.x;
+    uint8_t p1y = (uint8_t)current_player1_state.pos.y;
+    TileType_t p1_tile = (TileType_t)current_level_data->map_data[p1y][p1x];
+    if ((p1_tile == TILE_TYPE_COLLECTIBLE_ICE_GEM || p1_tile == TILE_TYPE_COLLECTIBLE_FIRE_GEM) && !is_gem_collected(p1x, p1y)) 
+    {
+        // 标记为已收集
+        for (uint8_t i = 0; i < gem_count; ++i) 
+        {
+            if (gems[i].x == p1x && gems[i].y == p1y && !gems[i].collected) 
+            {
+                gems[i].collected = true;
+                current_game_score += 100;
+                game_screen_redraw_tile(p1x, p1y); // 只重绘该格子
+                break;
+            }
+        }
+    }
+    // 火人同理
+    uint8_t p2x = (uint8_t)current_player2_state.pos.x;
+    uint8_t p2y = (uint8_t)current_player2_state.pos.y;
+    TileType_t p2_tile = (TileType_t)current_level_data->map_data[p2y][p2x];
+    if ((p2_tile == TILE_TYPE_COLLECTIBLE_ICE_GEM || p2_tile == TILE_TYPE_COLLECTIBLE_FIRE_GEM) && !is_gem_collected(p2x, p2y)) 
+    {
+        for (uint8_t i = 0; i < gem_count; ++i) 
+        {
+            if (gems[i].x == p2x && gems[i].y == p2y && !gems[i].collected) 
+            {
+                gems[i].collected = true;
+                current_game_score += 100;
+                game_screen_redraw_tile(p2x, p2y); // 只重绘该格子
+                break;
+            }
+        }
     }
     
 
@@ -209,3 +270,13 @@ void Game_Update(void)
         Current_State = UI_STATE_LOSE;
     }
 }
+
+bool is_gem_collected(uint8_t x, uint8_t y)
+{
+    for (uint8_t i = 0; i < gem_count; ++i) {
+        if (gems[i].x == x && gems[i].y == y)
+            return gems[i].collected;
+    }
+    return false;
+}
+

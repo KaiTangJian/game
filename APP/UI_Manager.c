@@ -5,6 +5,7 @@ int Select_Number = 1;                     // 当前选择的关卡
 lv_obj_t *Home_Screen;
 lv_obj_t *Select_Screen;
 lv_obj_t *Select_Label;
+extern bool is_gem_collected(uint8_t x, uint8_t y);
 static lv_color_t canvas_buffer[LV_CANVAS_BUF_SIZE_TRUE_COLOR(MAP_WIDTH * TILE_SIZE, MAP_HEIGHT *TILE_SIZE)];
 void create_home_screen(void)
 {
@@ -132,17 +133,27 @@ void game_screen_draw_map(const Level_t *level_data)
             {
             case TILE_TYPE_WALL:
                 tile_color = lv_color_hex(0X8430); // 灰色
+                //tile_color = lv_color_make(0, 255, 0);粉红色
+                //tile_color = lv_color_make(255, 255, 0);浅紫色
+                //tile_color = lv_color_make(255, 255, 255);橙色
+							//tile_color = lv_color_hex(0xAA0000);深蓝
+						
                 break;
             case TILE_TYPE_FIRE:
                 tile_color = lv_color_hex(0xF800); // 红色
                 break;
             case TILE_TYPE_ICE:
-                tile_color = lv_color_hex(0x001F); // 浅蓝�?
+                tile_color = lv_color_hex(0xAA0000); // 浅蓝�?
                 break;
             case TILE_TYPE_EXIT:
                 tile_color = lv_color_hex(0x07E0); // 绿色
                 break;
-            // TILE_TYPE_NORMAL ??????δ????????????????????? 0x333333
+            case TILE_TYPE_COLLECTIBLE_FIRE_GEM:
+               tile_color = lv_color_make(255, 255, 255);//橙色
+                break;
+            case TILE_TYPE_COLLECTIBLE_ICE_GEM:
+                tile_color = lv_color_make(255, 255, 0);//浅紫色
+                break;
             default:
                 tile_color = lv_color_hex(0xFFE0);
                 break;
@@ -306,7 +317,7 @@ void update_level_labels_highlight(void)
             if (Select_Number == i + 1)
             {
                 lv_obj_set_style_text_color(level_labels[i], lv_color_hex(0xFFFF00), LV_PART_MAIN);
-                //lv_obj_set_style_text_font(level_labels[i], &lv_font_montserrat_24, LV_PART_MAIN);
+                lv_obj_set_style_text_font(level_labels[i], &lv_font_montserrat_24, LV_PART_MAIN);
             }
             else
             {
@@ -316,3 +327,48 @@ void update_level_labels_highlight(void)
         }
     }
 }
+
+void game_screen_redraw_tile(uint8_t x, uint8_t y)
+{
+TileType_t t = (TileType_t)current_level_data->map_data[y][x];
+    if ((t == TILE_TYPE_COLLECTIBLE_FIRE_GEM || t == TILE_TYPE_COLLECTIBLE_ICE_GEM) && is_gem_collected(x, y)) {
+        t = TILE_TYPE_NORMAL;
+    }
+
+    lv_draw_rect_dsc_t rect_dsc;
+    lv_draw_rect_dsc_init(&rect_dsc);
+
+    // 根据tile类型设置颜色
+    switch (t)
+    {
+    case TILE_TYPE_WALL:
+        rect_dsc.bg_color = lv_color_hex(0X8430); // 灰色
+        break;
+    case TILE_TYPE_FIRE:
+        rect_dsc.bg_color = lv_color_hex(0xF800); // 红色
+        break;
+    case TILE_TYPE_ICE:
+        rect_dsc.bg_color = lv_color_hex(0x001F); // 浅蓝色
+        break;
+    case TILE_TYPE_EXIT:
+        rect_dsc.bg_color = lv_color_hex(0x07E0); // 绿色
+        break;
+    case TILE_TYPE_COLLECTIBLE_FIRE_GEM:
+        rect_dsc.bg_color = lv_color_hex(0xFF8000); // 橙色
+        break;
+    case TILE_TYPE_COLLECTIBLE_ICE_GEM:
+        rect_dsc.bg_color = lv_color_hex(0x00FFFF); // 青色
+        break;
+    default:
+        rect_dsc.bg_color = lv_color_hex(0xFFE0); // 普通地面
+        break;
+    }
+    rect_dsc.border_width = 0;
+    rect_dsc.radius = 0;
+
+    // 绘制格子
+    lv_canvas_draw_rect(map_canvas, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, &rect_dsc);
+
+    lv_obj_invalidate(map_canvas); // 通知LVGL刷新
+}
+

@@ -14,7 +14,7 @@ typedef enum
     GAME_STATE_LOST
 } GameState_t;
 //extern GameState_t current_game_state;
-//extern const Level_t* current_level_data;
+extern const Level_t* current_level_data;
 
 //extern GamePlayer_t current_player1_state; // 冰人的当前状�?
 //extern GamePlayer_t current_player2_state; // 火人的当前状�?
@@ -25,4 +25,5 @@ bool is_move_valid(const GamePlayer_t *player, int8_t dx, int8_t dy);
 void Game_HandleInput(uint8_t player_id, int8_t dx, int8_t dy);
 bool Game_LoadLevel(uint8_t level_id);
 void Game_Update(void);
+bool is_gem_collected(uint8_t x, uint8_t y);
 #endif

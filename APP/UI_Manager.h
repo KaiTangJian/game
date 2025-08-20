@@ -30,4 +30,5 @@ void create_game_win_screen(void);
 void create_game_lose_screen(void);
 void create_select_screen();
 void update_level_labels_highlight(void);
+void game_screen_redraw_tile(uint8_t x, uint8_t y);
 #endif
