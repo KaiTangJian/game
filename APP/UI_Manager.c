@@ -8,9 +8,11 @@ lv_obj_t *Select_Label;
 extern bool is_gem_collected(uint8_t x, uint8_t y);
 static lv_color_t canvas_buffer[LV_CANVAS_BUF_SIZE_TRUE_COLOR(MAP_WIDTH * TILE_SIZE, MAP_HEIGHT *TILE_SIZE)];
 void create_home_screen(void)
-{
-    Home_Screen = lv_obj_create(NULL); // 创建一个新屏幕
-    lv_obj_set_style_bg_color(Home_Screen, lv_color_hex(0xFFFF), 0);
+{    
+       if (Home_Screen == NULL)
+    {
+        Home_Screen = lv_obj_create(NULL); // 创建一个新屏幕
+        lv_obj_set_style_bg_color(Home_Screen, lv_color_hex(0xFFFF), 0);
 
     lv_obj_t *title = lv_label_create(Home_Screen);
     lv_label_set_text(title, "FIRE AND ICE");
@@ -25,6 +27,7 @@ void create_home_screen(void)
     lv_obj_t *hint_exit = lv_label_create(Home_Screen);
     lv_label_set_text(hint_exit, "Buttom2:Exit");
     lv_obj_align_to(hint_exit, hint_start, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 10);
+    }
 }
 
 // =============================================================================
@@ -85,7 +88,7 @@ void create_game_play_screen(void)
 
         // ???? UI ????? (?÷????????????)
         score_label = lv_label_create(game_play_screen);
-        lv_obj_set_style_text_color(score_label, lv_color_white(), LV_PART_MAIN);
+        lv_obj_set_style_text_color(score_label, lv_color_hex(0xFF4500), LV_PART_MAIN);
         lv_obj_align(score_label, LV_ALIGN_TOP_LEFT, 10, 10);
         lv_label_set_text(score_label, "Score: 0");
 

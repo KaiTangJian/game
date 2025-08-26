@@ -3,7 +3,7 @@
 <title>Static Call Graph - [game\game.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image game\game.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Wed Aug 20 22:18:27 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Tue Aug 26 17:10:12 2025
 <BR><P>
 <H3>Maximum Stack Usage =       1024 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -3059,7 +3059,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LvHandler_Task
 </UL>
 
-<P><STRONG><a name="[204]"></a>create_game_play_screen</STRONG> (Thumb, 378 bytes, Stack size 24 bytes, ui_manager.o(i.create_game_play_screen))
+<P><STRONG><a name="[204]"></a>create_game_play_screen</STRONG> (Thumb, 380 bytes, Stack size 24 bytes, ui_manager.o(i.create_game_play_screen))
 <BR><BR>[Stack]<UL><LI>Max Depth = 516<LI>Call Chain = create_game_play_screen &rArr; lv_obj_align_to &rArr; lv_obj_update_layout &rArr; layout_update_core &rArr;  layout_update_core (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_obj_create
@@ -3074,7 +3074,6 @@ Global Symbols
 <LI><a href="#[23f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_obj_set_style_bg_color
 <LI><a href="#[2e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_canvas_set_buffer
 <LI><a href="#[2e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_canvas_create
-<LI><a href="#[2e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_color_white
 <LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_color_hex
 </UL>
 <BR>[Called By]<UL><LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LvHandler_Task
@@ -3096,7 +3095,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LvHandler_Task
 </UL>
 
-<P><STRONG><a name="[202]"></a>create_home_screen</STRONG> (Thumb, 142 bytes, Stack size 16 bytes, ui_manager.o(i.create_home_screen))
+<P><STRONG><a name="[202]"></a>create_home_screen</STRONG> (Thumb, 146 bytes, Stack size 16 bytes, ui_manager.o(i.create_home_screen))
 <BR><BR>[Stack]<UL><LI>Max Depth = 508<LI>Call Chain = create_home_screen &rArr; lv_obj_align_to &rArr; lv_obj_update_layout &rArr; layout_update_core &rArr;  layout_update_core (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_obj_create
@@ -16368,7 +16367,6 @@ Local Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[205]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;create_select_screen
 <LI><a href="#[203]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;create_game_win_screen
-<LI><a href="#[204]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;create_game_play_screen
 <LI><a href="#[208]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;create_game_lose_screen
 <LI><a href="#[3ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_level_labels_highlight
 </UL>
