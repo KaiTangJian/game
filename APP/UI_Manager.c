@@ -46,7 +46,9 @@ void add_score_to_leaderboard(uint8_t level_id, uint32_t score) {
             break;
         }
     }
-    
+    // 保存到Flash
+    extern bool Flash_WriteScores(void);
+    Flash_WriteScores();
     // 更新UI显示（如果主界面已创建）
     if (Home_Screen != NULL) {
         // 只更新当前关卡的前三名显示
@@ -431,12 +433,12 @@ void update_level_labels_highlight(void)
             if (Select_Number == i + 1)
             {
                 lv_obj_set_style_text_color(level_labels[i], lv_color_hex(0xFFFF00), LV_PART_MAIN);
-                //lv_obj_set_style_text_font(level_labels[i], &lv_font_montserrat_24, LV_PART_MAIN);
+                
             }
             else
             {
                 lv_obj_set_style_text_color(level_labels[i], lv_color_white(), LV_PART_MAIN);
-                //lv_obj_set_style_text_font(level_labels[i], &lv_font_montserrat_18, LV_PART_MAIN);
+                
             }
         }
     }

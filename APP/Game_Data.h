@@ -3,11 +3,26 @@
 
 #include <stdint.h>
 #include <stdbool.h> // For bool type
-
+#include "stm32f4xx_hal.h"
 // Define your map dimensions
 #define MAP_WIDTH   15
 #define MAP_HEIGHT  10
 #define TILE_SIZE 5
+// 排行榜相关定义
+#define TOTAL_LEVELS 5
+#define MAX_SCORES_PER_LEVEL 5
+#define FLASH_STORAGE_ADDRESS 0x080E0000  // 使用Sector 11 (最后128KB扇区中的前16KB)
+#define FLASH_SCORES_SECTOR FLASH_SECTOR_11
+#define SCORES_DATA_SIZE (sizeof(level_high_scores))
+extern uint32_t level_high_scores[TOTAL_LEVELS][MAX_SCORES_PER_LEVEL];
+
+
+
+// Flash操作函数声明
+void Flash_Init(void);
+bool Flash_ReadScores(void);
+bool Flash_WriteScores(void);
+void Flash_ErasePage(void);
 // Tile Types (Adjust based on your game mechanics)
 typedef enum {
     TILE_TYPE_WALL = 0,//墙壁

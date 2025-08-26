@@ -55,8 +55,10 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-/* USER CODE BEGIN PFP */
 
+/* USER CODE BEGIN PFP */
+extern void Flash_Init(void);
+extern void update_home_screen_leaderboard(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -104,9 +106,11 @@ int main(void)
   //HAL_TIM_Base_Start_IT(&htim2);
   //HAL_TIM_Base_Start_IT(&htim3);
 	HAL_TIM_PWM_Start(&htim4,TIM_CHANNEL_1);
+  Flash_Init();
 	LCD_Init();
   lv_init();
   lv_port_disp_init();
+   update_home_screen_leaderboard();
   adc_dma_init();
   FreeRTOS_Start();
   /* USER CODE END 2 */

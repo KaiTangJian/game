@@ -1,6 +1,6 @@
 #include "Game_Data.h"
 #include <stddef.h>
-
+#include "stm32f4xx_hal.h"
 
 
 
@@ -61,4 +61,102 @@ const Level_t* Level_GetById(uint8_t level_id) {
         return &game_levels[level_id - 1]; // Level IDs are 1-based
     }
     return NULL; // Level not found
+}
+
+// ... 现有的地图数据和关卡定义 ...
+
+// Flash操作相关函数实现
+/**
+ * @brief 初始化Flash存储
+ */
+void Flash_Init(void) {
+    // 初始化时尝试从Flash读取排行榜数据
+    if (!Flash_ReadScores()) {
+        // 如果读取失败，使用默认值并保存到Flash
+        Flash_WriteScores();
+    }
+}
+
+/**
+ * @brief 从Flash读取排行榜数据
+ */
+bool Flash_ReadScores(void) {
+    uint32_t *flash_ptr = (uint32_t *)FLASH_STORAGE_ADDRESS;
+    uint32_t *data_ptr = (uint32_t *)level_high_scores;
+    uint32_t data_size = sizeof(level_high_scores);
+    
+    // 检查Flash中是否有有效数据（简单检查前4字节不为0xFFFFFFFF）
+    if (*flash_ptr == 0xFFFFFFFF) {
+        return false;  // Flash中没有数据
+    }
+    
+    // 从Flash读取数据
+    for (uint32_t i = 0; i < data_size / 4; i++) {
+        data_ptr[i] = flash_ptr[i];
+    }
+    
+    return true;
+}
+
+/**
+ * @brief 将排行榜数据写入Flash
+ */
+bool Flash_WriteScores(void) {
+    HAL_StatusTypeDef status;
+    uint32_t address = FLASH_STORAGE_ADDRESS;
+    uint32_t *data_ptr = (uint32_t *)level_high_scores;
+    uint32_t data_size = sizeof(level_high_scores);
+    
+    // 解锁Flash
+    HAL_FLASH_Unlock();
+    
+    // 擦除Flash扇区
+    FLASH_EraseInitTypeDef eraseInitStruct;
+    uint32_t sectorError = 0;
+    
+    eraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
+    eraseInitStruct.VoltageRange = FLASH_VOLTAGE_RANGE_3;
+    eraseInitStruct.Sector = FLASH_SCORES_SECTOR;
+    eraseInitStruct.NbSectors = 1;
+    
+    status = HAL_FLASHEx_Erase(&eraseInitStruct, &sectorError);
+    if (status != HAL_OK) {
+        HAL_FLASH_Lock();
+        return false;
+    }
+    
+    // 写入数据 (按字写入)
+    for (uint32_t i = 0; i < data_size; i += 4) {
+        status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, address, *(uint32_t*)((uint8_t*)data_ptr + i));
+        if (status != HAL_OK) {
+            HAL_FLASH_Lock();
+            return false;
+        }
+        address += 4;
+    }
+    
+    // 锁定Flash
+    HAL_FLASH_Lock();
+    
+    return true;
+}
+
+/**
+ * @brief 擦除Flash扇区
+ */
+void Flash_EraseSector(void) 
+{
+    HAL_FLASH_Unlock();
+    
+    FLASH_EraseInitTypeDef eraseInitStruct;
+    uint32_t sectorError = 0;
+    
+    eraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
+    eraseInitStruct.VoltageRange = FLASH_VOLTAGE_RANGE_3;
+    eraseInitStruct.Sector = FLASH_SCORES_SECTOR;
+    eraseInitStruct.NbSectors = 1;
+    
+    HAL_FLASHEx_Erase(&eraseInitStruct, &sectorError);
+    
+    HAL_FLASH_Lock();
 }
