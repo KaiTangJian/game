@@ -8,7 +8,7 @@ uint32_t remaining_game_time_sec;   // 剩余游戏时间
 
 #define MAX_GEMS_PER_LEVEL 8
 
-typedef struct 
+typedef struct
 {
     uint8_t x;
     uint8_t y;
@@ -21,19 +21,19 @@ static uint8_t gem_count = 0;
 
 static bool is_move_valid(const GamePlayer_t *player, int8_t dx, int8_t dy)
 {
-    // 计算玩家尝试移动到的新瓦格坐�?
+    // 计算玩家尝试移动到的新瓦格坐
     int new_x = player->pos.x + dx;
     int new_y = player->pos.y + dy;
 
-    // 1. 边界检�?: 确保新坐标在地图范围�?
+    // 1. 边界检�?: 确保新坐标在地图范围
     if (new_x < 0 || new_x >= MAP_WIDTH || new_y < 0 || new_y >= MAP_HEIGHT)
     {
-        return false; // 越界，移动无�?
+        return false; // 越界，移动无
     }
 
-    // 2. 获取目标瓦格的类�?
-    // 使用当前关卡的地图数据进行查�?
-    // 注意: current_level_data 必须在调用此函数前已有效加载�?
+    // 2. 获取目标瓦格的类
+    // 使用当前关卡的地图数据进行查
+    // 注意: current_level_data 必须在调用此函数前已有效加载
     TileType_t target_tile = (TileType_t)current_level_data->map_data[new_y][new_x];
 
     // 3. 墙壁检�?: 玩家不能穿过墙壁
@@ -60,9 +60,9 @@ static bool is_move_valid(const GamePlayer_t *player, int8_t dx, int8_t dy)
         }
     }
 
-    // 5. 其他更复杂的碰撞检�? (根据游戏设计添加)
+    // 5. 其他更复杂的碰撞检 (根据游戏设计添加)
 
-    return true; // 所有检查通过，移动有�?
+    return true; // 所有检查通过，移动有
 }
 void Game_HandleInput(uint8_t player_id, int8_t dx, int8_t dy)
 {
@@ -81,10 +81,8 @@ void Game_HandleInput(uint8_t player_id, int8_t dx, int8_t dy)
         return;
     }
 
-
-
-        // 跳跃输入处理
-    if (dy == -1 && player->on_ground && !player->is_jumping) 
+    // 跳跃输入处理
+    if (dy == -1 && player->on_ground && !player->is_jumping)
     {
         my_printf(&huart1, "JUMP");
         player->vertical_velocity = -1.0f; // 跳跃初速度（负值向上）
@@ -92,7 +90,7 @@ void Game_HandleInput(uint8_t player_id, int8_t dx, int8_t dy)
         player->on_ground = false;
         return;
     }
-        if (is_move_valid(player, dx, dy))
+    if (is_move_valid(player, dx, dy))
     {
         player->pos.x += dx;
         player->pos.y += dy;
@@ -123,8 +121,6 @@ bool Game_LoadLevel(uint8_t level_id)
     current_player1_state.on_ground = false;
     current_player1_state.is_jumping = false;
 
-
-
     // 初始化火人玩家
     current_player2_state.type = PLAYER_TYPE_FIRE;
     current_player2_state.pos = current_level_data->player2_start;
@@ -136,15 +132,15 @@ bool Game_LoadLevel(uint8_t level_id)
     current_player2_state.vertical_velocity = 0.0f;
     current_player2_state.on_ground = false;
     current_player2_state.is_jumping = false;
-    
-    //宝石相关
-     gem_count = 0;
-    for (uint8_t y = 0; y < MAP_HEIGHT; ++y) 
+
+    // 宝石相关
+    gem_count = 0;
+    for (uint8_t y = 0; y < MAP_HEIGHT; ++y)
     {
-        for (uint8_t x = 0; x < MAP_WIDTH; ++x) 
+        for (uint8_t x = 0; x < MAP_WIDTH; ++x)
         {
             TileType_t t = (TileType_t)current_level_data->map_data[y][x];
-            if ((t == TILE_TYPE_COLLECTIBLE_FIRE_GEM || t == TILE_TYPE_COLLECTIBLE_ICE_GEM) && gem_count < MAX_GEMS_PER_LEVEL) 
+            if ((t == TILE_TYPE_COLLECTIBLE_FIRE_GEM || t == TILE_TYPE_COLLECTIBLE_ICE_GEM) && gem_count < MAX_GEMS_PER_LEVEL)
             {
                 gems[gem_count].x = x;
                 gems[gem_count].y = y;
@@ -168,7 +164,7 @@ void Game_Update(void)
     TileType_t p1_current_tile = (TileType_t)current_level_data->map_data[(int)current_player1_state.pos.y][(int)current_player1_state.pos.x];
     if (current_player1_state.type == PLAYER_TYPE_ICE)
     {
-        
+
         if (p1_current_tile == TILE_TYPE_FIRE)
         {
             current_player1_state.health--;
@@ -185,50 +181,49 @@ void Game_Update(void)
         }
     }
 
-     for (int i = 0; i < 2; ++i) 
-     {
+    for (int i = 0; i < 2; ++i)
+    {
         GamePlayer_t *player = (i == 0) ? &current_player1_state : &current_player2_state;
-            // 新增：每帧都检测脚下是否还有地面
+        // 新增：每帧都检测脚下是否还有地面
         int below_y = (int)(player->pos.y + 1);
-        if (player->on_ground) 
+        if (player->on_ground)
         {
-            if (below_y >= MAP_HEIGHT ||current_level_data->map_data[below_y][(int)player->pos.x] != TILE_TYPE_WALL) 
+            if (below_y >= MAP_HEIGHT || current_level_data->map_data[below_y][(int)player->pos.x] != TILE_TYPE_WALL)
             {
-            // 脚下不是墙体，掉下去
-            player->on_ground = false;
+                // 脚下不是墙体，掉下去
+                player->on_ground = false;
             }
         }
-        if (!player->on_ground) 
+        if (!player->on_ground)
         {
-            player->vertical_velocity += 0.3f; // 重力加速度
+            player->vertical_velocity += 0.3f;                              // 重力加速度
             float new_y = player->pos.y + player->vertical_velocity * 0.1f; // 0.1f为时间步长
 
             // 检查是否落地
             int tile_below = (int)(new_y + 1.0f);
-            if (tile_below >= MAP_HEIGHT ||current_level_data->map_data[tile_below][(int)player->pos.x] == TILE_TYPE_WALL) 
+            if (tile_below >= MAP_HEIGHT || current_level_data->map_data[tile_below][(int)player->pos.x] == TILE_TYPE_WALL)
             {
                 player->pos.y = (float)((int)new_y); // 落地对齐格子
                 player->vertical_velocity = 0.0f;
                 player->on_ground = true;
                 player->is_jumping = false;
-            } 
-            else 
+            }
+            else
             {
                 player->pos.y = new_y;
             }
         }
-        
     }
     // 冰人
     uint8_t p1x = (uint8_t)current_player1_state.pos.x;
     uint8_t p1y = (uint8_t)current_player1_state.pos.y;
     TileType_t p1_tile = (TileType_t)current_level_data->map_data[p1y][p1x];
-    if ((p1_tile == TILE_TYPE_COLLECTIBLE_ICE_GEM || p1_tile == TILE_TYPE_COLLECTIBLE_FIRE_GEM) && !is_gem_collected(p1x, p1y)) 
+    if ((p1_tile == TILE_TYPE_COLLECTIBLE_ICE_GEM ) && !is_gem_collected(p1x, p1y))
     {
         // 标记为已收集
-        for (uint8_t i = 0; i < gem_count; ++i) 
+        for (uint8_t i = 0; i < gem_count; ++i)
         {
-            if (gems[i].x == p1x && gems[i].y == p1y && !gems[i].collected) 
+            if (gems[i].x == p1x && gems[i].y == p1y && !gems[i].collected)
             {
                 gems[i].collected = true;
                 current_game_score += 100;
@@ -241,11 +236,11 @@ void Game_Update(void)
     uint8_t p2x = (uint8_t)current_player2_state.pos.x;
     uint8_t p2y = (uint8_t)current_player2_state.pos.y;
     TileType_t p2_tile = (TileType_t)current_level_data->map_data[p2y][p2x];
-    if ((p2_tile == TILE_TYPE_COLLECTIBLE_ICE_GEM || p2_tile == TILE_TYPE_COLLECTIBLE_FIRE_GEM) && !is_gem_collected(p2x, p2y)) 
+    if (( p2_tile == TILE_TYPE_COLLECTIBLE_FIRE_GEM) && !is_gem_collected(p2x, p2y))
     {
-        for (uint8_t i = 0; i < gem_count; ++i) 
+        for (uint8_t i = 0; i < gem_count; ++i)
         {
-            if (gems[i].x == p2x && gems[i].y == p2y && !gems[i].collected) 
+            if (gems[i].x == p2x && gems[i].y == p2y && !gems[i].collected)
             {
                 gems[i].collected = true;
                 current_game_score += 100;
@@ -254,15 +249,15 @@ void Game_Update(void)
             }
         }
     }
-    
 
     // 2. 检查游戏胜利条件
     if (p1_current_tile == TILE_TYPE_EXIT && p2_current_tile == TILE_TYPE_EXIT)
     {
+        // 游戏胜利时将分数添加到排行榜
+        extern void add_score_to_leaderboard(uint8_t level_id, uint32_t score);
+        add_score_to_leaderboard(current_level_data->id, current_game_score);
         Current_State = UI_STATE_WON;
     }
-
-   
 
     // 4. 检查游戏失败条件 (除了时间用尽)
     if (current_player1_state.health <= 0 || current_player2_state.health <= 0)
@@ -273,10 +268,10 @@ void Game_Update(void)
 
 bool is_gem_collected(uint8_t x, uint8_t y)
 {
-    for (uint8_t i = 0; i < gem_count; ++i) {
+    for (uint8_t i = 0; i < gem_count; ++i)
+    {
         if (gems[i].x == x && gems[i].y == y)
             return gems[i].collected;
     }
     return false;
 }
-

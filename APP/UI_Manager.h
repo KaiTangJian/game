@@ -12,7 +12,8 @@ typedef enum
 	  UI_STATE_WON,
 		UI_STATE_LOSE
 }UI_STATE_t;
-
+#define MAX_SCORES_PER_LEVEL 5
+#define TOTAL_LEVELS 5
 extern UI_STATE_t Current_State;//现在的ui界面
 extern int Select_Number;//当前选择的关�??
 extern lv_obj_t *Home_Screen;
