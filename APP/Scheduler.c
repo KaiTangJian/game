@@ -223,9 +223,10 @@ void Task3(void *pvParameters)
     BaseType_t result = pdFALSE;
     while (1)
     {
-        my_printf(&huart1, "task3OK\r\n");
+        
         adc_task();
-        vTaskDelay(pdMS_TO_TICKS(1000));
+				Buzzer_APP();
+        vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
 void Game_Logic_Task(void *pvParameters)

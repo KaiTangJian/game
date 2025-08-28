@@ -177,6 +177,7 @@ game\main.o: ../lvgl/src/extra/libs/rlottie/lv_rlottie.h
 game\main.o: ../lvgl/src/extra/libs/ffmpeg/lv_ffmpeg.h
 game\main.o: ../APP/UI_Manager.h
 game\main.o: ../APP/Game_Manager.h
+game\main.o: ../APP/Buzzer_APP.h
 game\main.o: ../APP/Lcd.h
 game\main.o: ../lvgl/examples/porting/lv_port_disp.h
 game\main.o: ../APP/NRF24L01.h

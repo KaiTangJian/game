@@ -31,6 +31,7 @@
 #include "mydefine.h"
 #include "NRF24L01.h"
 #include "Bright_APP.h"
+#include "Buzzer_APP.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,7 +56,6 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-
 /* USER CODE BEGIN PFP */
 extern void Flash_Init(void);
 extern void update_home_screen_leaderboard(void);
@@ -102,10 +102,17 @@ int main(void)
   MX_I2C2_Init();
   MX_I2C3_Init();
   MX_TIM4_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
   //HAL_TIM_Base_Start_IT(&htim2);
   //HAL_TIM_Base_Start_IT(&htim3);
 	HAL_TIM_PWM_Start(&htim4,TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_2);
+	//uint32_t timFrequency = TIM_GetCounterFreq(&htim3);
+	__HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_2,500/5);
+	HAL_Delay(300);
+	__HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_2,0);
+	Buzzer_APP();
   Flash_Init();
 	LCD_Init();
   lv_init();

@@ -172,5 +172,6 @@ game\key_app.o: ../lvgl/src/extra/libs/rlottie/lv_rlottie.h
 game\key_app.o: ../lvgl/src/extra/libs/ffmpeg/lv_ffmpeg.h
 game\key_app.o: ..\APP\UI_Manager.h
 game\key_app.o: ..\APP\Game_Manager.h
+game\key_app.o: ..\APP\Buzzer_APP.h
 game\key_app.o: ..\APP\Lcd.h
 game\key_app.o: ../lvgl/examples/porting/lv_port_disp.h

@@ -73,11 +73,7 @@ void update_home_screen_leaderboard(void) {
     static bool leaderboard_created = false;
     
     if (!leaderboard_created) {
-        // 添加标题
-        lv_obj_t *title = lv_label_create(Home_Screen);
-        lv_label_set_text(title, "Top 3 Scores:");
-        lv_obj_set_style_text_color(title, lv_color_hex(0x0000FF), 0);
-        lv_obj_align(title, LV_ALIGN_BOTTOM_MID, 0, -80);
+
         
         // 横排显示5个关卡的前三名
         int start_x = 20;

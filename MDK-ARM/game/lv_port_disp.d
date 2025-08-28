@@ -174,5 +174,6 @@ game\lv_port_disp.o: ../APP/Game_Manager.h
 game\lv_port_disp.o: ../APP/Game_Data.h
 game\lv_port_disp.o: ../APP/UI_Manager.h
 game\lv_port_disp.o: ../APP/Game_Manager.h
+game\lv_port_disp.o: ../APP/Buzzer_APP.h
 game\lv_port_disp.o: ../APP/Lcd.h
 game\lv_port_disp.o: ../lvgl/examples/porting/lv_port_disp.h
