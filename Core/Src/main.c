@@ -108,11 +108,7 @@ int main(void)
   //HAL_TIM_Base_Start_IT(&htim3);
 	HAL_TIM_PWM_Start(&htim4,TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_2);
-	//uint32_t timFrequency = TIM_GetCounterFreq(&htim3);
-	__HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_2,500/5);
-	HAL_Delay(300);
-	__HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_2,0);
-	Buzzer_APP();
+	//Buzzer_APP();
   Flash_Init();
 	LCD_Init();
   lv_init();

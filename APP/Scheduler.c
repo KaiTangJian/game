@@ -225,7 +225,7 @@ void Task3(void *pvParameters)
     {
         
         adc_task();
-				Buzzer_APP();
+		Buzzer_APP();
         vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
