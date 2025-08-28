@@ -57,7 +57,7 @@ void Buzzer_APP(void)
   // 下一个音�?
   playIndex++;
 		// 播放结束
-		if (playIndex >= sizeof(MoChouXiang))
+		if (playIndex >= (sizeof(MoChouXiang)/sizeof(MoChouXiang[0])))
 		{
 				
 			playIndex = 0; // 重置索引
