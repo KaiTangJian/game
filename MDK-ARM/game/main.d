@@ -185,6 +185,7 @@ game\main.o: ../FreeRTOS/include/deprecated_definitions.h
 game\main.o: ../FreeRTOS/portable/RVDS/ARM_CM4F/portmacro.h
 game\main.o: ../FreeRTOS/include/mpu_wrappers.h
 game\main.o: ../APP/Buzzer_APP.h
+game\main.o: ../APP/DS1302_APP.h
 game\main.o: ../APP/Lcd.h
 game\main.o: ../lvgl/examples/porting/lv_port_disp.h
 game\main.o: ../APP/NRF24L01.h

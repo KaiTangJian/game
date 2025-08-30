@@ -181,5 +181,6 @@ game\usart_app.o: ../FreeRTOS/include/deprecated_definitions.h
 game\usart_app.o: ../FreeRTOS/portable/RVDS/ARM_CM4F/portmacro.h
 game\usart_app.o: ../FreeRTOS/include/mpu_wrappers.h
 game\usart_app.o: ..\APP\Buzzer_APP.h
+game\usart_app.o: ..\APP\DS1302_APP.h
 game\usart_app.o: ..\APP\Lcd.h
 game\usart_app.o: ../lvgl/examples/porting/lv_port_disp.h

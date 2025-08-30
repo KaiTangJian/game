@@ -173,6 +173,7 @@ game\mpu6050_app.o: ..\APP\USART_APP.h
 game\mpu6050_app.o: ..\APP\Scheduler.h
 game\mpu6050_app.o: ..\APP\MPU6050_APP.h
 game\mpu6050_app.o: ..\APP\Buzzer_APP.h
+game\mpu6050_app.o: ..\APP\DS1302_APP.h
 game\mpu6050_app.o: ..\APP\Lcd.h
 game\mpu6050_app.o: ../lvgl/examples/porting/lv_port_disp.h
 game\mpu6050_app.o: ..\APP\UI_Manager.h

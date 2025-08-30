@@ -181,6 +181,7 @@ game\lcd.o: ../FreeRTOS/include/deprecated_definitions.h
 game\lcd.o: ../FreeRTOS/portable/RVDS/ARM_CM4F/portmacro.h
 game\lcd.o: ../FreeRTOS/include/mpu_wrappers.h
 game\lcd.o: ..\APP\Buzzer_APP.h
+game\lcd.o: ..\APP\DS1302_APP.h
 game\lcd.o: ..\APP\Lcd.h
 game\lcd.o: ../lvgl/examples/porting/lv_port_disp.h
 game\lcd.o: ..\APP\font.h

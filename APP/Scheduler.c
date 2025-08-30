@@ -42,6 +42,12 @@ void Game_Logic_Task(void *pvParameters);
 TaskHandle_t Input_Task_Handle;
 void Input_Task(void *pvParameters);
 
+// 添加时间显示任务配置
+#define TIME_DISPLAY_TASK_STACK_SIZE 256
+#define TIME_DISPLAY_TASK_PRIORITY 2
+TaskHandle_t Time_Display_Task_Handle;
+void Time_Display_Task(void *pvParameters);
+
 // 启动
 QueueHandle_t queue1;
 QueueHandle_t queue2;
@@ -56,8 +62,8 @@ float gyroX;
 float gyroY;
 float gyroZ;
 
-extern GameState_t current_game_state;     // 现在的游戏状�???
-extern const Level_t *current_level_data;  // 关卡�???
+extern GameState_t current_game_state;     // 现在的游戏状�???
+extern const Level_t *current_level_data;  // 关卡�???
 extern GamePlayer_t current_player1_state; // 冰人状�?
 extern GamePlayer_t current_player2_state; // 火人状�?
 extern uint32_t current_game_score;        // 游戏分数
@@ -138,7 +144,15 @@ void Start_Task(void *pvParameters)
                 (UBaseType_t)INPUT_TASK_PRIORITY,
                 (TaskHandle_t *)&Input_Task_Handle);
 
-    // 删除启动任务(只要执行一�???)
+        // 创建时间显示任务
+    xTaskCreate((TaskFunction_t)Time_Display_Task,
+                (char *)"Time_Display_Task",
+                (configSTACK_DEPTH_TYPE)TIME_DISPLAY_TASK_STACK_SIZE,
+                (void *)NULL,
+                (UBaseType_t)TIME_DISPLAY_TASK_PRIORITY,
+                (TaskHandle_t *)&Time_Display_Task_Handle);
+
+    // 删除启动任务(只要执行一�???)
     vTaskDelete(NULL);
     taskEXIT_CRITICAL();
 }
@@ -180,10 +194,10 @@ void LvHandler_Task(void *pvParameters)
                 lv_disp_load_scr(Select_Screen);
                 break;
             case UI_STATE_IN_GAMME:
-                
+
                 create_game_play_screen();
                 lv_disp_load_scr(game_play_screen);
-                
+
                 break;
             case UI_STATE_WON:
                 create_game_win_screen();
@@ -229,7 +243,7 @@ void Game_Logic_Task(void *pvParameters)
     bool game_initialized_for_current_level = false;
     while (1)
     {
-        // 只有�??? UI 状态为 UI_STATE_IN_GAMME 时，才执行游戏逻辑�??? UI 更新
+        // 只有�??? UI 状态为 UI_STATE_IN_GAMME 时，才执行游戏逻辑�??? UI 更新
         if (Current_State == UI_STATE_IN_GAMME)
         {
 
@@ -238,11 +252,11 @@ void Game_Logic_Task(void *pvParameters)
                 if (Game_LoadLevel(Select_Number))
                 {
 
-                    // xSemaphoreTake(lvgl_mutex, portMAX_DELAY); // <-- 如果卡在这里，说明有其他任务持有互斥量且不释�???
+                    // xSemaphoreTake(lvgl_mutex, portMAX_DELAY); // <-- 如果卡在这里，说明有其他任务持有互斥量且不释�???
 
-                    game_screen_draw_map(current_level_data); // <-- 如果卡在这里，说�??? draw_map 内部有问题（如无限循环或内部尝试再次获取互斥量）
+                    game_screen_draw_map(current_level_data); // <-- 如果卡在这里，说�??? draw_map 内部有问题（如无限循环或内部尝试再次获取互斥量）
 
-                    game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state); // <-- 如果卡在这里，说�??? update_dynamic_elements 内部有问�???
+                    game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state); // <-- 如果卡在这里，说�??? update_dynamic_elements 内部有问�???
 
                     // xSemaphoreGive(lvgl_mutex);
 
@@ -277,7 +291,7 @@ void Game_Logic_Task(void *pvParameters)
             game_initialized_for_current_level = false;
         }
 
-        vTaskDelay(pdMS_TO_TICKS(200)); // 游戏逻辑�??? UI 更新频率，可根据游戏流畅度调�???
+        vTaskDelay(pdMS_TO_TICKS(200)); // 游戏逻辑�??? UI 更新频率，可根据游戏流畅度调�???
     }
 }
 
@@ -290,6 +304,53 @@ void Input_Task(void *pvParameters)
         key_proc();
         MPU6050_Process_Input();
         vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
+
+// 在Scheduler.c文件末尾添加时间显示任务
+void Time_Display_Task(void *pvParameters)
+{
+    static uint32_t last_update_time = 0;
+    static lv_obj_t *time_label = NULL;
+    
+    while (1)
+    {
+        uint32_t current_time = HAL_GetTick();
+        
+        // 每秒更新一次时间显示
+        if (current_time - last_update_time >= 1000)
+        {
+            // 只在主界面显示时间
+            if (Current_State == UI_STATE_START && Home_Screen != NULL)
+            {
+                // 获取LVGL互斥锁
+                if (xSemaphoreTake(lvgl_mutex, pdMS_TO_TICKS(50)) == pdTRUE)
+                {
+                    // 如果时间标签尚未创建，则创建它
+                    if (time_label == NULL)
+                    {
+                        time_label = lv_label_create(Home_Screen);
+                        lv_obj_align(time_label, LV_ALIGN_TOP_RIGHT, -10, 10);
+                        lv_obj_set_style_text_color(time_label, lv_color_hex(0x0000FF), 0);
+                    }
+                    
+                    // 读取并显示时间
+                    timeNow_t currentTime = DS1302_Read_Time();
+                    char time_text[32];
+                    snprintf(time_text, sizeof(time_text), 
+                             "20%02d-%02d-%02d %02d:%02d:%02d",
+                             currentTime.year, currentTime.month, currentTime.day,
+                             currentTime.hour, currentTime.minute, currentTime.second);
+                    lv_label_set_text(time_label, time_text);
+                    
+                    xSemaphoreGive(lvgl_mutex);
+                }
+            }
+            
+            last_update_time = current_time;
+        }
+        
+        vTaskDelay(pdMS_TO_TICKS(100)); // 100ms检查一次
     }
 }
 void vApplicationTickHook(void)

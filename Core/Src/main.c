@@ -32,6 +32,7 @@
 #include "NRF24L01.h"
 #include "Bright_APP.h"
 #include "Buzzer_APP.h"
+#include  "DS1302_APP.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -63,7 +64,6 @@ extern void update_home_screen_leaderboard(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
 /* USER CODE END 0 */
 
 /**
@@ -104,17 +104,15 @@ int main(void)
   MX_TIM4_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-  //HAL_TIM_Base_Start_IT(&htim2);
-  //HAL_TIM_Base_Start_IT(&htim3);
 	HAL_TIM_PWM_Start(&htim4,TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_2);
-	//Buzzer_APP();
   Flash_Init();
 	LCD_Init();
   lv_init();
   lv_port_disp_init();
-   update_home_screen_leaderboard();
+  update_home_screen_leaderboard();
   adc_dma_init();
+	DS1302_Set_Time(0x19,0x07,0x08,0x1e,0x11,0x36,0x00);
   FreeRTOS_Start();
   /* USER CODE END 2 */
 

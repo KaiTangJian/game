@@ -40,6 +40,7 @@
 "game\bright_app.o"
 "game\mpu6050_app.o"
 "game\buzzer_app.o"
+"game\ds1302_app.o"
 "game\croutine.o"
 "game\event_groups.o"
 "game\list.o"

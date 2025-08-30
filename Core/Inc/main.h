@@ -65,6 +65,8 @@ void Error_Handler(void);
 #define KEY2_GPIO_Port GPIOF
 #define KEY3_Pin GPIO_PIN_5
 #define KEY3_GPIO_Port GPIOF
+#define DS1302_Data_Pin GPIO_PIN_10
+#define DS1302_Data_GPIO_Port GPIOB
 #define RST_Pin GPIO_PIN_12
 #define RST_GPIO_Port GPIOB
 #define LED_Pin GPIO_PIN_13
@@ -73,6 +75,10 @@ void Error_Handler(void);
 #define DC_GPIO_Port GPIOB
 #define CS_Pin GPIO_PIN_15
 #define CS_GPIO_Port GPIOB
+#define DS1302_RST_Pin GPIO_PIN_8
+#define DS1302_RST_GPIO_Port GPIOB
+#define DS1302_CLK_Pin GPIO_PIN_9
+#define DS1302_CLK_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

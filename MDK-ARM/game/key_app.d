@@ -180,5 +180,6 @@ game\key_app.o: ../FreeRTOS/include/deprecated_definitions.h
 game\key_app.o: ../FreeRTOS/portable/RVDS/ARM_CM4F/portmacro.h
 game\key_app.o: ../FreeRTOS/include/mpu_wrappers.h
 game\key_app.o: ..\APP\Buzzer_APP.h
+game\key_app.o: ..\APP\DS1302_APP.h
 game\key_app.o: ..\APP\Lcd.h
 game\key_app.o: ../lvgl/examples/porting/lv_port_disp.h

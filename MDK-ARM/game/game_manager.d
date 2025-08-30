@@ -173,6 +173,7 @@ game\game_manager.o: ..\APP\MPU6050_APP.h
 game\game_manager.o: ../Core/Inc/I2C.h
 game\game_manager.o: ..\APP\Game_Manager.h
 game\game_manager.o: ..\APP\Buzzer_APP.h
+game\game_manager.o: ..\APP\DS1302_APP.h
 game\game_manager.o: ..\APP\Lcd.h
 game\game_manager.o: ../lvgl/examples/porting/lv_port_disp.h
 game\game_manager.o: ..\APP\UI_Manager.h
