@@ -160,6 +160,22 @@ bool Game_LoadLevel(uint8_t level_id)
 }
 void Game_Update(void)
 {
+        if (current_game_state == GAME_STATE_PLAYING && remaining_game_time_sec > 0) {
+        static uint32_t last_time_update = 0;
+        uint32_t current_time = xTaskGetTickCount(); // FreeRTOS系统时钟
+        
+        // 每1000ms减少1秒时间
+        if (current_time - last_time_update >= configTICK_RATE_HZ) {
+            remaining_game_time_sec--;
+            last_time_update = current_time;
+            
+            // 检查时间是否用尽
+            if (remaining_game_time_sec <= 0) {
+                remaining_game_time_sec = 0;
+                Current_State = UI_STATE_LOSE; // 时间用尽，游戏结束
+            }
+        }
+    } 
     // 1. 检查玩家与危险瓦格的碰撞
     TileType_t p1_current_tile = (TileType_t)current_level_data->map_data[(int)current_player1_state.pos.y][(int)current_player1_state.pos.x];
     if (current_player1_state.type == PLAYER_TYPE_ICE)
@@ -218,7 +234,7 @@ void Game_Update(void)
     uint8_t p1x = (uint8_t)current_player1_state.pos.x;
     uint8_t p1y = (uint8_t)current_player1_state.pos.y;
     TileType_t p1_tile = (TileType_t)current_level_data->map_data[p1y][p1x];
-    if ((p1_tile == TILE_TYPE_COLLECTIBLE_ICE_GEM ) && !is_gem_collected(p1x, p1y))
+    if ((p1_tile == TILE_TYPE_COLLECTIBLE_ICE_GEM) && !is_gem_collected(p1x, p1y))
     {
         // 标记为已收集
         for (uint8_t i = 0; i < gem_count; ++i)
@@ -236,7 +252,7 @@ void Game_Update(void)
     uint8_t p2x = (uint8_t)current_player2_state.pos.x;
     uint8_t p2y = (uint8_t)current_player2_state.pos.y;
     TileType_t p2_tile = (TileType_t)current_level_data->map_data[p2y][p2x];
-    if (( p2_tile == TILE_TYPE_COLLECTIBLE_FIRE_GEM) && !is_gem_collected(p2x, p2y))
+    if ((p2_tile == TILE_TYPE_COLLECTIBLE_FIRE_GEM) && !is_gem_collected(p2x, p2y))
     {
         for (uint8_t i = 0; i < gem_count; ++i)
         {
@@ -260,7 +276,7 @@ void Game_Update(void)
     }
 
     // 4. 检查游戏失败条件 (除了时间用尽)
-    if (current_player1_state.health <= 0 || current_player2_state.health <= 0)
+    if (current_player1_state.health <= 0 || current_player2_state.health <= 0 || remaining_game_time_sec <= 0)
     {
         Current_State = UI_STATE_LOSE;
     }

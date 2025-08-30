@@ -20,4 +20,14 @@
 
 extern UART_HandleTypeDef huart1;
 extern DMA_HandleTypeDef hdma_spi1_tx;
+/*
+lcd : spi1 mosi pb5
+miso pb4
+sck pb3
+cs pb15
+dc pb14
+led pb13v l
+rst pb12
+
+*/
 #endif

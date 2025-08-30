@@ -8,7 +8,6 @@ lv_obj_t *Select_Label;
 extern bool is_gem_collected(uint8_t x, uint8_t y);
 static lv_color_t canvas_buffer[LV_CANVAS_BUF_SIZE_TRUE_COLOR(MAP_WIDTH * TILE_SIZE, MAP_HEIGHT *TILE_SIZE)];
 
-
 // 5个关卡的排行榜数据
 uint32_t level_high_scores[TOTAL_LEVELS][MAX_SCORES_PER_LEVEL] = {
     {0, 0, 0, 0, 0}, // Level 1 的前5名分数
@@ -20,26 +19,28 @@ uint32_t level_high_scores[TOTAL_LEVELS][MAX_SCORES_PER_LEVEL] = {
 static lv_obj_t *score_labels[TOTAL_LEVELS][MAX_SCORES_PER_LEVEL] = {{NULL}};
 static lv_obj_t *level_title_labels[TOTAL_LEVELS] = {NULL};
 
-
-
-
 /**
  * @brief 添加分数到指定关卡的排行榜
  * @param level_id 关卡ID (1-5)
  * @param score 要添加的分数
  */
-void add_score_to_leaderboard(uint8_t level_id, uint32_t score) {
+void add_score_to_leaderboard(uint8_t level_id, uint32_t score)
+{
     // 检查关卡ID有效性
-    if (level_id < 1 || level_id > 5) return;
-    
+    if (level_id < 1 || level_id > 5)
+        return;
+
     uint8_t index = level_id - 1; // 转换为0基索引
-    
+
     // 找到合适的插入位置
-    for (int i = 0; i < MAX_SCORES_PER_LEVEL; i++) {
-        if (score > level_high_scores[index][i]) {
+    for (int i = 0; i < MAX_SCORES_PER_LEVEL; i++)
+    {
+        if (score > level_high_scores[index][i])
+        {
             // 将较低的分数下移
-            for (int j = MAX_SCORES_PER_LEVEL - 1; j > i; j--) {
-                level_high_scores[index][j] = level_high_scores[index][j-1];
+            for (int j = MAX_SCORES_PER_LEVEL - 1; j > i; j--)
+            {
+                level_high_scores[index][j] = level_high_scores[index][j - 1];
             }
             // 插入新分数
             level_high_scores[index][i] = score;
@@ -50,38 +51,43 @@ void add_score_to_leaderboard(uint8_t level_id, uint32_t score) {
     extern bool Flash_WriteScores(void);
     Flash_WriteScores();
     // 更新UI显示（如果主界面已创建）
-    if (Home_Screen != NULL) {
+    if (Home_Screen != NULL)
+    {
         // 只更新当前关卡的前三名显示
-        for (int i = 0; i < 3; i++) {
-            if (score_labels[index][i] != NULL) {
+        for (int i = 0; i < 3; i++)
+        {
+            if (score_labels[index][i] != NULL)
+            {
                 char score_text[16];
-                snprintf(score_text, sizeof(score_text), "%d.%d", i+1, (int)level_high_scores[index][i]);
+                snprintf(score_text, sizeof(score_text), "%d.%d", i + 1, (int)level_high_scores[index][i]);
                 lv_label_set_text(score_labels[index][i], score_text);
             }
         }
     }
 }
 
-
 /**
  * @brief 更新主界面的排行榜显示
  */
-void update_home_screen_leaderboard(void) {
-    if (Home_Screen == NULL) return;
-    
+void update_home_screen_leaderboard(void)
+{
+    if (Home_Screen == NULL)
+        return;
+
     // 直接在主界面上创建排行榜元素
     static bool leaderboard_created = false;
-    
-    if (!leaderboard_created) {
 
-        
+    if (!leaderboard_created)
+    {
+
         // 横排显示5个关卡的前三名
         int start_x = 20;
         int start_y = 180;
         int level_spacing = 60; // 每个关卡之间的水平间距
-        
+
         // 为每个关卡创建排行榜显示区域
-        for (int level = 0; level < 5; level++) {
+        for (int level = 0; level < 5; level++)
+        {
             // 关卡标题
             level_title_labels[level] = lv_label_create(Home_Screen);
             char title_text[8];
@@ -89,26 +95,31 @@ void update_home_screen_leaderboard(void) {
             lv_label_set_text(level_title_labels[level], title_text);
             lv_obj_set_style_text_color(level_title_labels[level], lv_color_hex(0x0000FF), 0);
             lv_obj_align(level_title_labels[level], LV_ALIGN_TOP_LEFT, start_x + level * level_spacing, start_y);
-            
+
             // 分数条目 (显示前3名)
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 3; i++)
+            {
                 score_labels[level][i] = lv_label_create(Home_Screen);
                 lv_obj_set_style_text_color(score_labels[level][i], lv_color_hex(0x000000), 0);
                 char score_text[16];
-                snprintf(score_text, sizeof(score_text), "%d.%d", i+1, (int)level_high_scores[level][i]);
+                snprintf(score_text, sizeof(score_text), "%d.%d", i + 1, (int)level_high_scores[level][i]);
                 lv_label_set_text(score_labels[level][i], score_text);
-                lv_obj_align(score_labels[level][i], LV_ALIGN_TOP_LEFT, 
-                            start_x + level * level_spacing, start_y + 15 + i * 15);
+                lv_obj_align(score_labels[level][i], LV_ALIGN_TOP_LEFT,
+                             start_x + level * level_spacing, start_y + 15 + i * 15);
             }
         }
-        
+
         leaderboard_created = true;
-    } else {
+    }
+    else
+    {
         // 更新现有标签的文本
-        for (int level = 0; level < 5; level++) {
-            for (int i = 0; i < 3; i++) {
+        for (int level = 0; level < 5; level++)
+        {
+            for (int i = 0; i < 3; i++)
+            {
                 char score_text[16];
-                snprintf(score_text, sizeof(score_text), "%d.%d", i+1, (int)level_high_scores[level][i]);
+                snprintf(score_text, sizeof(score_text), "%d.%d", i + 1, (int)level_high_scores[level][i]);
                 lv_label_set_text(score_labels[level][i], score_text);
             }
         }
@@ -116,26 +127,26 @@ void update_home_screen_leaderboard(void) {
 }
 
 void create_home_screen(void)
-{    
-       if (Home_Screen == NULL)
+{
+    if (Home_Screen == NULL)
     {
         Home_Screen = lv_obj_create(NULL); // 创建一个新屏幕
         lv_obj_set_style_bg_color(Home_Screen, lv_color_hex(0xFFFF), 0);
 
-    lv_obj_t *title = lv_label_create(Home_Screen);
-    lv_label_set_text(title, "FIRE AND ICE");
-    lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 50);
-    // lv_obj_set_style_text_color(title, lv_color_hex(0xFF0000), 0); // 红色文字
-    lv_obj_set_style_text_color(title, lv_color_hex(0xF800), 0);
-    lv_obj_set_style_text_font(title, &lv_font_montserrat_24, 0); // 24号字体，可根据需要调??
-    lv_obj_t *hint_start = lv_label_create(Home_Screen);
-    lv_label_set_text(hint_start, "Buttom1:Enter");
-    lv_obj_align(hint_start, LV_ALIGN_TOP_LEFT, 10, 10);
+        lv_obj_t *title = lv_label_create(Home_Screen);
+        lv_label_set_text(title, "FIRE AND ICE");
+        lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 50);
+        // lv_obj_set_style_text_color(title, lv_color_hex(0xFF0000), 0); // 红色文字
+        lv_obj_set_style_text_color(title, lv_color_hex(0xF800), 0);
+        lv_obj_set_style_text_font(title, &lv_font_montserrat_24, 0); // 24号字体，可根据需要调??
+        lv_obj_t *hint_start = lv_label_create(Home_Screen);
+        lv_label_set_text(hint_start, "Buttom1:Enter");
+        lv_obj_align(hint_start, LV_ALIGN_TOP_LEFT, 10, 10);
 
-    lv_obj_t *hint_exit = lv_label_create(Home_Screen);
-    lv_label_set_text(hint_exit, "Buttom2:Exit");
-    lv_obj_align_to(hint_exit, hint_start, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 10);
-    update_home_screen_leaderboard();
+        lv_obj_t *hint_exit = lv_label_create(Home_Screen);
+        lv_label_set_text(hint_exit, "Buttom2:Exit");
+        lv_obj_align_to(hint_exit, hint_start, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 10);
+        update_home_screen_leaderboard();
     }
 }
 
@@ -245,11 +256,11 @@ void game_screen_draw_map(const Level_t *level_data)
             {
             case TILE_TYPE_WALL:
                 tile_color = lv_color_hex(0X8430); // 灰色
-                //tile_color = lv_color_make(0, 255, 0);粉红色
-                //tile_color = lv_color_make(255, 255, 0);浅紫色
-                //tile_color = lv_color_make(255, 255, 255);橙色
-							//tile_color = lv_color_hex(0xAA0000);深蓝
-						
+                // tile_color = lv_color_make(0, 255, 0);粉红色
+                // tile_color = lv_color_make(255, 255, 0);浅紫色
+                // tile_color = lv_color_make(255, 255, 255);橙色
+                // tile_color = lv_color_hex(0xAA0000);深蓝
+
                 break;
             case TILE_TYPE_FIRE:
                 tile_color = lv_color_hex(0xF800); // 红色
@@ -261,10 +272,10 @@ void game_screen_draw_map(const Level_t *level_data)
                 tile_color = lv_color_hex(0x07E0); // 绿色
                 break;
             case TILE_TYPE_COLLECTIBLE_FIRE_GEM:
-               tile_color = lv_color_make(255, 255, 255);//橙色
+                tile_color = lv_color_make(255, 255, 255); // 橙色
                 break;
             case TILE_TYPE_COLLECTIBLE_ICE_GEM:
-                tile_color = lv_color_make(255, 255, 0);//浅紫色
+                tile_color = lv_color_make(255, 255, 0); // 浅紫色
                 break;
             default:
                 tile_color = lv_color_hex(0xFFE0);
@@ -403,12 +414,12 @@ void create_select_screen()
             if (Select_Number == i + 1)
             {
                 lv_obj_set_style_text_color(level_labels[i], lv_color_hex(0xFFFF00), LV_PART_MAIN);
-                //lv_obj_set_style_text_font(level_labels[i], &lv_font_montserrat_24, LV_PART_MAIN);
+                // lv_obj_set_style_text_font(level_labels[i], &lv_font_montserrat_24, LV_PART_MAIN);
             }
             else
             {
                 lv_obj_set_style_text_color(level_labels[i], lv_color_white(), LV_PART_MAIN);
-                //lv_obj_set_style_text_font(level_labels[i], &lv_font_montserrat_18, LV_PART_MAIN);
+                // lv_obj_set_style_text_font(level_labels[i], &lv_font_montserrat_18, LV_PART_MAIN);
             }
             lv_obj_align(level_labels[i], LV_ALIGN_TOP_MID, 0, 80 + i * 40);
         }
@@ -429,12 +440,10 @@ void update_level_labels_highlight(void)
             if (Select_Number == i + 1)
             {
                 lv_obj_set_style_text_color(level_labels[i], lv_color_hex(0xFFFF00), LV_PART_MAIN);
-                
             }
             else
             {
                 lv_obj_set_style_text_color(level_labels[i], lv_color_white(), LV_PART_MAIN);
-                
             }
         }
     }
@@ -442,8 +451,9 @@ void update_level_labels_highlight(void)
 
 void game_screen_redraw_tile(uint8_t x, uint8_t y)
 {
-TileType_t t = (TileType_t)current_level_data->map_data[y][x];
-    if ((t == TILE_TYPE_COLLECTIBLE_FIRE_GEM || t == TILE_TYPE_COLLECTIBLE_ICE_GEM) && is_gem_collected(x, y)) {
+    TileType_t t = (TileType_t)current_level_data->map_data[y][x];
+    if ((t == TILE_TYPE_COLLECTIBLE_FIRE_GEM || t == TILE_TYPE_COLLECTIBLE_ICE_GEM) && is_gem_collected(x, y))
+    {
         t = TILE_TYPE_NORMAL;
     }
 
@@ -483,4 +493,3 @@ TileType_t t = (TileType_t)current_level_data->map_data[y][x];
 
     lv_obj_invalidate(map_canvas); // 通知LVGL刷新
 }
-

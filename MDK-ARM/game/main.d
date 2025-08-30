@@ -177,6 +177,13 @@ game\main.o: ../lvgl/src/extra/libs/rlottie/lv_rlottie.h
 game\main.o: ../lvgl/src/extra/libs/ffmpeg/lv_ffmpeg.h
 game\main.o: ../APP/UI_Manager.h
 game\main.o: ../APP/Game_Manager.h
+game\main.o: ../FreeRTOS/include/FreeRTOS.h
+game\main.o: ../Core/Src/FreeRTOSConfig.h
+game\main.o: ../FreeRTOS/include/projdefs.h
+game\main.o: ../FreeRTOS/include/portable.h
+game\main.o: ../FreeRTOS/include/deprecated_definitions.h
+game\main.o: ../FreeRTOS/portable/RVDS/ARM_CM4F/portmacro.h
+game\main.o: ../FreeRTOS/include/mpu_wrappers.h
 game\main.o: ../APP/Buzzer_APP.h
 game\main.o: ../APP/Lcd.h
 game\main.o: ../lvgl/examples/porting/lv_port_disp.h

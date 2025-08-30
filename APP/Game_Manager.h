@@ -5,6 +5,8 @@
 #include "lvgl.h"
 #include "USART_APP.h"
 #include "UI_Manager.h"
+//#include "FreeRTOSConfig.h"
+#include "FreeRTOS.h"
 typedef enum
 {
     GAME_STATE_LOADING,

@@ -136,18 +136,18 @@ static void Process_Single_Player_Input(uint8_t player_id, MPU6050_PlayerData *d
     int8_t dx = 0;
     bool should_move = false;
 
-//    // 左右移动检测
-//    if (data->Gy > MOVE_THRESHOLD_GYRO)
-//    {
-//        dx = 1; // 向右移动
-//        should_move = true;
-//    }
-//    else if (data->Gy < -MOVE_THRESHOLD_GYRO)
-//    {
-//        dx = -1; // 向左移动
-//        should_move = true;
-//    }
-        // 左右移动检测（基于倾斜角度）
+    //    // 左右移动检测
+    //    if (data->Gy > MOVE_THRESHOLD_GYRO)
+    //    {
+    //        dx = 1; // 向右移动
+    //        should_move = true;
+    //    }
+    //    else if (data->Gy < -MOVE_THRESHOLD_GYRO)
+    //    {
+    //        dx = -1; // 向左移动
+    //        should_move = true;
+    //    }
+    // 左右移动检测（基于倾斜角度）
     if (data->Ax > MOVE_THRESHOLD_ACCEL)
     {
         dx = -1; // 向右倾斜
@@ -174,7 +174,6 @@ static void Process_Single_Player_Input(uint8_t player_id, MPU6050_PlayerData *d
         Game_HandleInput(player_id, 0, -1); // 向上跳跃
         data->last_jump_time = current_time;
     }
-
 }
 
 // 处理双传感器输入
@@ -217,4 +216,3 @@ void MPU6050_Read_All(void)
 
     Temperature = player1_data.Temperature;
 }
-

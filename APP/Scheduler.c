@@ -15,7 +15,7 @@ void Start_Task(void *pvParameters);
 
 // 任务LvHandler_Task配置
 #define START_LvHandler_Task_STACK_SIZE 1024
-#define START_LvHandler_Task_PRIORITY 4//4
+#define START_LvHandler_Task_PRIORITY 4 // 4
 TaskHandle_t Start_LvHandler_Task_Handle;
 void LvHandler_Task(void *pvParameters);
 //// 任务2配置
@@ -30,13 +30,13 @@ void Task2(void *pvParameters);
 TaskHandle_t Start_Task3_Handle;
 void Task3(void *pvParameters);
 
-//游戏逻辑任务
+// 游戏逻辑任务
 #define GAME_LOGIC_TASK_STACK_SIZE 1024
-#define GAME_LOGIC_TASK_PRIORITY 2//2
+#define GAME_LOGIC_TASK_PRIORITY 2 // 2
 TaskHandle_t Game_Logic_Task_Handle;
 void Game_Logic_Task(void *pvParameters);
 
-//输入处理任务
+// 输入处理任务
 #define INPUT_TASK_STACK_SIZE 256
 #define INPUT_TASK_PRIORITY 3
 TaskHandle_t Input_Task_Handle;
@@ -56,8 +56,8 @@ float gyroX;
 float gyroY;
 float gyroZ;
 
-extern GameState_t current_game_state;     // 现在的游戏状�??
-extern const Level_t *current_level_data;  // 关卡�??
+extern GameState_t current_game_state;     // 现在的游戏状�???
+extern const Level_t *current_level_data;  // 关卡�???
 extern GamePlayer_t current_player1_state; // 冰人状�?
 extern GamePlayer_t current_player2_state; // 火人状�?
 extern uint32_t current_game_score;        // 游戏分数
@@ -73,7 +73,6 @@ typedef struct
     float GZ;
 } Remote_Data;
 Remote_Data Data1_Receive;
-
 
 void FreeRTOS_Start()
 {
@@ -123,15 +122,15 @@ void Start_Task(void *pvParameters)
                 (UBaseType_t)START_TASK3_PRIORITY,
                 (TaskHandle_t *)&Start_Task3_Handle);
 
-        // 创建游戏逻辑任务
+    // 创建游戏逻辑任务
     xTaskCreate((TaskFunction_t)Game_Logic_Task,
                 (char *)"Game_Logic_Task",
                 (configSTACK_DEPTH_TYPE)GAME_LOGIC_TASK_STACK_SIZE,
                 (void *)NULL,
                 (UBaseType_t)GAME_LOGIC_TASK_PRIORITY,
                 (TaskHandle_t *)&Game_Logic_Task_Handle);
-    
-        // 创建输入处理任务
+
+    // 创建输入处理任务
     xTaskCreate((TaskFunction_t)Input_Task,
                 (char *)"Input_Task",
                 (configSTACK_DEPTH_TYPE)INPUT_TASK_STACK_SIZE,
@@ -139,71 +138,68 @@ void Start_Task(void *pvParameters)
                 (UBaseType_t)INPUT_TASK_PRIORITY,
                 (TaskHandle_t *)&Input_Task_Handle);
 
-    // 删除启动任务(只要执行一�??)
+    // 删除启动任务(只要执行一�???)
     vTaskDelete(NULL);
     taskEXIT_CRITICAL();
 }
 
 void LvHandler_Task(void *pvParameters)
 {
-	vTaskDelay(pdMS_TO_TICKS(100));
-    
-	create_home_screen();
+    vTaskDelay(pdMS_TO_TICKS(100));
+
+    create_home_screen();
     create_game_win_screen();
     create_game_play_screen();
     create_select_screen();
-	
+
     xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
     static UI_STATE_t last_state = UI_STATE_START;
     lv_disp_load_scr(Home_Screen);
     Current_State = UI_STATE_START;
-    //lv_disp_load_scr(game_play_screen);
+    // lv_disp_load_scr(game_play_screen);
     xSemaphoreGive(lvgl_mutex);
-		while (1)
+    while (1)
     {
         xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
         lv_task_handler();
         xSemaphoreGive(lvgl_mutex);
         vTaskDelay(pdMS_TO_TICKS(5));
 
-    if (Current_State != last_state)
-    {
-        xSemaphoreTake(lvgl_mutex, portMAX_DELAY); // 屏幕加载前获取互斥锁
-
-        switch (Current_State)
+        if (Current_State != last_state)
         {
+            xSemaphoreTake(lvgl_mutex, portMAX_DELAY); // 屏幕加载前获取互斥锁
+
+            switch (Current_State)
+            {
             case UI_STATE_START:
-                create_home_screen(); 
-                lv_disp_load_scr(Home_Screen); 
+                create_home_screen();
+                lv_disp_load_scr(Home_Screen);
                 break;
             case UI_STATE_SELECT:
-                create_select_screen(); 
-                lv_disp_load_scr(Select_Screen); 
+                create_select_screen();
+                lv_disp_load_scr(Select_Screen);
                 break;
             case UI_STATE_IN_GAMME:
-                //my_printf(&huart1, "LvHandler_Task: Attempting to load game_play_screen...\r\n");   
-								create_game_play_screen(); 
-                lv_disp_load_scr(game_play_screen); 
-								//my_printf(&huart1, "LvHandler_Task: game_play_screen loaded. Releasing mutex...\r\n");
+                
+                create_game_play_screen();
+                lv_disp_load_scr(game_play_screen);
+                
                 break;
-						case UI_STATE_WON:
-								create_game_win_screen();
-						lv_disp_load_scr(game_win_screen);
-						
-						break;
-						case UI_STATE_LOSE:
-								create_game_lose_screen();
-						lv_disp_load_scr(game_lose_screen);
-						break;
-						
-            
-        }
-        xSemaphoreGive(lvgl_mutex);
-    }
-		//xSemaphoreGive(lvgl_mutex); // 屏幕加载后释放互斥锁
-    last_state = Current_State;   
-		}
+            case UI_STATE_WON:
+                create_game_win_screen();
+                lv_disp_load_scr(game_win_screen);
 
+                break;
+            case UI_STATE_LOSE:
+                create_game_lose_screen();
+                lv_disp_load_scr(game_lose_screen);
+                break;
+            }
+            xSemaphoreGive(lvgl_mutex);
+        }
+        // xSemaphoreGive(lvgl_mutex); // 屏幕加载后释放互斥锁
+        last_state = Current_State;
+    }
 }
 
 void Task2(void *pvParameters)
@@ -212,7 +208,6 @@ void Task2(void *pvParameters)
     while (1)
     {
 
-		
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
@@ -223,78 +218,72 @@ void Task3(void *pvParameters)
     BaseType_t result = pdFALSE;
     while (1)
     {
-        
+
         adc_task();
-		Buzzer_APP();
+        Buzzer_APP();
         vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
 void Game_Logic_Task(void *pvParameters)
 {
-  bool game_initialized_for_current_level = false;  
-     while (1)
+    bool game_initialized_for_current_level = false;
+    while (1)
     {
-        // 只有�?? UI 状态为 UI_STATE_IN_GAMME 时，才执行游戏逻辑�?? UI 更新
+        // 只有�??? UI 状态为 UI_STATE_IN_GAMME 时，才执行游戏逻辑�??? UI 更新
         if (Current_State == UI_STATE_IN_GAMME)
         {
 
             if (!game_initialized_for_current_level)
             {
-					if (Game_LoadLevel(Select_Number))
-		        {
-                    
-            //xSemaphoreTake(lvgl_mutex, portMAX_DELAY); // <-- 如果卡在这里，说明有其他任务持有互斥量且不释�??
-                    
-                    game_screen_draw_map(current_level_data); // <-- 如果卡在这里，说�?? draw_map 内部有问题（如无限循环或内部尝试再次获取互斥量）
-                    
-                    game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state); // <-- 如果卡在这里，说�?? update_dynamic_elements 内部有问�??
-                    
-            //xSemaphoreGive(lvgl_mutex);
-                    
-            
+                if (Game_LoadLevel(Select_Number))
+                {
+
+                    // xSemaphoreTake(lvgl_mutex, portMAX_DELAY); // <-- 如果卡在这里，说明有其他任务持有互斥量且不释�???
+
+                    game_screen_draw_map(current_level_data); // <-- 如果卡在这里，说�??? draw_map 内部有问题（如无限循环或内部尝试再次获取互斥量）
+
+                    game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state); // <-- 如果卡在这里，说�??? update_dynamic_elements 内部有问�???
+
+                    // xSemaphoreGive(lvgl_mutex);
+
                     game_initialized_for_current_level = true;
-                     
-				}
-        else
-        {
-            my_printf(&huart1, "Game_Logic_Task: Game_LoadLevel failed! Cannot initialize game screen.\r\n");
-        }
+                }
+                else
+                {
+                    my_printf(&huart1, "Game_Logic_Task: Game_LoadLevel failed! Cannot initialize game screen.\r\n");
+                }
             }
 
-
             Game_Update();
-            
 
-            //xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
-            if (xSemaphoreTake(lvgl_mutex, pdMS_TO_TICKS(50)) == pdTRUE) 
+            // xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
+            if (xSemaphoreTake(lvgl_mutex, pdMS_TO_TICKS(50)) == pdTRUE)
             {
 
                 game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state); // 更新玩家位置/动画
-                game_screen_update_ui_overlay(current_game_score, // 更新分数、血量、时间等叠加信息
-                                          current_player1_state.health, 
-                                          current_player2_state.health, 
-                                          remaining_game_time_sec);
+                game_screen_update_ui_overlay(current_game_score,                                    // 更新分数、血量、时间等叠加信息
+                                              current_player1_state.health,
+                                              current_player2_state.health,
+                                              remaining_game_time_sec);
                 xSemaphoreGive(lvgl_mutex);
             }
-            else 
+            else
             {
-                    my_printf(&huart1, "Game_Logic_Task: Failed to get lvgl_mutex within timeout\r\n");
+                my_printf(&huart1, "Game_Logic_Task: Failed to get lvgl_mutex within timeout\r\n");
             }
         }
         else // 如果当前 UI 状态不是游戏状态，则重置初始化标志
         {
             game_initialized_for_current_level = false;
         }
-        
-        vTaskDelay(pdMS_TO_TICKS(200)); // 游戏逻辑�?? UI 更新频率，可根据游戏流畅度调�??
-    }
-    
 
+        vTaskDelay(pdMS_TO_TICKS(200)); // 游戏逻辑�??? UI 更新频率，可根据游戏流畅度调�???
+    }
 }
 
 void Input_Task(void *pvParameters)
 {
-   MPU6050_Dual_Init();
+    MPU6050_Dual_Init();
     while (1)
     {
         my_printf(&huart1, "task4OK\r\n");

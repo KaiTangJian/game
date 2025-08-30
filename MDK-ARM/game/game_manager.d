@@ -176,3 +176,10 @@ game\game_manager.o: ..\APP\Buzzer_APP.h
 game\game_manager.o: ..\APP\Lcd.h
 game\game_manager.o: ../lvgl/examples/porting/lv_port_disp.h
 game\game_manager.o: ..\APP\UI_Manager.h
+game\game_manager.o: ../FreeRTOS/include/FreeRTOS.h
+game\game_manager.o: ../Core/Src/FreeRTOSConfig.h
+game\game_manager.o: ../FreeRTOS/include/projdefs.h
+game\game_manager.o: ../FreeRTOS/include/portable.h
+game\game_manager.o: ../FreeRTOS/include/deprecated_definitions.h
+game\game_manager.o: ../FreeRTOS/portable/RVDS/ARM_CM4F/portmacro.h
+game\game_manager.o: ../FreeRTOS/include/mpu_wrappers.h

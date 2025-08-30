@@ -177,4 +177,11 @@ game\mpu6050_app.o: ..\APP\Lcd.h
 game\mpu6050_app.o: ../lvgl/examples/porting/lv_port_disp.h
 game\mpu6050_app.o: ..\APP\UI_Manager.h
 game\mpu6050_app.o: ..\APP\Game_Manager.h
+game\mpu6050_app.o: ../FreeRTOS/include/FreeRTOS.h
+game\mpu6050_app.o: ../Core/Src/FreeRTOSConfig.h
+game\mpu6050_app.o: ../FreeRTOS/include/projdefs.h
+game\mpu6050_app.o: ../FreeRTOS/include/portable.h
+game\mpu6050_app.o: ../FreeRTOS/include/deprecated_definitions.h
+game\mpu6050_app.o: ../FreeRTOS/portable/RVDS/ARM_CM4F/portmacro.h
+game\mpu6050_app.o: ../FreeRTOS/include/mpu_wrappers.h
 game\mpu6050_app.o: ..\APP\nrf24L01.h

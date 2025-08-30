@@ -174,6 +174,13 @@ game\lv_port_disp.o: ../APP/Game_Manager.h
 game\lv_port_disp.o: ../APP/Game_Data.h
 game\lv_port_disp.o: ../APP/UI_Manager.h
 game\lv_port_disp.o: ../APP/Game_Manager.h
+game\lv_port_disp.o: ../FreeRTOS/include/FreeRTOS.h
+game\lv_port_disp.o: ../Core/Src/FreeRTOSConfig.h
+game\lv_port_disp.o: ../FreeRTOS/include/projdefs.h
+game\lv_port_disp.o: ../FreeRTOS/include/portable.h
+game\lv_port_disp.o: ../FreeRTOS/include/deprecated_definitions.h
+game\lv_port_disp.o: ../FreeRTOS/portable/RVDS/ARM_CM4F/portmacro.h
+game\lv_port_disp.o: ../FreeRTOS/include/mpu_wrappers.h
 game\lv_port_disp.o: ../APP/Buzzer_APP.h
 game\lv_port_disp.o: ../APP/Lcd.h
 game\lv_port_disp.o: ../lvgl/examples/porting/lv_port_disp.h
