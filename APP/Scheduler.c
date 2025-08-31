@@ -83,6 +83,7 @@ extern GamePlayer_t current_player1_state; // 冰人状�?
 extern GamePlayer_t current_player2_state; // 火人状�?
 extern uint32_t current_game_score;        // 游戏分数
 extern uint32_t remaining_game_time_sec;   // 剩余游戏时间
+extern TIM_HandleTypeDef htim1;
 uint32_t saved_brightness = 0;
 typedef struct
 {
@@ -325,33 +326,46 @@ void Game_Logic_Task(void *pvParameters)
 void Input_Task(void *pvParameters)
 {
     MPU6050_Dual_Init();
+     int16_t last_encoder_count = 0;
+    
     while (1)
     {
         my_printf(&huart1, "task4OK\r\n");
         key_proc();
         MPU6050_Process_Input();
-        // 在非游戏状态下，MPU活动也应该更新用户活动时间
+        
+       int16_t current_encoder_count = __HAL_TIM_GET_COUNTER(&htim1);
+			my_printf(&huart1,"count:%d",current_encoder_count);
+        int16_t encoder_diff = current_encoder_count - last_encoder_count;
+        
+        if (encoder_diff != 0) 
+        {
+            // 调整音量
+            Encoder_Control_Volume(encoder_diff);
+            last_encoder_count = current_encoder_count;
+        }
 
-            // 检查MPU6050是否有显著运动，更新用户活动时间
-            static float last_ax1 = 0, last_ay1 = 0, last_az1 = 0;
-            static float last_ax2 = 0, last_ay2 = 0, last_az2 = 0;
 
-            MPU6050_Read_Player_Data(1);
-            MPU6050_Read_Player_Data(2);
+        // 检查MPU6050是否有显著运动，更新用户活动时间
+        static float last_ax1 = 0, last_ay1 = 0, last_az1 = 0;
+        static float last_ax2 = 0, last_ay2 = 0, last_az2 = 0;
 
-            // 计算运动变化量
-            float delta1 = fabsf(player1_data.Ax - last_ax1) +
+        MPU6050_Read_Player_Data(1);
+        MPU6050_Read_Player_Data(2);
+
+        // 计算运动变化量
+        float delta1 = fabsf(player1_data.Ax - last_ax1) +
                            fabsf(player1_data.Ay - last_ay1) +
                            fabsf(player1_data.Az - last_az1);
-            float delta2 = fabsf(player2_data.Ax - last_ax2) +
+        float delta2 = fabsf(player2_data.Ax - last_ax2) +
                            fabsf(player2_data.Ay - last_ay2) +
                            fabsf(player2_data.Az - last_az2);
 
-            // 如果检测到显著运动，更新用户活动时间
-            if ((delta1 > MOTION_THRESHOLD) || (delta2 > MOTION_THRESHOLD))
-            {
-                Update_Action_Time();
-            }
+        // 如果检测到显著运动，更新用户活动时间
+        if ((delta1 > MOTION_THRESHOLD) || (delta2 > MOTION_THRESHOLD))
+        {
+            Update_Action_Time();
+        }
 
             // 保存当前值用于下次比较
             last_ax1 = player1_data.Ax;
@@ -361,7 +375,7 @@ void Input_Task(void *pvParameters)
             last_ay2 = player2_data.Ay;
             last_az2 = player2_data.Az;
         
-        vTaskDelay(pdMS_TO_TICKS(500));
+        vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
 
@@ -434,8 +448,8 @@ void Screen_Manager_Task(void *pvParameters)
 void Wakeup_Task(void *pvParameters)
 {
     static int wakeup_counter = 0;
-#define WAKEUP_THRESHOLD 3.5f
-#define WAKEUP_SAMPLES 3
+    #define WAKEUP_THRESHOLD 3.5f
+    #define WAKEUP_SAMPLES 3
 
     while (1)
     {

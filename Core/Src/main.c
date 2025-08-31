@@ -103,9 +103,11 @@ int main(void)
   MX_I2C3_Init();
   MX_TIM4_Init();
   MX_TIM3_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
 	HAL_TIM_PWM_Start(&htim4,TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_2);
+  HAL_TIM_Encoder_Start(&htim1,TIM_CHANNEL_ALL);
   Flash_Init();
 	LCD_Init();
   lv_init();
