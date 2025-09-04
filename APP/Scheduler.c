@@ -7,6 +7,7 @@
 #include "adc.h"
 #include "Lcd.h"
 #include "UI_Manager.h"
+#include "ESP8266_APP.h"
 
 #define SCREEN_TIMEOUT_MS 30000 // 30秒无操作后熄屏
 #define MOTION_THRESHOLD 2.0f
@@ -120,6 +121,7 @@ void FreeRTOS_Start()
 
 void Start_Task(void *pvParameters)
 {
+    
     // 创建lvgl任务
     taskENTER_CRITICAL();
     xTaskCreate((TaskFunction_t)LvHandler_Task,
@@ -184,7 +186,6 @@ void Start_Task(void *pvParameters)
                 (void *)NULL,
                 (UBaseType_t)WAKEUP_TASK_PRIORITY,
                 (TaskHandle_t *)&Wakeup_Task_Handle);
-
     // 删除启动任务(只要执行一�???)
     vTaskDelete(NULL);
     taskEXIT_CRITICAL();
@@ -251,7 +252,7 @@ void LvHandler_Task(void *pvParameters)
 
 void Task2(void *pvParameters)
 {
-    my_printf(&huart1, "OK111\r\n");
+    
     while (1)
     {
 
@@ -267,6 +268,7 @@ void Task3(void *pvParameters)
 
         adc_task();
         Buzzer_APP();
+        my_printf(&huart1, "当前音量: %d\r\n", get_volume());
         vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
@@ -330,17 +332,17 @@ void Input_Task(void *pvParameters)
     
     while (1)
     {
-        my_printf(&huart1, "task4OK\r\n");
+        
         key_proc();
         MPU6050_Process_Input();
         
-       int16_t current_encoder_count = __HAL_TIM_GET_COUNTER(&htim1);
-			my_printf(&huart1,"count:%d",current_encoder_count);
+       int16_t current_encoder_count = __HAL_TIM_GET_COUNTER(&htim1);			
         int16_t encoder_diff = current_encoder_count - last_encoder_count;
         
         if (encoder_diff != 0) 
         {
             // 调整音量
+        
             Encoder_Control_Volume(encoder_diff);
             last_encoder_count = current_encoder_count;
         }
@@ -492,6 +494,7 @@ void Wakeup_Task(void *pvParameters)
         vTaskDelay(pdMS_TO_TICKS(200)); // 每200ms检测一次
     }
 }
+
 void vApplicationTickHook(void)
 {
     lv_tick_inc(1);

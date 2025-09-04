@@ -272,6 +272,9 @@ void Game_Update(void)
         // 游戏胜利时将分数添加到排行榜
         extern void add_score_to_leaderboard(uint8_t level_id, uint32_t score);
         add_score_to_leaderboard(current_level_data->id, current_game_score);
+        // 上传分数到OneNET平台
+        extern _Bool OneNET_Upload_Game_Score(uint32_t score, uint8_t level);
+        OneNET_Upload_Game_Score(current_game_score, current_level_data->id);
         Current_State = UI_STATE_WON;
     }
 

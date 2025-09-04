@@ -4,7 +4,7 @@
 #include "main.h" 
 #include "stdbool.h"
 
-#define P0 	0	// 休止符频�?
+#define P0 	0	// 休止符频�??
 #define L1 262  // 低音频率
 #define L2 294
 #define L3 330
@@ -33,9 +33,9 @@
 #define VOLUME_MIN 0
 #define VOLUME_MAX 100
 #define DEFAULT_VOLUME 50
-// --- 音符结构体定�? ---
+// --- 音符结构体定�?? ---
 typedef struct {
-    uint16_t frequency;     // 音高频率 (Hz)�?0 代表静音�?0xFFFF 代表旋律结束
+    uint16_t frequency;     // 音高频率 (Hz)�??0 代表静音�??0xFFFF 代表旋律结束
     float period;   // 持续时间 (毫秒)
 } BuzzerNote_t;
 
@@ -47,4 +47,6 @@ uint32_t TIM_GetCounterFreq(TIM_HandleTypeDef *htim);
 void Set_Volume(uint8_t volume);
 void Encoder_Control_Volume(int16_t encoder_diff);
 uint8_t get_volume(void);
+
+
 #endif

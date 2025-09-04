@@ -190,3 +190,4 @@ game\main.o: ../APP/Lcd.h
 game\main.o: ../lvgl/examples/porting/lv_port_disp.h
 game\main.o: ../APP/NRF24L01.h
 game\main.o: ../APP/Bright_APP.h
+game\main.o: ../APP/ESP8266_APP.h
