@@ -4,7 +4,7 @@
 #include "main.h" 
 #include "stdbool.h"
 
-#define P0 	0	// 休止符频�??
+#define P0 	0	// 休止符频�??
 #define L1 262  // 低音频率
 #define L2 294
 #define L3 330
@@ -32,10 +32,10 @@
 // 音量控制相关定义
 #define VOLUME_MIN 0
 #define VOLUME_MAX 100
-#define DEFAULT_VOLUME 50
-// --- 音符结构体定�?? ---
+#define DEFAULT_VOLUME 0
+// --- 音符结构体定�?? ---
 typedef struct {
-    uint16_t frequency;     // 音高频率 (Hz)�??0 代表静音�??0xFFFF 代表旋律结束
+    uint16_t frequency;     // 音高频率 (Hz)�??0 代表静音�??0xFFFF 代表旋律结束
     float period;   // 持续时间 (毫秒)
 } BuzzerNote_t;
 

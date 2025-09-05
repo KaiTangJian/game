@@ -18,7 +18,7 @@
 // 添加OneNET设备
 #define ONENET_PRODUCT_ID    "cd8uB9Qod2"
 #define ONENET_DEVICE_ID     "01s"
-#define ONENET_AUTH_INFO     "Y2dBTU5yampRSjNHQ1UyQ1NFdXdqVThETGhWaUh5Tmo="
+// #define ONENET_AUTH_INFO     "Y2dBTU5yampRSjNHQ1UyQ1NFdXdqVThETGhWaUh5Tmo="
 
 unsigned char ESP01S_buf[128];
 unsigned short ESP01S_cnt = 0, ESP01S_cntPre = 0;
@@ -82,7 +82,7 @@ bool ESP01S_WaitRecive(void)
 //==========================================================
 bool ESP01S_SendCmd(char *cmd, char *res)
 {
-    unsigned char timeOut = 200;
+    unsigned char timeOut = 1000;
 
     // 调试信息：显示发送的命令
     //my_printf(&huart1, "发送cmd: %s", cmd);
@@ -155,7 +155,12 @@ void ESP01S_Init(void)
 	ESP01S_SendCmd("AT+RST\r\n", "");
 	HAL_Delay(500);	
 	
-
+	my_printf(&huart1, "Disable Echo (ATE0)\r\n"); // 打印提示信息
+	if(ESP01S_SendCmd("ATE0\r\n", "OK") != 0)     // 发送ATE0命令，期望收到"OK"
+	{
+		my_printf(&huart1, "ATE0命令失败，可能ECHO已禁用或模块无响应\r\n"); // 如果失败，打印错误
+	}
+	HAL_Delay(500); // 延时等待模块处理
 	
 	// 原代码: UsartPrintf(USART_DEBUG, "2. CWMODE\r\n");
 	// 修改为使用 my_printf
@@ -175,7 +180,7 @@ void ESP01S_Init(void)
 	{
 		my_printf(&huart1, "CWDHCP设置失败\r\n");
 	}
-	HAL_Delay(500);
+	HAL_Delay(1000);
 	
 	// 原代码: UsartPrintf(USART_DEBUG, "4. CWJAP\r\n");
 	// 修改为使用 my_printf
@@ -185,7 +190,7 @@ void ESP01S_Init(void)
 	{
 		my_printf(&huart1, "WiFi连接失败\r\n");
 	}
-	HAL_Delay(500);
+	HAL_Delay(1000);
 	
 	// 原代码: UsartPrintf(USART_DEBUG, "5. CIPSTART\r\n");
 	// 修改为使用 my_printf
@@ -195,7 +200,7 @@ void ESP01S_Init(void)
 	{
 		my_printf(&huart1, "TCP连接失败\r\n");
 	}
-	HAL_Delay(500);
+	HAL_Delay(1000);
 	
 	// 原代码: UsartPrintf(USART_DEBUG, "6. ESP01S Init OK\r\n");
 	// 修改为使用 my_printf
@@ -273,24 +278,113 @@ bool OneNET_MQTT_Connect(void)
 //
 //	返回参数�?	0-成功	1-失败
 //==========================================================
+//bool OneNET_MQTT_Publish(char* topic, char* data, uint8_t qos)
+//{
+//    char publish_cmd[256];
+//    
+//        // 构造AT命令
+//    int len = snprintf(publish_cmd, sizeof(publish_cmd), 
+//                       "AT+MQTTPUB=0,\"%s\",\"%s\",%d,0\r\n", 
+//                       topic, data, qos);
+//    
+//    my_printf(&huart1, "AT命令长度: %d 字节\r\n", len);
+//    
+//    // 如果命令太长，给出警告
+//    if(len > 200) {
+//        my_printf(&huart1, "警告,AT命令可能过长(%d字节)\r\n", len);
+//    }
+
+//    snprintf(publish_cmd, sizeof(publish_cmd), 
+//             "AT+MQTTPUB=0,\"%s\",\"%s\",%d,0\r\n", 
+//             topic, data, qos);
+//    
+//    if(ESP01S_SendCmd(publish_cmd, "OK") != 0)
+//    {
+//        my_printf(&huart1, "MQTT发布失败\r\n");
+//        return 1;
+//    }
+//    
+//    my_printf(&huart1, "MQTT发布成功: %s\r\n", data);
+//    return 0;
+//}
 bool OneNET_MQTT_Publish(char* topic, char* data, uint8_t qos)
 {
     char publish_cmd[256];
     
-    snprintf(publish_cmd, sizeof(publish_cmd), 
-             "AT+MQTTPUB=0,\"%s\",\"%s\",%d,0\r\n", 
-             topic, data, qos);
+    // 构造AT命令
+    int len = snprintf(publish_cmd, sizeof(publish_cmd), 
+                       "AT+MQTTPUB=0,\"%s\",\"%s\",%d,0\r\n", 
+                       topic, data, qos);
     
-    if(ESP01S_SendCmd(publish_cmd, "OK") != 0)
+    my_printf(&huart1, "AT命令长度: %d 字节\r\n", len);
+    my_printf(&huart1, "发送命令: %s", publish_cmd);
+    
+    // 增加超时时间和重试机制
+    for(int retry = 0; retry < 3; retry++)
     {
-        my_printf(&huart1, "MQTT发布失败\r\n");
-        return 1;
+        my_printf(&huart1, "第%d次尝试发布数据\r\n", retry + 1);
+        
+        // 发送命令并等待响应
+        unsigned char timeOut = 2000; // 增加超时时间到2000
+        char full_cmd[256];
+        int cmd_len = snprintf(full_cmd, sizeof(full_cmd), "%s", publish_cmd);
+        
+        // 发送命令
+        HAL_StatusTypeDef status = HAL_UART_Transmit(&huart2, (uint8_t*)full_cmd, cmd_len, 2000);
+        
+        if (status != HAL_OK) {
+            my_printf(&huart1, "发送失败:HAL状态码%d\r\n", status);
+            HAL_Delay(1000);
+            continue;
+        }
+        
+        // 清空接收缓冲区
+        ESP01S_Clear();
+        
+        // 等待响应
+        while(timeOut--)
+        {
+            if(ESP01S_WaitRecive() == REV_OK)
+            {
+                my_printf(&huart1, "收到完整响应:%s\r\n", (char*)ESP01S_buf);
+                
+                // 检查多种成功响应
+                if(strstr((const char *)ESP01S_buf, "OK") != NULL)
+                {
+                    ESP01S_Clear();
+                    my_printf(&huart1, "MQTT发布成功\r\n");
+                    return 0;
+                }
+                else if(strstr((const char *)ESP01S_buf, "SEND OK") != NULL)
+                {
+                    ESP01S_Clear();
+                    my_printf(&huart1, "MQTT数据发送成功\r\n");
+                    return 0;
+                }
+                else if(strstr((const char *)ESP01S_buf, "ERROR") != NULL)
+                {
+                    my_printf(&huart1, "MQTT发布错误\r\n");
+                    ESP01S_Clear();
+                    break; // 不再重试
+                }
+                else
+                {
+                    my_printf(&huart1, "响应不匹配，继续等待...\r\n");
+                    ESP01S_Clear();
+                }
+            }
+            HAL_Delay(15);
+        }
+        
+        my_printf(&huart1, "第%d次尝试超时\r\n", retry + 1);
+        if(retry < 2) {
+            HAL_Delay(2000); // 重试前等待
+        }
     }
     
-    my_printf(&huart1, "MQTT发布成功: %s\r\n", data);
-    return 0;
+    my_printf(&huart1, "MQTT发布最终失败\r\n");
+    return 1;
 }
-
 //==========================================================
 //	函数名称�?	OneNET_Upload_Game_Score
 //
@@ -301,24 +395,55 @@ bool OneNET_MQTT_Publish(char* topic, char* data, uint8_t qos)
 //
 //	返回参数�?	0-成功	1-失败
 //==========================================================
+//bool OneNET_Upload_Game_Score(uint32_t score, uint8_t level)
+//{
+//    char json_data[128];
+//    char topic[64];
+//    
+//    // 构造JSON数据，格�?: {"id":"123","params":{"level_X_score":{"value":score}}}
+//    //snprintf(json_data, sizeof(json_data), 
+//     //        "{\"id\":\"123\",\"params\":{\"level_%d_score\":{\"value\":%lu}}}", 
+//     //        level, score);
+//     // 修正JSON格式，正确转义双引号
+//    //snprintf(json_data, sizeof(json_data), 
+//     //        "{\\\"id\\\":\\\"123\\\",\\\"params\\\":{\\\"level_%d_score\\\":{\\\"value\\\":%lu}}}", 
+//     //        level, score);
+//         // 构造JSON数据，需要双重转义引号
+//    snprintf(json_data, sizeof(json_data), 
+//             "{\\\"id\\\":\\\"123\\\",\\\"params\\\":{\\\"level_%d_score\\\":{\\\"value\\\":%lu}}}", 
+//             level, score);
+//    // 构造主�?
+//    snprintf(topic, sizeof(topic), "$sys/%s/%s/thing/property/post", 
+//             ONENET_PRODUCT_ID, ONENET_DEVICE_ID);
+//    
+//    // 发布数据
+//    return OneNET_MQTT_Publish(topic, json_data, 0);
+//}
+
 bool OneNET_Upload_Game_Score(uint32_t score, uint8_t level)
 {
     char json_data[128];
     char topic[64];
+
+    char onenet_product_id[100] = ONENET_PRODUCT_ID;
+    char onenet_device_id[100] = ONENET_DEVICE_ID;
     
-    // 构造JSON数据，格�?: {"id":"123","params":{"level_X_score":{"value":score}}}
+    // 构造JSON数据，正确转义双引号
     snprintf(json_data, sizeof(json_data), 
-             "{\"id\":\"123\",\"params\":{\"level_%d_score\":{\"value\":%lu}}}", 
+             "{\\\"id\\\":\\\"123\\\"\\,\\\"params\\\":{\\\"level_%d_score\\\":{\\\"value\\\":%lu\\}}}", 
              level, score);
     
-    // 构造主�?
-    snprintf(topic, sizeof(topic), "$sys/%s/%s/thing/property/post", 
-             ONENET_PRODUCT_ID, ONENET_DEVICE_ID);
+    // 构造主题
+    snprintf(topic, sizeof(topic), "$sys/%s/01s/thing/property/post", 
+             onenet_product_id);
+    
+    my_printf(&huart1, "准备上传分数: 关卡=%d, 分数=%lu\r\n", level, score);
+    my_printf(&huart1, "JSON数据: %s\r\n", json_data);
+    my_printf(&huart1, "主题: %s\r\n", topic);
     
     // 发布数据
     return OneNET_MQTT_Publish(topic, json_data, 0);
 }
-
 //==========================================================
 //	函数名称�?	OneNET_Init
 //

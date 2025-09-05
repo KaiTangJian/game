@@ -3,11 +3,11 @@
 <title>Static Call Graph - [game\game.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image game\game.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Sep 04 23:16:30 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Fri Sep 05 22:08:18 2025
 <BR><P>
-<H3>Maximum Stack Usage =       1464 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =       1664 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
-Game_Logic_Task &rArr; Game_Update &rArr; OneNET_Upload_Game_Score &rArr; OneNET_MQTT_Publish &rArr; ESP01S_SendCmd &rArr; my_printf &rArr; vsnprintf &rArr; _printf_char_common &rArr; __printf
+Game_Logic_Task &rArr; Game_Update &rArr; OneNET_Upload_Game_Score &rArr; OneNET_MQTT_Publish &rArr; my_printf &rArr; vsnprintf &rArr; _printf_char_common &rArr; __printf
 <P>
 <H3>
 Functions with no stack information
@@ -647,8 +647,8 @@ Global Symbols
 <P><STRONG><a name="[62c]"></a>__rt_entry_postsh_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$00000009))
 
 <P><STRONG><a name="[158]"></a>__rt_entry_main</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$0000000D))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1376 + Unknown Stack Size
-<LI>Call Chain = __rt_entry_main &rArr; main &rArr; ESP01S_Init &rArr; OneNET_Init &rArr; OneNET_MQTT_Connect &rArr; ESP01S_SendCmd &rArr; my_printf &rArr; vsnprintf &rArr; _printf_char_common &rArr; __printf
+<BR><BR>[Stack]<UL><LI>Max Depth = 1640 + Unknown Stack Size
+<LI>Call Chain = __rt_entry_main &rArr; main &rArr; OneNET_Upload_Game_Score &rArr; OneNET_MQTT_Publish &rArr; my_printf &rArr; vsnprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[159]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[15a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exit
@@ -948,10 +948,10 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[162]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_sputc
 <LI><a href="#[161]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_char_common
 </UL>
-<BR>[Called By]<UL><LI><a href="#[327]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_home_screen_leaderboard
+<BR>[Called By]<UL><LI><a href="#[1c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_Upload_Game_Score
+<LI><a href="#[327]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_home_screen_leaderboard
 <LI><a href="#[237]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;create_select_screen
 <LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Time_Display_Task
-<LI><a href="#[1c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_Upload_Game_Score
 <LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_MQTT_Publish
 <LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_MQTT_Connect
 <LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ESP01S_SendCmd
@@ -1014,7 +1014,8 @@ Global Symbols
 <P><STRONG><a name="[1a6]"></a>strstr</STRONG> (Thumb, 36 bytes, Stack size 12 bytes, strstr.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = strstr
 </UL>
-<BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ESP01S_SendCmd
+<BR>[Called By]<UL><LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_MQTT_Publish
+<LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ESP01S_SendCmd
 </UL>
 
 <P><STRONG><a name="[4aa]"></a>strcpy</STRONG> (Thumb, 72 bytes, Stack size 12 bytes, strcpy.o(.text))
@@ -1066,7 +1067,8 @@ Global Symbols
 <P><STRONG><a name="[16e]"></a>__aeabi_memcpy4</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, rt_memcpy_w.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __aeabi_memcpy4
 </UL>
-<BR>[Called By]<UL><LI><a href="#[352]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_draw_label
+<BR>[Called By]<UL><LI><a href="#[1c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_Upload_Game_Score
+<LI><a href="#[352]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_draw_label
 <LI><a href="#[16d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_memcpy
 </UL>
 
@@ -1594,10 +1596,11 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr
 </UL>
 <BR>[Called By]<UL><LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ESP01S_Init
+<LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_MQTT_Publish
 <LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ESP01S_SendCmd
 </UL>
 
-<P><STRONG><a name="[1a0]"></a>ESP01S_Init</STRONG> (Thumb, 208 bytes, Stack size 8 bytes, esp8266_app.o(i.ESP01S_Init))
+<P><STRONG><a name="[1a0]"></a>ESP01S_Init</STRONG> (Thumb, 244 bytes, Stack size 8 bytes, esp8266_app.o(i.ESP01S_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 1360 + Unknown Stack Size
 <LI>Call Chain = ESP01S_Init &rArr; OneNET_Init &rArr; OneNET_MQTT_Connect &rArr; ESP01S_SendCmd &rArr; my_printf &rArr; vsnprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
@@ -1623,12 +1626,12 @@ Global Symbols
 <LI><a href="#[163]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ESP01S_Init
-<LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_MQTT_Publish
 <LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_MQTT_Connect
 </UL>
 
 <P><STRONG><a name="[1a5]"></a>ESP01S_WaitRecive</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, esp8266_app.o(i.ESP01S_WaitRecive))
-<BR><BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ESP01S_SendCmd
+<BR><BR>[Called By]<UL><LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_MQTT_Publish
+<LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ESP01S_SendCmd
 </UL>
 
 <P><STRONG><a name="[1a7]"></a>Encoder_Control_Volume</STRONG> (Thumb, 86 bytes, Stack size 8 bytes, buzzer_app.o(i.Encoder_Control_Volume))
@@ -1731,8 +1734,8 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[77]"></a>Game_Logic_Task</STRONG> (Thumb, 130 bytes, Stack size 0 bytes, scheduler.o(i.Game_Logic_Task))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1464 + Unknown Stack Size
-<LI>Call Chain = Game_Logic_Task &rArr; Game_Update &rArr; OneNET_Upload_Game_Score &rArr; OneNET_MQTT_Publish &rArr; ESP01S_SendCmd &rArr; my_printf &rArr; vsnprintf &rArr; _printf_char_common &rArr; __printf
+<BR><BR>[Stack]<UL><LI>Max Depth = 1664 + Unknown Stack Size
+<LI>Call Chain = Game_Logic_Task &rArr; Game_Update &rArr; OneNET_Upload_Game_Score &rArr; OneNET_MQTT_Publish &rArr; my_printf &rArr; vsnprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_printf
 <LI><a href="#[1bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueSemaphoreTake
@@ -1747,11 +1750,11 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> scheduler.o(i.Start_Task)
 </UL>
 <P><STRONG><a name="[1be]"></a>Game_Update</STRONG> (Thumb, 716 bytes, Stack size 40 bytes, game_manager.o(i.Game_Update))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1464 + Unknown Stack Size
-<LI>Call Chain = Game_Update &rArr; OneNET_Upload_Game_Score &rArr; OneNET_MQTT_Publish &rArr; ESP01S_SendCmd &rArr; my_printf &rArr; vsnprintf &rArr; _printf_char_common &rArr; __printf
+<BR><BR>[Stack]<UL><LI>Max Depth = 1664 + Unknown Stack Size
+<LI>Call Chain = Game_Update &rArr; OneNET_Upload_Game_Score &rArr; OneNET_MQTT_Publish &rArr; my_printf &rArr; vsnprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetTickCount
-<LI><a href="#[1c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_Upload_Game_Score
+<BR>[Calls]<UL><LI><a href="#[1c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_Upload_Game_Score
+<LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetTickCount
 <LI><a href="#[1c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;is_gem_collected
 <LI><a href="#[1c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_screen_redraw_tile
 <LI><a href="#[1c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;add_score_to_leaderboard
@@ -1858,6 +1861,7 @@ Global Symbols
 <LI><a href="#[23b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Init_Single
 <LI><a href="#[227]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Dual_Init
 <LI><a href="#[192]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Buzzer_APP
+<LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_MQTT_Publish
 <LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ESP01S_SendCmd
 </UL>
 
@@ -2398,6 +2402,7 @@ Global Symbols
 <LI><a href="#[224]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_WaitOnFlagUntilTimeout
 </UL>
 <BR>[Called By]<UL><LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_printf
+<LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_MQTT_Publish
 <LI><a href="#[223]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_RxCpltCallback
 <LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ESP01S_SendCmd
 </UL>
@@ -2730,25 +2735,32 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_Init
 </UL>
 
-<P><STRONG><a name="[24d]"></a>OneNET_MQTT_Publish</STRONG> (Thumb, 62 bytes, Stack size 272 bytes, esp8266_app.o(i.OneNET_MQTT_Publish))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1224 + Unknown Stack Size
-<LI>Call Chain = OneNET_MQTT_Publish &rArr; ESP01S_SendCmd &rArr; my_printf &rArr; vsnprintf &rArr; _printf_char_common &rArr; __printf
+<P><STRONG><a name="[24d]"></a>OneNET_MQTT_Publish</STRONG> (Thumb, 264 bytes, Stack size 544 bytes, esp8266_app.o(i.OneNET_MQTT_Publish))
+<BR><BR>[Stack]<UL><LI>Max Depth = 1216 + Unknown Stack Size
+<LI>Call Chain = OneNET_MQTT_Publish &rArr; my_printf &rArr; vsnprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_printf
-<LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ESP01S_SendCmd
+<BR>[Calls]<UL><LI><a href="#[193]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
+<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_printf
+<LI><a href="#[1a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Transmit
+<LI><a href="#[1a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ESP01S_WaitRecive
+<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ESP01S_Clear
+<LI><a href="#[1a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strstr
 <LI><a href="#[163]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[1c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_Upload_Game_Score
 </UL>
 
-<P><STRONG><a name="[1c6]"></a>OneNET_Upload_Game_Score</STRONG> (Thumb, 48 bytes, Stack size 200 bytes, esp8266_app.o(i.OneNET_Upload_Game_Score))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1424 + Unknown Stack Size
-<LI>Call Chain = OneNET_Upload_Game_Score &rArr; OneNET_MQTT_Publish &rArr; ESP01S_SendCmd &rArr; my_printf &rArr; vsnprintf &rArr; _printf_char_common &rArr; __printf
+<P><STRONG><a name="[1c6]"></a>OneNET_Upload_Game_Score</STRONG> (Thumb, 102 bytes, Stack size 408 bytes, esp8266_app.o(i.OneNET_Upload_Game_Score))
+<BR><BR>[Stack]<UL><LI>Max Depth = 1624 + Unknown Stack Size
+<LI>Call Chain = OneNET_Upload_Game_Score &rArr; OneNET_MQTT_Publish &rArr; my_printf &rArr; vsnprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_MQTT_Publish
+<BR>[Calls]<UL><LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_printf
+<LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_MQTT_Publish
+<LI><a href="#[16e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
 <LI><a href="#[163]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Game_Update
+<BR>[Called By]<UL><LI><a href="#[159]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Game_Update
 </UL>
 
 <P><STRONG><a name="[38]"></a>SPI1_IRQHandler</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, stm32f4xx_it.o(i.SPI1_IRQHandler))
@@ -8697,8 +8709,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[472]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_color_black
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_theme_get_color_primary
-<LI><a href="#[351]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_draw_label_dsc_init
+<BR>[Called By]<UL><LI><a href="#[351]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_draw_label_dsc_init
+<LI><a href="#[3c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_theme_get_color_primary
 <LI><a href="#[5c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;style_init
 <LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_part_begin_event_cb
 <LI><a href="#[47d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_disp_drv_register
@@ -9837,11 +9849,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[2b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_lv_txt_set_text_vfmt
 </UL>
 
-<P><STRONG><a name="[159]"></a>main</STRONG> (Thumb, 162 bytes, Stack size 16 bytes, main.o(i.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1376 + Unknown Stack Size
-<LI>Call Chain = main &rArr; ESP01S_Init &rArr; OneNET_Init &rArr; OneNET_MQTT_Connect &rArr; ESP01S_SendCmd &rArr; my_printf &rArr; vsnprintf &rArr; _printf_char_common &rArr; __printf
+<P><STRONG><a name="[159]"></a>main</STRONG> (Thumb, 172 bytes, Stack size 16 bytes, main.o(i.main))
+<BR><BR>[Stack]<UL><LI>Max Depth = 1640 + Unknown Stack Size
+<LI>Call Chain = main &rArr; OneNET_Upload_Game_Score &rArr; OneNET_MQTT_Publish &rArr; my_printf &rArr; vsnprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;adc_dma_init
+<BR>[Calls]<UL><LI><a href="#[1c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_Upload_Game_Score
 <LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_USART2_UART_Init
 <LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_USART1_UART_Init
 <LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_TIM4_Init
@@ -9869,6 +9881,7 @@ Global Symbols
 <LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_printf
 <LI><a href="#[568]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_port_disp_init
 <LI><a href="#[4cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_init
+<LI><a href="#[2ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;adc_dma_init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[158]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
@@ -9880,7 +9893,8 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[1a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Transmit
 <LI><a href="#[160]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vsnprintf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[1b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FreeRTOS_Start
+<BR>[Called By]<UL><LI><a href="#[1c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OneNET_Upload_Game_Score
+<LI><a href="#[1b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FreeRTOS_Start
 <LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ESP01S_Init
 <LI><a href="#[159]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[20a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_PeriodElapsedCallback
@@ -13030,8 +13044,8 @@ Local Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_event_get_target
 <LI><a href="#[386]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_event_get_param
-<LI><a href="#[3c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_theme_get_color_primary
 <LI><a href="#[3c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_palette_main
+<LI><a href="#[3c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_theme_get_color_primary
 <LI><a href="#[3c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_btnmatrix_has_btn_ctrl
 <LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lv_btnmatrix_get_selected_btn
 </UL>

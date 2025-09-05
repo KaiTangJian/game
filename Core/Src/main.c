@@ -123,6 +123,7 @@ int main(void)
 
   //NRF24L01_Init();
   ESP01S_Init();
+  OneNET_Upload_Game_Score(1000,1);
 		FreeRTOS_Start();
   /* USER CODE END 2 */
 
