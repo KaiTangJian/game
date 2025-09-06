@@ -45,6 +45,8 @@ game\key_app.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\incl
 game\key_app.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\math.h
 game\key_app.o: ..\APP\KEY_APP.h
 game\key_app.o: ..\APP\mydefine.h
+game\key_app.o: ..\APP\Bright_APP.h
+game\key_app.o: ../Core/Inc/adc.h
 game\key_app.o: ..\APP\USART_APP.h
 game\key_app.o: ..\APP\Scheduler.h
 game\key_app.o: ..\APP\MPU6050_APP.h

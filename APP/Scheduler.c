@@ -10,7 +10,7 @@
 #include "ESP8266_APP.h"
 
 #define SCREEN_TIMEOUT_MS 30000 // 30秒无操作后熄屏
-#define MOTION_THRESHOLD 2.0f
+#define MOTION_THRESHOLD 0.5f
 // 启动任务配置
 #define START_TASK_STACK_SIZE 130
 #define START_TASK_PRIORITY 4
@@ -67,15 +67,6 @@ void Wakeup_Task(void *pvParameters);
 QueueHandle_t queue1;
 QueueHandle_t queue2;
 QueueHandle_t lvgl_mutex;
-uint8_t Mode = 0;
-uint8_t Tx_cnt;
-uint8_t playerId;
-float accX;
-float accY;
-float accZ;
-float gyroX;
-float gyroY;
-float gyroZ;
 extern bool Screen_On;
 extern uint32_t last_user_activity_time;
 extern GameState_t current_game_state;     // 现在的游戏状�???
@@ -86,17 +77,6 @@ extern uint32_t current_game_score;        // 游戏分数
 extern uint32_t remaining_game_time_sec;   // 剩余游戏时间
 extern TIM_HandleTypeDef htim1;
 uint32_t saved_brightness = 0;
-typedef struct
-{
-    uint8_t Player_ID;
-    float AX;
-    float AY;
-    float AZ;
-    float GX;
-    float GY;
-    float GZ;
-} Remote_Data;
-Remote_Data Data1_Receive;
 
 void FreeRTOS_Start()
 {
@@ -272,12 +252,11 @@ void Task3(void *pvParameters)
         vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
-static uint32_t last_game_activity_time = 0;
-#define GAME_SCREEN_TIMEOUT_MS 60000 // 游戏中1分钟无操作后息屏
+#define GAME_SCREEN_TIMEOUT_MS 90000 // 游戏中1分钟无操作后息屏
 void Game_Logic_Task(void *pvParameters)
 {
     bool game_initialized_for_current_level = false;
-    static uint32_t last_input_time = 0;
+    
     while (1)
     {
         // 只有�??? UI 状态为 UI_STATE_IN_GAMME 时，才执行游戏逻辑�??? UI 更新
@@ -341,10 +320,9 @@ void Input_Task(void *pvParameters)
         
         if (encoder_diff != 0) 
         {
-            // 调整音量
-        
             Encoder_Control_Volume(encoder_diff);
             last_encoder_count = current_encoder_count;
+             Update_Action_Time();
         }
 
 

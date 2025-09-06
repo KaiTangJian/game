@@ -51,6 +51,7 @@ game\main.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include
 game\main.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\math.h
 game\main.o: ../APP/KEY_APP.h
 game\main.o: ../APP/mydefine.h
+game\main.o: ../APP/Bright_APP.h
 game\main.o: ../APP/USART_APP.h
 game\main.o: ../APP/Scheduler.h
 game\main.o: ../APP/MPU6050_APP.h
@@ -189,5 +190,4 @@ game\main.o: ../APP/DS1302_APP.h
 game\main.o: ../APP/Lcd.h
 game\main.o: ../lvgl/examples/porting/lv_port_disp.h
 game\main.o: ../APP/NRF24L01.h
-game\main.o: ../APP/Bright_APP.h
 game\main.o: ../APP/ESP8266_APP.h

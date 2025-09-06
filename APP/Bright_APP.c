@@ -14,10 +14,7 @@ uint32_t last_user_activity_time = 0;
 // --- 初始化 (通常在 main 函数或外设初始化函数中调用一次) ---
 void adc_dma_init(void)
 {
-    // 启动 ADC 并使能 DMA 传输
-    // hadc1: ADC 句柄
-    // (uint32_t*)adc_dma_buffer: DMA 目标缓冲区地址 (HAL库通常需要uint32_t*)
-    // ADC_DMA_BUFFER_SIZE: 本次传输的数据量 (缓冲区大小)
+
     HAL_ADC_Start_DMA(&hadc1, (uint32_t *)adc_dma_buffer, ADC_DMA_BUFFER_SIZE);
 }
 

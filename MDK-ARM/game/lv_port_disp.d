@@ -166,6 +166,8 @@ game\lv_port_disp.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..
 game\lv_port_disp.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\math.h
 game\lv_port_disp.o: ../APP/KEY_APP.h
 game\lv_port_disp.o: ../APP/mydefine.h
+game\lv_port_disp.o: ../APP/Bright_APP.h
+game\lv_port_disp.o: ../Core/Inc/adc.h
 game\lv_port_disp.o: ../APP/USART_APP.h
 game\lv_port_disp.o: ../APP/Scheduler.h
 game\lv_port_disp.o: ../APP/MPU6050_APP.h

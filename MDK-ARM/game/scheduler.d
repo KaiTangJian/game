@@ -54,6 +54,8 @@ game\scheduler.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\in
 game\scheduler.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\math.h
 game\scheduler.o: ..\APP\KEY_APP.h
 game\scheduler.o: ..\APP\mydefine.h
+game\scheduler.o: ..\APP\Bright_APP.h
+game\scheduler.o: ../Core/Inc/adc.h
 game\scheduler.o: ..\APP\USART_APP.h
 game\scheduler.o: ..\APP\Scheduler.h
 game\scheduler.o: ..\APP\MPU6050_APP.h
@@ -187,6 +189,4 @@ game\scheduler.o: ..\APP\Lcd.h
 game\scheduler.o: ../lvgl/examples/porting/lv_port_disp.h
 game\scheduler.o: ../FreeRTOS/include/queue.h
 game\scheduler.o: ../FreeRTOS/include/semphr.h
-game\scheduler.o: ..\APP\Bright_APP.h
-game\scheduler.o: ../Core/Inc/adc.h
 game\scheduler.o: ..\APP\ESP8266_APP.h

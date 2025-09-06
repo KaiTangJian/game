@@ -22,7 +22,7 @@ extern UART_HandleTypeDef huart1;
 // 控制阈值定义
 #define MOVE_THRESHOLD_GYRO 30.0f // 左右移动阈值（陀螺仪度/秒）
 #define JUMP_THRESHOLD_ACCEL 0.3f // 跳跃检测阈值
-#define JUMP_COOLDOWN 200         // 跳跃冷却时间（毫秒）
+#define JUMP_COOLDOWN 1000         // 跳跃冷却时间（毫秒）
 #define MOVE_INTERVAL 200         // 连续移动间隔（毫秒）
 #define MOVE_THRESHOLD_ACCEL 0.3f // 倾斜移动阈值
 // 双传感器数据结构

@@ -136,17 +136,7 @@ static void Process_Single_Player_Input(uint8_t player_id, MPU6050_PlayerData *d
     int8_t dx = 0;
     bool should_move = false;
 
-    //    // 左右移动检测
-    //    if (data->Gy > MOVE_THRESHOLD_GYRO)
-    //    {
-    //        dx = 1; // 向右移动
-    //        should_move = true;
-    //    }
-    //    else if (data->Gy < -MOVE_THRESHOLD_GYRO)
-    //    {
-    //        dx = -1; // 向左移动
-    //        should_move = true;
-    //    }
+
     // 左右移动检测（基于倾斜角度）
     if (data->Ax > MOVE_THRESHOLD_ACCEL)
     {

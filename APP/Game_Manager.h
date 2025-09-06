@@ -5,7 +5,6 @@
 #include "lvgl.h"
 #include "USART_APP.h"
 #include "UI_Manager.h"
-//#include "FreeRTOSConfig.h"
 #include "FreeRTOS.h"
 typedef enum
 {
@@ -15,14 +14,9 @@ typedef enum
     GAME_STATE_WON,
     GAME_STATE_LOST
 } GameState_t;
-//extern GameState_t current_game_state;
 extern const Level_t* current_level_data;
 
-//extern GamePlayer_t current_player1_state; // 冰人的当前状�?
-//extern GamePlayer_t current_player2_state; // 火人的当前状�?
 
-//extern uint32_t current_game_score;
-//extern uint32_t remaining_game_time_sec;
 bool is_move_valid(const GamePlayer_t *player, int8_t dx, int8_t dy);
 void Game_HandleInput(uint8_t player_id, int8_t dx, int8_t dy);
 bool Game_LoadLevel(uint8_t level_id);

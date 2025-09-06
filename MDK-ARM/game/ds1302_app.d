@@ -47,6 +47,8 @@ game\ds1302_app.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\i
 game\ds1302_app.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\math.h
 game\ds1302_app.o: ..\APP\KEY_APP.h
 game\ds1302_app.o: ..\APP\mydefine.h
+game\ds1302_app.o: ..\APP\Bright_APP.h
+game\ds1302_app.o: ../Core/Inc/adc.h
 game\ds1302_app.o: ..\APP\USART_APP.h
 game\ds1302_app.o: ..\APP\Scheduler.h
 game\ds1302_app.o: ..\APP\MPU6050_APP.h

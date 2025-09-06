@@ -167,6 +167,8 @@ game\game_manager.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..
 game\game_manager.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\math.h
 game\game_manager.o: ..\APP\KEY_APP.h
 game\game_manager.o: ..\APP\mydefine.h
+game\game_manager.o: ..\APP\Bright_APP.h
+game\game_manager.o: ../Core/Inc/adc.h
 game\game_manager.o: ..\APP\USART_APP.h
 game\game_manager.o: ..\APP\Scheduler.h
 game\game_manager.o: ..\APP\MPU6050_APP.h

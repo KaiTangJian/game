@@ -3,7 +3,7 @@
 <title>Static Call Graph - [game\game.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image game\game.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Fri Sep 05 22:08:18 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Sat Sep 06 09:25:28 2025
 <BR><P>
 <H3>Maximum Stack Usage =       1664 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1950,7 +1950,7 @@ Global Symbols
 <LI><a href="#[1a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Encoder_Control_Volume
 <LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Time_Display_Task
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Screen_Manager_Task
-<LI><a href="#[22b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Update_Action_Time
+<LI><a href="#[22a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Update_Action_Time
 </UL>
 
 <P><STRONG><a name="[1d9]"></a>HAL_I2C_Init</STRONG> (Thumb, 376 bytes, Stack size 16 bytes, stm32f4xx_hal_i2c.o(i.HAL_I2C_Init))
@@ -2418,16 +2418,16 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
-<P><STRONG><a name="[78]"></a>Input_Task</STRONG> (Thumb, 254 bytes, Stack size 0 bytes, scheduler.o(i.Input_Task))
+<P><STRONG><a name="[78]"></a>Input_Task</STRONG> (Thumb, 258 bytes, Stack size 0 bytes, scheduler.o(i.Input_Task))
 <BR><BR>[Stack]<UL><LI>Max Depth = 736 + Unknown Stack Size
 <LI>Call Chain = Input_Task &rArr; MPU6050_Process_Input &rArr; Process_Single_Player_Input &rArr; Game_HandleInput &rArr; my_printf &rArr; vsnprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
-<LI><a href="#[22a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Read_Player_Data
+<LI><a href="#[22b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Read_Player_Data
 <LI><a href="#[229]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Process_Input
 <LI><a href="#[227]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Dual_Init
 <LI><a href="#[1a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Encoder_Control_Volume
-<LI><a href="#[22b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Update_Action_Time
+<LI><a href="#[22a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Update_Action_Time
 <LI><a href="#[228]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;key_proc
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> scheduler.o(i.Start_Task)
@@ -2551,7 +2551,7 @@ Global Symbols
 <LI>Call Chain = MPU6050_Process_Input &rArr; Process_Single_Player_Input &rArr; Game_HandleInput &rArr; my_printf &rArr; vsnprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[23c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Process_Single_Player_Input
-<LI><a href="#[22a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Read_Player_Data
+<LI><a href="#[22b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Read_Player_Data
 </UL>
 <BR>[Called By]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Input_Task
 </UL>
@@ -2561,10 +2561,10 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_I2C_Mem_Read
 </UL>
-<BR>[Called By]<UL><LI><a href="#[22a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Read_Player_Data
+<BR>[Called By]<UL><LI><a href="#[22b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Read_Player_Data
 </UL>
 
-<P><STRONG><a name="[22a]"></a>MPU6050_Read_Player_Data</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, mpu6050_app.o(i.MPU6050_Read_Player_Data))
+<P><STRONG><a name="[22b]"></a>MPU6050_Read_Player_Data</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, mpu6050_app.o(i.MPU6050_Read_Player_Data))
 <BR><BR>[Stack]<UL><LI>Max Depth = 184<LI>Call Chain = MPU6050_Read_Player_Data &rArr; MPU6050_Read_All_Single &rArr; HAL_I2C_Mem_Read &rArr; I2C_RequestMemoryRead &rArr; I2C_WaitOnMasterAddressFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[23d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Read_All_Single
@@ -2905,7 +2905,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[25e]"></a>Turn_On</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, bright_app.o(i.Turn_On))
-<BR><BR>[Called By]<UL><LI><a href="#[22b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Update_Action_Time
+<BR><BR>[Called By]<UL><LI><a href="#[22a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Update_Action_Time
 </UL>
 
 <P><STRONG><a name="[222]"></a>UART_Start_Receive_IT</STRONG> (Thumb, 54 bytes, Stack size 0 bytes, stm32f4xx_hal_uart.o(i.UART_Start_Receive_IT))
@@ -2926,7 +2926,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
-<P><STRONG><a name="[22b]"></a>Update_Action_Time</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, bright_app.o(i.Update_Action_Time))
+<P><STRONG><a name="[22a]"></a>Update_Action_Time</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, bright_app.o(i.Update_Action_Time))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Update_Action_Time
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
@@ -2950,8 +2950,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_printf
 <LI><a href="#[1bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
-<LI><a href="#[22a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Read_Player_Data
-<LI><a href="#[22b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Update_Action_Time
+<LI><a href="#[22b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Read_Player_Data
+<LI><a href="#[22a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Update_Action_Time
 <LI><a href="#[25f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sqrtf
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> scheduler.o(i.Start_Task)
@@ -3715,7 +3715,7 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 272<LI>Call Chain = key_proc &rArr; update_level_labels_highlight &rArr; lv_obj_set_style_text_color &rArr; lv_obj_set_local_style_prop &rArr; lv_obj_refresh_style &rArr; refresh_children_style &rArr;  refresh_children_style (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[426]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_level_labels_highlight
-<LI><a href="#[22b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Update_Action_Time
+<LI><a href="#[22a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Update_Action_Time
 <LI><a href="#[425]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;key_read
 </UL>
 <BR>[Called By]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Input_Task
@@ -10689,7 +10689,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[1a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Transmit
 </UL>
 
-<P><STRONG><a name="[23c]"></a>Process_Single_Player_Input</STRONG> (Thumb, 86 bytes, Stack size 24 bytes, mpu6050_app.o(i.Process_Single_Player_Input))
+<P><STRONG><a name="[23c]"></a>Process_Single_Player_Input</STRONG> (Thumb, 88 bytes, Stack size 24 bytes, mpu6050_app.o(i.Process_Single_Player_Input))
 <BR><BR>[Stack]<UL><LI>Max Depth = 728 + Unknown Stack Size
 <LI>Call Chain = Process_Single_Player_Input &rArr; Game_HandleInput &rArr; my_printf &rArr; vsnprintf &rArr; _printf_char_common &rArr; __printf
 </UL>

@@ -46,6 +46,8 @@ game\lcd.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\
 game\lcd.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\math.h
 game\lcd.o: ..\APP\KEY_APP.h
 game\lcd.o: ..\APP\mydefine.h
+game\lcd.o: ..\APP\Bright_APP.h
+game\lcd.o: ../Core/Inc/adc.h
 game\lcd.o: ..\APP\USART_APP.h
 game\lcd.o: ..\APP\Scheduler.h
 game\lcd.o: ..\APP\MPU6050_APP.h
