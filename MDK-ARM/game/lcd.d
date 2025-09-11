@@ -49,10 +49,10 @@ game\lcd.o: ..\APP\mydefine.h
 game\lcd.o: ..\APP\Bright_APP.h
 game\lcd.o: ../Core/Inc/adc.h
 game\lcd.o: ..\APP\USART_APP.h
+game\lcd.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdbool.h
 game\lcd.o: ..\APP\Scheduler.h
 game\lcd.o: ..\APP\MPU6050_APP.h
 game\lcd.o: ../Core/Inc/I2C.h
-game\lcd.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdbool.h
 game\lcd.o: ..\APP\Game_Manager.h
 game\lcd.o: ..\APP\Game_Data.h
 game\lcd.o: ../lvgl/lvgl.h

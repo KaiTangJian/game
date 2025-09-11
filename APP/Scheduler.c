@@ -306,7 +306,7 @@ void Game_Logic_Task(void *pvParameters)
 
 void Input_Task(void *pvParameters)
 {
-    MPU6050_Dual_Init();
+			MPU6050_Dual_Init();
      int16_t last_encoder_count = 0;
     
     while (1)
@@ -428,7 +428,7 @@ void Screen_Manager_Task(void *pvParameters)
 void Wakeup_Task(void *pvParameters)
 {
     static int wakeup_counter = 0;
-    #define WAKEUP_THRESHOLD 3.5f
+    #define WAKEUP_THRESHOLD 5.5f
     #define WAKEUP_SAMPLES 3
 
     while (1)

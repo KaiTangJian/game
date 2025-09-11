@@ -119,11 +119,10 @@ int main(void)
   lv_port_disp_init();
   update_home_screen_leaderboard();
   adc_dma_init();
-  DS1302_Set_Time(0x19, 0x07, 0x08, 0x1e, 0x11, 0x36, 0x00);
+  //DS1302_Set_Time(25, 1, 9, 7, 11, 16, 0);
 
   //NRF24L01_Init();
   ESP01S_Init();
-  OneNET_Upload_Game_Score(1000,1);
 		FreeRTOS_Start();
   /* USER CODE END 2 */
 

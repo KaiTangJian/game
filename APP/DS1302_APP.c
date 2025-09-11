@@ -67,25 +67,25 @@ uint8_t DS1302_Read_Register(uint8_t regAddress)
 void DS1302_Set_Time(uint8_t year,uint8_t week,uint8_t month,uint8_t day,uint8_t hour,uint8_t minute,uint8_t second)
 {
 	DS1302_Write_Register(W_CONTR,0x00);
-	DS1302_Write_Register(W_YEAR,year);
-	DS1302_Write_Register(W_WEEK,week);
-	DS1302_Write_Register(W_MONTH,month);
-	DS1302_Write_Register(W_DAY,day);
-	DS1302_Write_Register(W_HOUR,hour);
-	DS1302_Write_Register(W_MINUTE,minute);
-	DS1302_Write_Register(W_SECOND,second);
+	DS1302_Write_Register(W_YEAR,binary_to_bcd(year));
+	DS1302_Write_Register(W_WEEK,binary_to_bcd(week));
+	DS1302_Write_Register(W_MONTH,binary_to_bcd(month));
+	DS1302_Write_Register(W_DAY,binary_to_bcd(day));
+	DS1302_Write_Register(W_HOUR,binary_to_bcd(hour));
+	DS1302_Write_Register(W_MINUTE,binary_to_bcd(minute));
+	DS1302_Write_Register(W_SECOND,binary_to_bcd(second));
 	DS1302_Write_Register(W_CONTR,0x80);
 }
 timeNow_t DS1302_Read_Time(void)
 {
 	timeNow_t timeNow;
-	timeNow.year=DS1302_Read_Register(R_YEAR);
-	timeNow.week=DS1302_Read_Register(R_WEEK);
-	timeNow.month=DS1302_Read_Register(R_MONTH);
-	timeNow.day=DS1302_Read_Register(R_DAY);
-	timeNow.hour=DS1302_Read_Register(R_HOUR);
-	timeNow.minute=DS1302_Read_Register(R_MINUTE);
-	timeNow.second=DS1302_Read_Register(R_SECOND);
+	timeNow.year=bcd_to_binary(DS1302_Read_Register(R_YEAR));
+	timeNow.week=bcd_to_binary(DS1302_Read_Register(R_WEEK));
+	timeNow.month=bcd_to_binary(DS1302_Read_Register(R_MONTH));
+	timeNow.day=bcd_to_binary(DS1302_Read_Register(R_DAY));
+	timeNow.hour=bcd_to_binary(DS1302_Read_Register(R_HOUR));
+	timeNow.minute=bcd_to_binary(DS1302_Read_Register(R_MINUTE));
+	timeNow.second=bcd_to_binary(DS1302_Read_Register(R_SECOND));
 	return timeNow;
 }
 void DS1302_Print_Time(void)
@@ -93,4 +93,11 @@ void DS1302_Print_Time(void)
 	timeNow_t timeNow=DS1302_Read_Time();
 	my_printf(&huart1,"20%02X-%02X-%02X %02X:%02X:%02X\n",timeNow.year,timeNow.month,timeNow.day,timeNow.hour,timeNow.minute,timeNow.second);
 	
+}
+uint8_t bcd_to_binary(uint8_t bcd) {
+    return ((bcd >> 4) * 10) + (bcd & 0x0F);
+}
+
+uint8_t binary_to_bcd(uint8_t binary) {
+    return (((binary / 10) << 4) | (binary % 10));
 }

@@ -39,10 +39,10 @@ game\esp8266_app.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 game\esp8266_app.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 game\esp8266_app.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdbool.h
 game\esp8266_app.o: ..\APP\ESP8266_APP.h
+game\esp8266_app.o: ../Core/Inc/gpio.h
 game\esp8266_app.o: ../Core/Inc/usart.h
 game\esp8266_app.o: ..\APP\USART_APP.h
 game\esp8266_app.o: ..\APP\mydefine.h
-game\esp8266_app.o: ../Core/Inc/gpio.h
 game\esp8266_app.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdio.h
 game\esp8266_app.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\string.h
 game\esp8266_app.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdarg.h

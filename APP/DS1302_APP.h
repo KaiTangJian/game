@@ -43,6 +43,7 @@ typedef struct {
 }timeNow_t;
 timeNow_t DS1302_Read_Time(void);
 void DS1302_Print_Time(void);
-
+uint8_t bcd_to_binary(uint8_t bcd);
+uint8_t binary_to_bcd(uint8_t binary);
 #endif
 

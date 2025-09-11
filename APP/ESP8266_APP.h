@@ -1,18 +1,20 @@
 #ifndef _ESP01S_H_
 #define _ESP01S_H_
 #include <stdbool.h>
+#include "stdbool.h"
+#include "gpio.h"
 #define REV_OK		0	//æ¥æ”¶å®Œæˆæ ‡å¿—
-#define REV_WAIT	1	//æ¥æ”¶æœªå®Œæˆæ ‡å¿?
+#define REV_WAIT	1	//æ¥æ”¶æœªå®Œæˆæ ‡ï¿½?
 
 void ESP01S_Init(void);
 void ESP01S_Clear(void);
 void ESP01S_SendData(unsigned char *data, unsigned short len);
 unsigned char *ESP01S_GetIPD(unsigned short timeOut);
-// OneNET MQTT¹¦ÄÜº¯ÊıÉùÃ÷
-_Bool OneNET_MQTT_Connect(void);
-_Bool OneNET_MQTT_Publish(char* topic, char* data, uint8_t qos);
-_Bool OneNET_Upload_Game_Score(uint32_t score, uint8_t level);
-_Bool OneNET_Init(void);
+// OneNET MQTTï¿½ï¿½ï¿½Üºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+bool OneNET_MQTT_Connect(void);
+bool OneNET_MQTT_Publish(char* topic, char* data, uint8_t qos);
+bool OneNET_Upload_Game_Score(uint32_t score, uint8_t level);
+bool OneNET_Init(void);
 
 #endif
 

@@ -5,8 +5,8 @@
 #include <stdbool.h> // For bool type
 #include "stm32f4xx_hal.h"
 // Define your map dimensions
-#define MAP_WIDTH   15
-#define MAP_HEIGHT  10
+#define MAP_WIDTH   20
+#define MAP_HEIGHT  15
 #define TILE_SIZE 5
 // 排行榜相关定义
 #define TOTAL_LEVELS 5
@@ -29,7 +29,6 @@ typedef enum {
     TILE_TYPE_FIRE,     // 火焰
     TILE_TYPE_ICE,      // 冰川
     TILE_TYPE_NORMAL,   // 正常地面
-	TILE_TYPE_AIR,		//空气
     TILE_TYPE_EXIT,     // 出口
     TILE_TYPE_COLLECTIBLE_FIRE_GEM, // 火宝
     TILE_TYPE_COLLECTIBLE_ICE_GEM,  // 冰宝

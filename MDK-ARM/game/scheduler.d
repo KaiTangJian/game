@@ -57,10 +57,10 @@ game\scheduler.o: ..\APP\mydefine.h
 game\scheduler.o: ..\APP\Bright_APP.h
 game\scheduler.o: ../Core/Inc/adc.h
 game\scheduler.o: ..\APP\USART_APP.h
+game\scheduler.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdbool.h
 game\scheduler.o: ..\APP\Scheduler.h
 game\scheduler.o: ..\APP\MPU6050_APP.h
 game\scheduler.o: ../Core/Inc/I2C.h
-game\scheduler.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdbool.h
 game\scheduler.o: ..\APP\Game_Manager.h
 game\scheduler.o: ..\APP\Game_Data.h
 game\scheduler.o: ../lvgl/lvgl.h

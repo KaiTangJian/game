@@ -1,5 +1,6 @@
 #include "mydefine.h"
 #include "UI_Manager.h"
+#include "Bright_APP.h"
 uint8_t key_val, key_down, key_old, key_up;
 uint8_t key_read()
 {
@@ -22,7 +23,7 @@ void key_proc()
     key_up = ~key_val & (key_old ^ key_val);  // 检测按键释放事
     key_old = key_val;                        // 更新旧按键状
 
-    if (key_down != 0) // 只有当有按键按下时才执行以下逻辑
+    if (Screen_On && key_down != 0) // 只有当有按键按下时才执行以下逻辑
     {
          Update_Action_Time(); // 调用 Bright_APP.h 中的函数
         switch (Current_State)

@@ -1,5 +1,5 @@
 #include "UI_Manager.h"
-
+#include  "lvgl.h"
 UI_STATE_t Current_State = UI_STATE_START; // 现在的ui界面
 int Select_Number = 1;                     // 当前选择的关卡
 lv_obj_t *Home_Screen;
@@ -189,18 +189,18 @@ void create_game_play_screen(void)
         lv_obj_align(map_canvas, LV_ALIGN_CENTER, 0, 0); // ????
         lv_obj_clear_flag(map_canvas, LV_OBJ_FLAG_SCROLLABLE);
 
-        // ?????????? (???? - ?????????)
+        // 冰人
         player1_obj = lv_obj_create(game_play_screen);
         lv_obj_set_size(player1_obj, TILE_SIZE, TILE_SIZE);
-        lv_obj_set_style_bg_color(player1_obj, lv_color_hex(0x0000), LV_PART_MAIN); // ?????
+        lv_obj_set_style_bg_color(player1_obj, lv_color_hex(0xFF4500), LV_PART_MAIN); // ?????
         lv_obj_set_style_border_width(player1_obj, 0, LV_PART_MAIN);                // ????
         lv_obj_clear_flag(player1_obj, LV_OBJ_FLAG_SCROLLABLE);
         // lv_obj_add_flag(player1_obj, LV_OBJ_FLAG_HIDDEN); // ???????
 
-        // ?????????? (???? - ????????)
+        // ?火人
         player2_obj = lv_obj_create(game_play_screen);
         lv_obj_set_size(player2_obj, TILE_SIZE, TILE_SIZE);
-        lv_obj_set_style_bg_color(player2_obj, lv_color_hex(0xFF4500), LV_PART_MAIN); // ????
+        lv_obj_set_style_bg_color(player2_obj, lv_color_hex(0xF800), LV_PART_MAIN); // ????
         lv_obj_set_style_border_width(player2_obj, 0, LV_PART_MAIN);                  // ????
         lv_obj_clear_flag(player2_obj, LV_OBJ_FLAG_SCROLLABLE);
         // lv_obj_add_flag(player2_obj, LV_OBJ_FLAG_HIDDEN); // ???????
@@ -230,67 +230,79 @@ void create_game_play_screen(void)
 
 /**
  * @brief 地图绘制
- * @param level_data ???????????
+ * @param level_data 地图数据
  */
 void game_screen_draw_map(const Level_t *level_data)
 {
     if (!map_canvas || !level_data)
         return;
 
-    // ?????????????????????
-    lv_canvas_fill_bg(map_canvas, lv_color_hex(0x333333), LV_OPA_COVER); // ???????????
+    // 清空画布
+    lv_canvas_fill_bg(map_canvas, lv_color_hex(0x333333), LV_OPA_COVER);
 
     // 声明一个矩形绘图描述符
     lv_draw_rect_dsc_t rect_dsc;
-    lv_draw_rect_dsc_init(&rect_dsc); // 初始化绘图描述符
+    lv_draw_rect_dsc_init(&rect_dsc);
+    rect_dsc.border_width = 0;
+    rect_dsc.radius = 0;
+
+    // 声明圆形绘图描述符
+    lv_draw_arc_dsc_t arc_dsc;
+    lv_draw_arc_dsc_init(&arc_dsc);
+    arc_dsc.width = TILE_SIZE / 3;
 
     for (int y = 0; y < MAP_HEIGHT; y++)
     {
         for (int x = 0; x < MAP_WIDTH; x++)
         {
             TileType_t tile = (TileType_t)level_data->map_data[y][x];
-            // lv_color_t tile_color = lv_color_hex(0x333333); // ???????????? TILE_TYPE_NORMAL ????????
-            lv_color_t tile_color = lv_color_make(51, 51, 51); // 手动指定RGB�?
+            
+            // 先绘制基础地形背景
             switch (tile)
             {
             case TILE_TYPE_WALL:
-                tile_color = lv_color_hex(0X8430); // 灰色
-                // tile_color = lv_color_make(0, 255, 0);粉红色
-                // tile_color = lv_color_make(255, 255, 0);浅紫色
-                // tile_color = lv_color_make(255, 255, 255);橙色
-                // tile_color = lv_color_hex(0xAA0000);深蓝
-
+                rect_dsc.bg_color = lv_color_hex(0X8430); // 灰色
                 break;
             case TILE_TYPE_FIRE:
-                tile_color = lv_color_hex(0xF800); // 红色
+                rect_dsc.bg_color = lv_color_hex(0xF800); // 红色
                 break;
             case TILE_TYPE_ICE:
-                tile_color = lv_color_hex(0xAA0000); // 浅蓝�?
+                rect_dsc.bg_color = lv_color_hex(0xAA0000); // 浅蓝色
                 break;
             case TILE_TYPE_EXIT:
-                tile_color = lv_color_hex(0x07E0); // 绿色
+                rect_dsc.bg_color = lv_color_hex(0x07E0); // 绿色
                 break;
             case TILE_TYPE_COLLECTIBLE_FIRE_GEM:
-                tile_color = lv_color_make(255, 255, 255); // 橙色
-                break;
             case TILE_TYPE_COLLECTIBLE_ICE_GEM:
-                tile_color = lv_color_make(255, 255, 0); // 浅紫色
+                rect_dsc.bg_color = lv_color_hex(0xFFE0); // 宝石格子使用普通地面颜色
                 break;
             default:
-                tile_color = lv_color_hex(0xFFE0);
+                rect_dsc.bg_color = lv_color_hex(0x000000);
                 break;
             }
-            // 设置绘图描述符的背景颜色
-            rect_dsc.bg_color = tile_color;
-            // 如果不需要边框，确保边框宽度�?0
-            rect_dsc.border_width = 0;
-            // 如果不需要圆角，确保圆角半径�?0
-            rect_dsc.radius = 0;
-            // ????????????????
+            
+            // 绘制基础格子
             lv_canvas_draw_rect(map_canvas, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, &rect_dsc);
+            
+            // 如果是宝石，则在上方绘制圆形
+            switch (tile)
+            {
+            case TILE_TYPE_COLLECTIBLE_FIRE_GEM:
+                arc_dsc.color = lv_color_make(255, 165, 0); // 橙色
+                lv_canvas_draw_arc(map_canvas, x*TILE_SIZE + TILE_SIZE/2, y*TILE_SIZE + TILE_SIZE/2, 
+                                  TILE_SIZE/3, 0, 360, &arc_dsc);
+                break;
+            case TILE_TYPE_COLLECTIBLE_ICE_GEM:
+                arc_dsc.color = lv_color_make(173, 216, 230); // 浅蓝色
+                lv_canvas_draw_arc(map_canvas, x*TILE_SIZE + TILE_SIZE/2, y*TILE_SIZE + TILE_SIZE/2, 
+                                  TILE_SIZE/3, 0, 360, &arc_dsc);
+                break;
+            default:
+                break;
+            }
         }
     }
-    lv_obj_invalidate(map_canvas); // ?????????
+    lv_obj_invalidate(map_canvas);
 }
 
 /**
@@ -456,10 +468,13 @@ void game_screen_redraw_tile(uint8_t x, uint8_t y)
         t = TILE_TYPE_NORMAL;
     }
 
+    // 初始化矩形绘制描述符
     lv_draw_rect_dsc_t rect_dsc;
     lv_draw_rect_dsc_init(&rect_dsc);
+    rect_dsc.border_width = 0;
+    rect_dsc.radius = 0;
 
-    // 根据tile类型设置颜色
+    // 先绘制基础地形背景
     switch (t)
     {
     case TILE_TYPE_WALL:
@@ -475,20 +490,37 @@ void game_screen_redraw_tile(uint8_t x, uint8_t y)
         rect_dsc.bg_color = lv_color_hex(0x07E0); // 绿色
         break;
     case TILE_TYPE_COLLECTIBLE_FIRE_GEM:
-        rect_dsc.bg_color = lv_color_hex(0xFF8000); // 橙色
-        break;
     case TILE_TYPE_COLLECTIBLE_ICE_GEM:
-        rect_dsc.bg_color = lv_color_hex(0x00FFFF); // 青色
+        rect_dsc.bg_color = lv_color_hex(0xFFE0); // 宝石格子使用普通地面颜色作为背景
         break;
     default:
-        rect_dsc.bg_color = lv_color_hex(0xFFE0); // 普通地面
+        rect_dsc.bg_color = lv_color_hex(0x000000); // 普通地面
         break;
     }
-    rect_dsc.border_width = 0;
-    rect_dsc.radius = 0;
-
-    // 绘制格子
+    
+    // 绘制基础格子背景
     lv_canvas_draw_rect(map_canvas, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, &rect_dsc);
+
+    // 如果是宝石，则在上方绘制圆形
+    if (t == TILE_TYPE_COLLECTIBLE_FIRE_GEM || t == TILE_TYPE_COLLECTIBLE_ICE_GEM)
+    {
+        lv_draw_arc_dsc_t arc_dsc;
+        lv_draw_arc_dsc_init(&arc_dsc);
+        arc_dsc.width = TILE_SIZE/3;
+        
+        if (t == TILE_TYPE_COLLECTIBLE_FIRE_GEM)
+        {
+            arc_dsc.color = lv_color_make(255, 165, 0); // 橙色宝石
+            lv_canvas_draw_arc(map_canvas, x*TILE_SIZE + TILE_SIZE/2, y*TILE_SIZE + TILE_SIZE/2, 
+                              TILE_SIZE/3, 0, 360, &arc_dsc);
+        }
+        else if (t == TILE_TYPE_COLLECTIBLE_ICE_GEM)
+        {
+            arc_dsc.color = lv_color_make(173, 216, 230); // 浅蓝色宝石
+            lv_canvas_draw_arc(map_canvas, x*TILE_SIZE + TILE_SIZE/2, y*TILE_SIZE + TILE_SIZE/2, 
+                              TILE_SIZE/3, 0, 360, &arc_dsc);
+        }
+    }
 
     lv_obj_invalidate(map_canvas); // 通知LVGL刷新
 }

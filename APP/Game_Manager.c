@@ -5,7 +5,7 @@ GamePlayer_t current_player1_state; // 冰人的当前状态
 GamePlayer_t current_player2_state; // 火人的当前状态
 uint32_t current_game_score;        // 当前游戏分数
 uint32_t remaining_game_time_sec;   // 剩余游戏时间
-
+extern bool OneNET_Upload_Game_Score(uint32_t score, uint8_t level);
 #define MAX_GEMS_PER_LEVEL 8
 
 typedef struct
@@ -85,7 +85,7 @@ void Game_HandleInput(uint8_t player_id, int8_t dx, int8_t dy)
     if (dy == -1 && player->on_ground && !player->is_jumping)
     {
         my_printf(&huart1, "JUMP");
-        player->vertical_velocity = -1.0f; // 跳跃初速度（负值向上）
+        player->vertical_velocity = -8.5f; // 跳跃初速度（负值向上）
         player->is_jumping = true;
         player->on_ground = false;
         return;
@@ -170,7 +170,8 @@ void Game_Update(void)
             last_time_update = current_time;
             
             // 检查时间是否用尽
-            if (remaining_game_time_sec <= 0) {
+            if (remaining_game_time_sec <= 0) 
+            {
                 remaining_game_time_sec = 0;
                 Current_State = UI_STATE_LOSE; // 时间用尽，游戏结束
             }
@@ -200,7 +201,7 @@ void Game_Update(void)
     for (int i = 0; i < 2; ++i)
     {
         GamePlayer_t *player = (i == 0) ? &current_player1_state : &current_player2_state;
-        // 新增：每帧都检测脚下是否还有地面
+        
         int below_y = (int)(player->pos.y + 1);
         if (player->on_ground)
         {
@@ -212,7 +213,7 @@ void Game_Update(void)
         }
         if (!player->on_ground)
         {
-            player->vertical_velocity += 0.3f;                              // 重力加速度
+            player->vertical_velocity += 2.0f;                              // 重力加速度
             float new_y = player->pos.y + player->vertical_velocity * 0.1f; // 0.1f为时间步长
 
             // 检查是否落地
@@ -229,7 +230,24 @@ void Game_Update(void)
                 player->pos.y = new_y;
             }
         }
+		
+		if (!player->on_ground && player->vertical_velocity < 0) // 玩家正在向上移动
+	    {
+    // 计算玩家头部位置（玩家当前位置减去一点偏移量）
+			float head_pos = player->pos.y - 0.1f;
+			int head_y = (int)head_pos; // 玩家头部所在的网格行
+    
+    // 检查是否撞到天花板（超出上边界或碰到墙体）
+			if (head_y < 0 || current_level_data->map_data[head_y][(int)player->pos.x] == TILE_TYPE_WALL)
+			{
+        // 撞到天花板，停止向上移动
+        player->vertical_velocity = 0.0f;
+        // 调整玩家位置，使其紧贴天花板下方
+        player->pos.y = (float)(head_y + 1);
+			}
+	    }
     }
+
     // 冰人
     uint8_t p1x = (uint8_t)current_player1_state.pos.x;
     uint8_t p1y = (uint8_t)current_player1_state.pos.y;
@@ -273,7 +291,7 @@ void Game_Update(void)
         extern void add_score_to_leaderboard(uint8_t level_id, uint32_t score);
         add_score_to_leaderboard(current_level_data->id, current_game_score);
         // 上传分数到OneNET平台
-        extern _Bool OneNET_Upload_Game_Score(uint32_t score, uint8_t level);
+        
         OneNET_Upload_Game_Score(current_game_score, current_level_data->id);
         Current_State = UI_STATE_WON;
     }
