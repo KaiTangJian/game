@@ -261,7 +261,7 @@ void game_screen_draw_map(const Level_t *level_data)
             switch (tile)
             {
             case TILE_TYPE_WALL:
-                rect_dsc.bg_color = lv_color_hex(0X8430); // 灰色
+                rect_dsc.bg_color = lv_color_hex(0x888888); // 灰色
                 break;
             case TILE_TYPE_FIRE:
                 rect_dsc.bg_color = lv_color_hex(0xF800); // 红色
@@ -478,7 +478,7 @@ void game_screen_redraw_tile(uint8_t x, uint8_t y)
     switch (t)
     {
     case TILE_TYPE_WALL:
-        rect_dsc.bg_color = lv_color_hex(0X8430); // 灰色
+        rect_dsc.bg_color = lv_color_hex(0x888888); // 灰色
         break;
     case TILE_TYPE_FIRE:
         rect_dsc.bg_color = lv_color_hex(0xF800); // 红色

@@ -185,3 +185,6 @@ game\key_app.o: ..\APP\Buzzer_APP.h
 game\key_app.o: ..\APP\DS1302_APP.h
 game\key_app.o: ..\APP\Lcd.h
 game\key_app.o: ../lvgl/examples/porting/lv_port_disp.h
+game\key_app.o: ../FreeRTOS/include/queue.h
+game\key_app.o: ../FreeRTOS/include/task.h
+game\key_app.o: ../FreeRTOS/include/list.h

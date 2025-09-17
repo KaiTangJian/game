@@ -9,7 +9,7 @@
 #include "UI_Manager.h"
 #include "ESP8266_APP.h"
 
-#define SCREEN_TIMEOUT_MS 30000 // 30秒无操作后熄屏
+#define SCREEN_TIMEOUT_MS 60000 // 60秒无操作后熄屏
 #define MOTION_THRESHOLD 0.5f
 // 启动任务配置
 #define START_TASK_STACK_SIZE 130
@@ -77,12 +77,31 @@ extern uint32_t current_game_score;        // 游戏分数
 extern uint32_t remaining_game_time_sec;   // 剩余游戏时间
 extern TIM_HandleTypeDef htim1;
 uint32_t saved_brightness = 0;
+// 消息结构体定义
+typedef enum {
+    MSG_USER_ACTIVITY = 1,
+    MSG_SCREEN_OFF,
+    MSG_SCREEN_ON,
+    MSG_GAME_STATE_CHANGE,
+    MSG_VOLUME_CHANGE,
+    MSG_WAKEUP,
+    MSG_TIME_UPDATE
+} AppMsgType_t;
+
+typedef struct {
+    AppMsgType_t type;
+    uint32_t data;
+} AppMessage_t;
+
+// 全局队列句柄
+QueueHandle_t app_msg_queue;
 
 void FreeRTOS_Start()
 {
     queue1 = xQueueCreate(2, sizeof(uint8_t));
     queue2 = xQueueCreate(1, sizeof(char *));
     lvgl_mutex = xSemaphoreCreateMutex();
+    app_msg_queue = xQueueCreate(10, sizeof(AppMessage_t));
     if (lvgl_mutex == NULL)
     {
         // 创建失败，打印日志或处理错误
@@ -306,7 +325,7 @@ void Game_Logic_Task(void *pvParameters)
 
 void Input_Task(void *pvParameters)
 {
-			MPU6050_Dual_Init();
+	MPU6050_Dual_Init();
      int16_t last_encoder_count = 0;
     
     while (1)
@@ -322,7 +341,9 @@ void Input_Task(void *pvParameters)
         {
             Encoder_Control_Volume(encoder_diff);
             last_encoder_count = current_encoder_count;
-             Update_Action_Time();
+            AppMessage_t msg = {MSG_USER_ACTIVITY, HAL_GetTick()};
+            xQueueSend(app_msg_queue, &msg, 0);
+             //Update_Action_Time();
         }
 
 
@@ -344,7 +365,9 @@ void Input_Task(void *pvParameters)
         // 如果检测到显著运动，更新用户活动时间
         if ((delta1 > MOTION_THRESHOLD) || (delta2 > MOTION_THRESHOLD))
         {
-            Update_Action_Time();
+            
+             AppMessage_t msg = {MSG_USER_ACTIVITY, HAL_GetTick()};
+            xQueueSend(app_msg_queue, &msg, 0);
         }
 
             // 保存当前值用于下次比较
@@ -410,8 +433,22 @@ void Screen_Manager_Task(void *pvParameters)
 {
     while (1)
     {
+        uint32_t last_user_activity_time = HAL_GetTick();
         uint32_t current_time = HAL_GetTick();
-
+        AppMessage_t msg;
+             if (xQueueReceive(app_msg_queue, &msg, pdMS_TO_TICKS(1000)) == pdPASS)
+        {
+            if (msg.type == MSG_USER_ACTIVITY)
+            {
+                last_user_activity_time = msg.data;
+                
+                if (!Screen_On)
+                {
+                    Turn_On();
+                    my_printf(&huart1, "Screen wakeup by activity\n");
+                }
+            }
+        }
         // 检查是否超时需要熄屏（适用于所有界面）
         if (Screen_On && // 屏幕当前是开启的
             (current_time - last_user_activity_time) > SCREEN_TIMEOUT_MS)
@@ -454,8 +491,8 @@ void Wakeup_Task(void *pvParameters)
                 wakeup_counter++;
                 if (wakeup_counter >= WAKEUP_SAMPLES)
                 {
-                    my_printf(&huart1, "Wakeup detected by MPU6050!\n");
-                    Update_Action_Time(); // 唤醒屏幕
+                    AppMessage_t msg = {MSG_USER_ACTIVITY, HAL_GetTick()};
+                    xQueueSend(app_msg_queue, &msg, 0);
                     wakeup_counter = 0;
                 }
             }

@@ -31,7 +31,18 @@ static bool is_move_valid(const GamePlayer_t *player, int8_t dx, int8_t dy)
         return false; // 越界，移动无
     }
 
-    // 2. 获取目标瓦格的类
+     // 2. 对角移动特殊处理：防止穿越墙角
+    if (dx != 0 && dy != 0) {
+        // 检查两个相邻的墙角格子
+        TileType_t horizontal_tile = (TileType_t)current_level_data->map_data[(uint16_t)player->pos.y][new_x];
+        TileType_t vertical_tile = (TileType_t)current_level_data->map_data[new_y][(uint16_t)player->pos.x];
+        
+        // 如果任何一个相邻格子是墙壁，则不允许对角移动
+        if (horizontal_tile == TILE_TYPE_WALL || vertical_tile == TILE_TYPE_WALL) {
+            return false;
+        }
+    }
+    
     // 使用当前关卡的地图数据进行查
     // 注意: current_level_data 必须在调用此函数前已有效加载
     TileType_t target_tile = (TileType_t)current_level_data->map_data[new_y][new_x];

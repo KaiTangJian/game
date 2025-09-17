@@ -1,7 +1,28 @@
 #include "mydefine.h"
 #include "UI_Manager.h"
 #include "Bright_APP.h"
+#include "queue.h"
 uint8_t key_val, key_down, key_old, key_up;
+
+extern QueueHandle_t app_msg_queue;
+
+// 消息类型定义
+typedef enum {
+    MSG_USER_ACTIVITY = 1,
+    MSG_SCREEN_OFF,
+    MSG_SCREEN_ON,
+    MSG_GAME_STATE_CHANGE,
+    MSG_VOLUME_CHANGE,
+    MSG_WAKEUP,
+    MSG_TIME_UPDATE
+} AppMsgType_t;
+
+typedef struct {
+    AppMsgType_t type;
+    uint32_t data;
+} AppMessage_t;
+
+
 uint8_t key_read()
 {
     uint8_t temp = 0;
@@ -22,10 +43,14 @@ void key_proc()
     key_down = key_val & (key_old ^ key_val); // 检测按键按下事
     key_up = ~key_val & (key_old ^ key_val);  // 检测按键释放事
     key_old = key_val;                        // 更新旧按键状
-
+    if (key_down != 0) // 检测按键释放事
+    {              
+            AppMessage_t msg = {MSG_USER_ACTIVITY, HAL_GetTick()};
+            xQueueSend(app_msg_queue, &msg, 0);       
+    }
     if (Screen_On && key_down != 0) // 只有当有按键按下时才执行以下逻辑
     {
-         Update_Action_Time(); // 调用 Bright_APP.h 中的函数
+        
         switch (Current_State)
         {
         case UI_STATE_START:   // 当前在开始界
