@@ -1,6 +1,5 @@
 #include "FreeRTOS.h"
 #include "task.h"
-#include "mydefine.h"
 #include "queue.h"
 #include "semphr.h"
 #include "Bright_APP.h"
@@ -8,9 +7,12 @@
 #include "Lcd.h"
 #include "UI_Manager.h"
 #include "ESP8266_APP.h"
-
+#include "MPU6050_APP.h"
+#include "Buzzer_APP.h"
+#include "DS1302_APP.h"
+#include <math.h>
 #define SCREEN_TIMEOUT_MS 30000 // 30秒无操作后熄屏
-#define MOTION_THRESHOLD 0.4f
+#define MOTION_THRESHOLD 0.2f
 // 启动任务配置
 #define START_TASK_STACK_SIZE 130
 #define START_TASK_PRIORITY 4

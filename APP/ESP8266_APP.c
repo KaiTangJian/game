@@ -4,11 +4,11 @@
 // 网络设备驱动
 #include "ESP8266_APP.h"
 
-// 硬件驱动
+
 #include "usart.h"
 #include "USART_APP.h" // 添加这个头文件以使用 my_printf
 
-// C�?
+
 #include <string.h>
 #include <stdio.h>
 #include <string.h>
@@ -18,7 +18,6 @@
 // 添加OneNET设备
 #define ONENET_PRODUCT_ID "cd8uB9Qod2"
 #define ONENET_DEVICE_ID "01s"
-// #define ONENET_AUTH_INFO     "Y2dBTU5yampRSjNHQ1UyQ1NFdXdqVThETGhWaUh5Tmo="
 
 unsigned char ESP01S_buf[128];
 unsigned short ESP01S_cnt = 0, ESP01S_cntPre = 0;

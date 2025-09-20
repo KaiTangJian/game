@@ -33,7 +33,7 @@ typedef enum {
     TILE_TYPE_COLLECTIBLE_FIRE_GEM, // 火宝
     TILE_TYPE_COLLECTIBLE_ICE_GEM,  // 冰宝
     TILE_TYPE_DOOR,     // 待打开的出口
-    // ... more types as needed
+    
 } TileType_t;
 
 

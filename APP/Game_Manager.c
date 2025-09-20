@@ -94,7 +94,7 @@ void Game_HandleInput(uint8_t player_id, int8_t dx, int8_t dy)
     if (dy == -1 && player->on_ground && !player->is_jumping)
     {
         my_printf(&huart1, "JUMP");
-        player->vertical_velocity = -8.5f; // 跳跃初速度（负值向上）
+        player->vertical_velocity = -5.5f; // 跳跃初速度（负值向上）
         player->is_jumping = true;
         player->on_ground = false;
         return;
@@ -107,7 +107,7 @@ void Game_HandleInput(uint8_t player_id, int8_t dx, int8_t dy)
 }
 bool Game_LoadLevel(uint8_t level_id)
 {
-    // 尝试加载关卡（带错误恢复�?
+    // 尝试加载关卡
     current_level_data = Level_GetById(level_id);
     if (current_level_data == NULL)
     {
@@ -222,7 +222,7 @@ void Game_Update(void)
         }
         if (!player->on_ground)
         {
-            player->vertical_velocity += 2.0f;                              // 重力加速度
+            player->vertical_velocity += 1.0f;                              // 重力加速度
             float new_y = player->pos.y + player->vertical_velocity * 0.1f; // 0.1f为时间步长
 
             // 检查是否落地
@@ -242,11 +242,11 @@ void Game_Update(void)
 		
 		if (!player->on_ground && player->vertical_velocity < 0) // 玩家正在向上移动
 	    {
-    // 计算玩家头部位置（玩家当前位置减去一点偏移量）
+            // 计算玩家头部位置（玩家当前位置减去一点偏移量）
 			float head_pos = player->pos.y - 0.1f;
 			int head_y = (int)head_pos; // 玩家头部所在的网格行
     
-    // 检查是否撞到天花板（超出上边界或碰到墙体）
+            // 检查是否撞到天花板（超出上边界或碰到墙体）
 			if (head_y < 0 || current_level_data->map_data[head_y][(int)player->pos.x] == TILE_TYPE_WALL)
 			{
                 // 撞到天花板，停止向上移动
@@ -276,7 +276,7 @@ void Game_Update(void)
             }
         }
     }
-    // 火人同理
+    // 火人
     uint8_t p2x = (uint8_t)current_player2_state.pos.x;
     uint8_t p2y = (uint8_t)current_player2_state.pos.y;
     TileType_t p2_tile = (TileType_t)current_level_data->map_data[p2y][p2x];
