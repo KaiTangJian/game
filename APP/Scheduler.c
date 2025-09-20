@@ -10,7 +10,7 @@
 #include "ESP8266_APP.h"
 
 #define SCREEN_TIMEOUT_MS 30000 // 30秒无操作后熄屏
-#define MOTION_THRESHOLD 3.4f
+#define MOTION_THRESHOLD 0.4f
 // 启动任务配置
 #define START_TASK_STACK_SIZE 130
 #define START_TASK_PRIORITY 4
@@ -31,7 +31,7 @@ void Task3(void *pvParameters);
 
 // 游戏逻辑任务
 #define GAME_LOGIC_TASK_STACK_SIZE 1024
-#define GAME_LOGIC_TASK_PRIORITY 2 // 2
+#define GAME_LOGIC_TASK_PRIORITY 2 
 TaskHandle_t Game_Logic_Task_Handle;
 void Game_Logic_Task(void *pvParameters);
 
@@ -412,7 +412,9 @@ void Input_Task(void *pvParameters)
     {
 
         key_proc();
+        taskENTER_CRITICAL();
         MPU6050_Process_Input();
+        taskEXIT_CRITICAL();
 
         int16_t current_encoder_count = __HAL_TIM_GET_COUNTER(&htim1);
         int16_t encoder_diff = current_encoder_count - last_encoder_count;
@@ -423,16 +425,11 @@ void Input_Task(void *pvParameters)
             last_encoder_count = current_encoder_count;
             AppMessage_t msg = {MSG_USER_ACTIVITY, HAL_GetTick()};
             xQueueSend(app_msg_queue, &msg, 0);
-            // Update_Action_Time();
         }
 
         // 检查MPU6050是否有显著运动，更新用户活动时间
         static float last_ax1 = 0, last_ay1 = 0, last_az1 = 0;
         static float last_ax2 = 0, last_ay2 = 0, last_az2 = 0;
-
-        MPU6050_Read_Player_Data(1);
-        MPU6050_Read_Player_Data(2);
-        // my_printf(&huart1, "Player1: Ax=%.2f, Ay=%.2f, Az=%.2f | Player2: Ax=%.2f, Ay=%.2f, Az=%.2f\r\n",player1_data.Ax, player1_data.Ay, player1_data.Az,player2_data.Ax, player2_data.Ay, player2_data.Az);
 
         // 计算运动变化量
         float delta1 = fabsf(player1_data.Ax - last_ax1) +
@@ -443,7 +440,7 @@ void Input_Task(void *pvParameters)
                        fabsf(player2_data.Az - last_az2);
 
         // 如果检测到显著运动，更新用户活动时间
-        if ((delta1 > MOTION_THRESHOLD) || (delta2 > MOTION_THRESHOLD))
+        if (Screen_On && ((delta1 > MOTION_THRESHOLD) || (delta2 > MOTION_THRESHOLD)))
         {
 
             AppMessage_t msg = {MSG_USER_ACTIVITY, HAL_GetTick()};
@@ -543,18 +540,21 @@ void Screen_Manager_Task(void *pvParameters)
 void Wakeup_Task(void *pvParameters)
 {
     static int wakeup_counter = 0;
-#define WAKEUP_THRESHOLD 55.5f
-#define WAKEUP_SAMPLES 5
+#define WAKEUP_THRESHOLD 1.5f
+#define WAKEUP_SAMPLES 3
 
     while (1)
     {
         // 只在屏幕关闭时检测唤醒
+        
         if (!Screen_On)
         {
+            
             // 读取MPU6050数据用于唤醒检测
+            taskENTER_CRITICAL();
             MPU6050_Read_Player_Data(1);
             MPU6050_Read_Player_Data(2);
-
+            taskEXIT_CRITICAL();
             // 检查运动幅度
             float motion1 = sqrtf(player1_data.Ax * player1_data.Ax +
                                   player1_data.Ay * player1_data.Ay +
@@ -569,6 +569,8 @@ void Wakeup_Task(void *pvParameters)
                 wakeup_counter++;
                 if (wakeup_counter >= WAKEUP_SAMPLES)
                 {
+                
+                    Turn_On();
                     AppMessage_t msg = {MSG_WAKEUP, HAL_GetTick()};
                     xQueueSend(app_msg_queue, &msg, 0);
                     wakeup_counter = 0;

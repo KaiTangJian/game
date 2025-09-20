@@ -35,17 +35,20 @@
 #define DEFAULT_VOLUME 0
 // --- 音符结构体定�?? ---
 typedef struct {
-    uint16_t frequency;     // 音高频率 (Hz)�??0 代表静音�??0xFFFF 代表旋律结束
+    uint16_t frequency;     // 音高频率 
     float period;   // 持续时间 (毫秒)
 } BuzzerNote_t;
-
+typedef enum {
+    SOUND_EFFECT_COLLECT_ITEM = 1,   // 收集物品音效
+} SoundEffect_t;
 // --- 外部声明 (全局变量) ---
 extern TIM_HandleTypeDef htim3; 
+extern TIM_HandleTypeDef htim2;
 extern UART_HandleTypeDef huart1;
 void Buzzer_APP();
-uint32_t TIM_GetCounterFreq(TIM_HandleTypeDef *htim);
 void Set_Volume(uint8_t volume);
 void Encoder_Control_Volume(int16_t encoder_diff);
+void play_collect_item_sound(void);
 uint8_t get_volume(void);
 
 

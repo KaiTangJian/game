@@ -249,10 +249,10 @@ void Game_Update(void)
     // 检查是否撞到天花板（超出上边界或碰到墙体）
 			if (head_y < 0 || current_level_data->map_data[head_y][(int)player->pos.x] == TILE_TYPE_WALL)
 			{
-        // 撞到天花板，停止向上移动
-        player->vertical_velocity = 0.0f;
-        // 调整玩家位置，使其紧贴天花板下方
-        player->pos.y = (float)(head_y + 1);
+                // 撞到天花板，停止向上移动
+                player->vertical_velocity = 0.0f;
+                 // 调整玩家位置，使其紧贴天花板下方
+                player->pos.y = (float)(head_y + 1);
 			}
 	    }
     }
@@ -271,6 +271,7 @@ void Game_Update(void)
                 gems[i].collected = true;
                 current_game_score += 100;
                 game_screen_redraw_tile(p1x, p1y); // 只重绘该格子
+                play_collect_item_sound();
                 break;
             }
         }
@@ -288,6 +289,7 @@ void Game_Update(void)
                 gems[i].collected = true;
                 current_game_score += 100;
                 game_screen_redraw_tile(p2x, p2y); // 只重绘该格子
+                play_collect_item_sound();
                 break;
             }
         }
