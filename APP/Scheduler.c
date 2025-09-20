@@ -9,8 +9,8 @@
 #include "UI_Manager.h"
 #include "ESP8266_APP.h"
 
-#define SCREEN_TIMEOUT_MS 60000 // 60秒无操作后熄屏
-#define MOTION_THRESHOLD 0.5f
+#define SCREEN_TIMEOUT_MS 30000 // 30秒无操作后熄屏
+#define MOTION_THRESHOLD 3.4f
 // 启动任务配置
 #define START_TASK_STACK_SIZE 130
 #define START_TASK_PRIORITY 4
@@ -22,11 +22,6 @@ void Start_Task(void *pvParameters);
 #define START_LvHandler_Task_PRIORITY 4 // 4
 TaskHandle_t Start_LvHandler_Task_Handle;
 void LvHandler_Task(void *pvParameters);
-//// 任务2配置
-#define START_TASK2_STACK_SIZE 512
-#define START_TASK2_PRIORITY 3
-TaskHandle_t Start_Task2_Handle;
-void Task2(void *pvParameters);
 
 // 任务3配置
 #define START_TASK3_STACK_SIZE 256
@@ -41,7 +36,7 @@ TaskHandle_t Game_Logic_Task_Handle;
 void Game_Logic_Task(void *pvParameters);
 
 // 输入处理任务
-#define INPUT_TASK_STACK_SIZE 256
+#define INPUT_TASK_STACK_SIZE 512
 #define INPUT_TASK_PRIORITY 3
 TaskHandle_t Input_Task_Handle;
 void Input_Task(void *pvParameters);
@@ -67,6 +62,9 @@ void Wakeup_Task(void *pvParameters);
 QueueHandle_t queue1;
 QueueHandle_t queue2;
 QueueHandle_t lvgl_mutex;
+QueueHandle_t ui_request_queue; // UI切换请求队列
+QueueHandle_t ui_state_queue;   // UI状态广播队列
+QueueHandle_t game_state_queue; // 专门为游戏逻辑任务创建的状态队列
 extern bool Screen_On;
 extern uint32_t last_user_activity_time;
 extern GameState_t current_game_state;     // 现在的游戏状�???
@@ -78,7 +76,8 @@ extern uint32_t remaining_game_time_sec;   // 剩余游戏时间
 extern TIM_HandleTypeDef htim1;
 uint32_t saved_brightness = 0;
 // 消息结构体定义
-typedef enum {
+typedef enum
+{
     MSG_USER_ACTIVITY = 1,
     MSG_SCREEN_OFF,
     MSG_SCREEN_ON,
@@ -88,7 +87,8 @@ typedef enum {
     MSG_TIME_UPDATE
 } AppMsgType_t;
 
-typedef struct {
+typedef struct
+{
     AppMsgType_t type;
     uint32_t data;
 } AppMessage_t;
@@ -102,6 +102,9 @@ void FreeRTOS_Start()
     queue2 = xQueueCreate(1, sizeof(char *));
     lvgl_mutex = xSemaphoreCreateMutex();
     app_msg_queue = xQueueCreate(10, sizeof(AppMessage_t));
+    ui_request_queue = xQueueCreate(5, sizeof(AppMessage_t));
+    ui_state_queue = xQueueCreate(5, sizeof(AppMessage_t));   // 用于KEY
+    game_state_queue = xQueueCreate(5, sizeof(AppMessage_t)); // 用于 Game_Logic_Task
     if (lvgl_mutex == NULL)
     {
         // 创建失败，打印日志或处理错误
@@ -120,7 +123,7 @@ void FreeRTOS_Start()
 
 void Start_Task(void *pvParameters)
 {
-    
+
     // 创建lvgl任务
     taskENTER_CRITICAL();
     xTaskCreate((TaskFunction_t)LvHandler_Task,
@@ -129,14 +132,6 @@ void Start_Task(void *pvParameters)
                 (void *)NULL,
                 (UBaseType_t)START_LvHandler_Task_PRIORITY,
                 (TaskHandle_t *)&Start_LvHandler_Task_Handle);
-
-    // 创建任务2
-    xTaskCreate((TaskFunction_t)Task2,
-                (char *)"Task2",
-                (configSTACK_DEPTH_TYPE)START_TASK2_STACK_SIZE,
-                (void *)NULL,
-                (UBaseType_t)START_TASK2_PRIORITY,
-                (TaskHandle_t *)&Start_Task2_Handle);
 
     // 创建任务3
     xTaskCreate((TaskFunction_t)Task3,
@@ -203,59 +198,133 @@ void LvHandler_Task(void *pvParameters)
     static UI_STATE_t last_state = UI_STATE_START;
     lv_disp_load_scr(Home_Screen);
     Current_State = UI_STATE_START;
-    // lv_disp_load_scr(game_play_screen);
+
     xSemaphoreGive(lvgl_mutex);
     while (1)
     {
-        xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
-        lv_task_handler();
-        xSemaphoreGive(lvgl_mutex);
-        vTaskDelay(pdMS_TO_TICKS(5));
+        //        xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
+        //        lv_task_handler();
+        //        xSemaphoreGive(lvgl_mutex);
+        //        vTaskDelay(pdMS_TO_TICKS(5));
+
+        //        if (Current_State != last_state)
+        //        {
+        //            //xSemaphoreTake(lvgl_mutex, portMAX_DELAY); // 屏幕加载前获取互斥锁
+
+        //            switch (Current_State)
+        //            {
+        //            case UI_STATE_START:
+        //                create_home_screen();
+        //                lv_disp_load_scr(Home_Screen);
+        //                break;
+        //            case UI_STATE_SELECT:
+        //                create_select_screen();
+        //                lv_disp_load_scr(Select_Screen);
+        //                break;
+        //            case UI_STATE_IN_GAMME:
+
+        //                create_game_play_screen();
+        //                lv_disp_load_scr(game_play_screen);
+
+        //                break;
+        //            case UI_STATE_WON:
+        //                create_game_win_screen();
+        //                lv_disp_load_scr(game_win_screen);
+
+        //                break;
+        //            case UI_STATE_LOSE:
+        //                create_game_lose_screen();
+        //                lv_disp_load_scr(game_lose_screen);
+        //                break;
+        //            }
+        //            xSemaphoreGive(lvgl_mutex);
+        //        }
+        //        // xSemaphoreGive(lvgl_mutex); // 屏幕加载后释放互斥锁
+        //        last_state = Current_State;
+        // 先处理界面切换逻辑（独立处理）
+
+        AppMessage_t req_msg;
+        // 处理UI切换请求
+        if (xQueueReceive(ui_request_queue, &req_msg, pdMS_TO_TICKS(5)) == pdPASS)
+        {
+            if (req_msg.type == MSG_GAME_STATE_CHANGE)
+            {
+                Current_State = (UI_STATE_t)req_msg.data;
+            }
+        }
 
         if (Current_State != last_state)
         {
-            xSemaphoreTake(lvgl_mutex, portMAX_DELAY); // 屏幕加载前获取互斥锁
-
-            switch (Current_State)
+            // 等待获取互斥锁来处理界面切换
+            if (xSemaphoreTake(lvgl_mutex, pdMS_TO_TICKS(100)) == pdTRUE)
             {
-            case UI_STATE_START:
-                create_home_screen();
-                lv_disp_load_scr(Home_Screen);
-                break;
-            case UI_STATE_SELECT:
-                create_select_screen();
-                lv_disp_load_scr(Select_Screen);
-                break;
-            case UI_STATE_IN_GAMME:
+                switch (Current_State)
+                {
+                case UI_STATE_START:
+                    if (Home_Screen == NULL)
+                    {
+                        create_home_screen();
+                    }
+                    lv_disp_load_scr(Home_Screen);
+                    break;
+                case UI_STATE_SELECT:
+                    if (Select_Screen == NULL)
+                    {
+                        create_select_screen();
+                    }
+                    lv_disp_load_scr(Select_Screen);
+                    break;
+                case UI_STATE_IN_GAMME:
+                    if (game_play_screen == NULL)
+                    {
+                        create_game_play_screen();
+                    }
+                    lv_disp_load_scr(game_play_screen);
+                    break;
+                case UI_STATE_WON:
+                    if (game_win_screen == NULL)
+                    {
+                        create_game_win_screen();
+                    }
+                    lv_disp_load_scr(game_win_screen);
+                    break;
+                case UI_STATE_LOSE:
+                    if (game_lose_screen == NULL)
+                    {
+                        create_game_lose_screen();
+                    }
+                    lv_disp_load_scr(game_lose_screen);
+                    break;
+                }
 
-                create_game_play_screen();
-                lv_disp_load_scr(game_play_screen);
+                xSemaphoreGive(lvgl_mutex);
 
-                break;
-            case UI_STATE_WON:
-                create_game_win_screen();
-                lv_disp_load_scr(game_win_screen);
-
-                break;
-            case UI_STATE_LOSE:
-                create_game_lose_screen();
-                lv_disp_load_scr(game_lose_screen);
-                break;
+                AppMessage_t state_msg = {MSG_GAME_STATE_CHANGE, Current_State};
+                xQueueSend(ui_state_queue, &state_msg, 0);
+                xQueueSend(game_state_queue, &state_msg, 0); // 给 Game_Logic_Task 使用
+                last_state = Current_State;
             }
+            else
+            {
+                // 如果无法获取互斥锁，稍后再试
+                vTaskDelay(pdMS_TO_TICKS(10));
+                continue;
+            }
+        }
+
+        // 处理常规的LVGL任务
+        if (xSemaphoreTake(lvgl_mutex, pdMS_TO_TICKS(50)) == pdTRUE)
+        {
+            lv_task_handler();
             xSemaphoreGive(lvgl_mutex);
         }
-        // xSemaphoreGive(lvgl_mutex); // 屏幕加载后释放互斥锁
-        last_state = Current_State;
-    }
-}
+        else
+        {
+            // 如果无法获取互斥锁，短暂等待
+            vTaskDelay(pdMS_TO_TICKS(5));
+        }
 
-void Task2(void *pvParameters)
-{
-    
-    while (1)
-    {
-
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(5));
     }
 }
 
@@ -271,15 +340,24 @@ void Task3(void *pvParameters)
         vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
-#define GAME_SCREEN_TIMEOUT_MS 90000 // 游戏中1分钟无操作后息屏
+
 void Game_Logic_Task(void *pvParameters)
 {
     bool game_initialized_for_current_level = false;
-    
+    static UI_STATE_t local_ui_state = UI_STATE_START; // 本地状态变量
     while (1)
     {
+        AppMessage_t state_msg;
+        // 非阻塞接收最新的UI状态广播
+        while (xQueueReceive(game_state_queue, &state_msg, 0) == pdPASS)
+        {
+            if (state_msg.type == MSG_GAME_STATE_CHANGE)
+            {
+                local_ui_state = (UI_STATE_t)state_msg.data;
+            }
+        }
         // 只有�??? UI 状态为 UI_STATE_IN_GAMME 时，才执行游戏逻辑�??? UI 更新
-        if (Current_State == UI_STATE_IN_GAMME)
+        if (local_ui_state == UI_STATE_IN_GAMME)
         {
             if (!game_initialized_for_current_level)
             {
@@ -323,29 +401,30 @@ void Game_Logic_Task(void *pvParameters)
     }
 }
 
+// 添加调试输出函数
+
 void Input_Task(void *pvParameters)
 {
-	MPU6050_Dual_Init();
-     int16_t last_encoder_count = 0;
-    
+    MPU6050_Dual_Init();
+    int16_t last_encoder_count = 0;
+    my_printf(&huart1, "Input_Task: Started\r\n");
     while (1)
     {
-        
+
         key_proc();
         MPU6050_Process_Input();
-        
-       int16_t current_encoder_count = __HAL_TIM_GET_COUNTER(&htim1);			
+
+        int16_t current_encoder_count = __HAL_TIM_GET_COUNTER(&htim1);
         int16_t encoder_diff = current_encoder_count - last_encoder_count;
-        
-        if (encoder_diff != 0) 
+
+        if (encoder_diff != 0)
         {
             Encoder_Control_Volume(encoder_diff);
             last_encoder_count = current_encoder_count;
             AppMessage_t msg = {MSG_USER_ACTIVITY, HAL_GetTick()};
             xQueueSend(app_msg_queue, &msg, 0);
-             //Update_Action_Time();
+            // Update_Action_Time();
         }
-
 
         // 检查MPU6050是否有显著运动，更新用户活动时间
         static float last_ax1 = 0, last_ay1 = 0, last_az1 = 0;
@@ -353,31 +432,32 @@ void Input_Task(void *pvParameters)
 
         MPU6050_Read_Player_Data(1);
         MPU6050_Read_Player_Data(2);
+        // my_printf(&huart1, "Player1: Ax=%.2f, Ay=%.2f, Az=%.2f | Player2: Ax=%.2f, Ay=%.2f, Az=%.2f\r\n",player1_data.Ax, player1_data.Ay, player1_data.Az,player2_data.Ax, player2_data.Ay, player2_data.Az);
 
         // 计算运动变化量
         float delta1 = fabsf(player1_data.Ax - last_ax1) +
-                           fabsf(player1_data.Ay - last_ay1) +
-                           fabsf(player1_data.Az - last_az1);
+                       fabsf(player1_data.Ay - last_ay1) +
+                       fabsf(player1_data.Az - last_az1);
         float delta2 = fabsf(player2_data.Ax - last_ax2) +
-                           fabsf(player2_data.Ay - last_ay2) +
-                           fabsf(player2_data.Az - last_az2);
+                       fabsf(player2_data.Ay - last_ay2) +
+                       fabsf(player2_data.Az - last_az2);
 
         // 如果检测到显著运动，更新用户活动时间
         if ((delta1 > MOTION_THRESHOLD) || (delta2 > MOTION_THRESHOLD))
         {
-            
-             AppMessage_t msg = {MSG_USER_ACTIVITY, HAL_GetTick()};
+
+            AppMessage_t msg = {MSG_USER_ACTIVITY, HAL_GetTick()};
             xQueueSend(app_msg_queue, &msg, 0);
         }
 
-            // 保存当前值用于下次比较
-            last_ax1 = player1_data.Ax;
-            last_ay1 = player1_data.Ay;
-            last_az1 = player1_data.Az;
-            last_ax2 = player2_data.Ax;
-            last_ay2 = player2_data.Ay;
-            last_az2 = player2_data.Az;
-        
+        // 保存当前值用于下次比较
+        last_ax1 = player1_data.Ax;
+        last_ay1 = player1_data.Ay;
+        last_az1 = player1_data.Az;
+        last_ax2 = player2_data.Ax;
+        last_ay2 = player2_data.Ay;
+        last_az2 = player2_data.Az;
+
         vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
@@ -431,31 +511,29 @@ void Time_Display_Task(void *pvParameters)
 // 屏幕管理任务实现
 void Screen_Manager_Task(void *pvParameters)
 {
+
     while (1)
     {
-        uint32_t last_user_activity_time = HAL_GetTick();
+
         uint32_t current_time = HAL_GetTick();
         AppMessage_t msg;
-             if (xQueueReceive(app_msg_queue, &msg, pdMS_TO_TICKS(1000)) == pdPASS)
+        if (xQueueReceive(app_msg_queue, &msg, pdMS_TO_TICKS(100)) == pdPASS)
         {
             if (msg.type == MSG_USER_ACTIVITY)
             {
                 last_user_activity_time = msg.data;
-                
+
                 if (!Screen_On)
                 {
                     Turn_On();
-                    my_printf(&huart1, "Screen wakeup by activity\n");
                 }
             }
         }
         // 检查是否超时需要熄屏（适用于所有界面）
-        if (Screen_On && // 屏幕当前是开启的
-            (current_time - last_user_activity_time) > SCREEN_TIMEOUT_MS)
+        if (Screen_On && (current_time - last_user_activity_time) > SCREEN_TIMEOUT_MS)
         {
             // 在任何界面下，超时都应熄屏
             Turn_Off();
-            my_printf(&huart1, "Screen timeout, turning off\n");
         }
 
         vTaskDelay(pdMS_TO_TICKS(1000)); // 每秒检查一次
@@ -465,8 +543,8 @@ void Screen_Manager_Task(void *pvParameters)
 void Wakeup_Task(void *pvParameters)
 {
     static int wakeup_counter = 0;
-    #define WAKEUP_THRESHOLD 5.5f
-    #define WAKEUP_SAMPLES 3
+#define WAKEUP_THRESHOLD 55.5f
+#define WAKEUP_SAMPLES 5
 
     while (1)
     {
@@ -491,7 +569,7 @@ void Wakeup_Task(void *pvParameters)
                 wakeup_counter++;
                 if (wakeup_counter >= WAKEUP_SAMPLES)
                 {
-                    AppMessage_t msg = {MSG_USER_ACTIVITY, HAL_GetTick()};
+                    AppMessage_t msg = {MSG_WAKEUP, HAL_GetTick()};
                     xQueueSend(app_msg_queue, &msg, 0);
                     wakeup_counter = 0;
                 }

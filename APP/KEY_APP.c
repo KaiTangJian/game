@@ -5,7 +5,8 @@
 uint8_t key_val, key_down, key_old, key_up;
 
 extern QueueHandle_t app_msg_queue;
-
+extern QueueHandle_t ui_request_queue;
+extern QueueHandle_t ui_state_queue;
 // 消息类型定义
 typedef enum {
     MSG_USER_ACTIVITY = 1,
@@ -22,7 +23,7 @@ typedef struct {
     uint32_t data;
 } AppMessage_t;
 
-
+static UI_STATE_t local_ui_state = UI_STATE_START;
 uint8_t key_read()
 {
     uint8_t temp = 0;
@@ -48,15 +49,26 @@ void key_proc()
             AppMessage_t msg = {MSG_USER_ACTIVITY, HAL_GetTick()};
             xQueueSend(app_msg_queue, &msg, 0);       
     }
+        AppMessage_t state_msg;
+    while (xQueueReceive(ui_state_queue, &state_msg, 0) == pdPASS)
+    {
+        if (state_msg.type == MSG_GAME_STATE_CHANGE)
+        {
+            local_ui_state = (UI_STATE_t)state_msg.data;
+        }
+    }
+    
     if (Screen_On && key_down != 0) // 只有当有按键按下时才执行以下逻辑
     {
-        
-        switch (Current_State)
+        AppMessage_t req_msg;
+        req_msg.type = MSG_GAME_STATE_CHANGE;
+        switch (local_ui_state)
         {
         case UI_STATE_START:   // 当前在开始界
             if (key_down == 3) // 在开始界面按下按
             {
-                Current_State = UI_STATE_SELECT; // 进入选择界面
+                req_msg.data = UI_STATE_SELECT;
+                xQueueSend(ui_request_queue, &req_msg, 0);
             }
             // 如果开始界面有其他按键功能，可以在这里添加
             break;
@@ -82,32 +94,36 @@ void key_proc()
             }
             else if (key_down == 3) // 按键3: 确认选择并进入游戏
             {
-                Current_State = UI_STATE_IN_GAMME; // 进入游戏界面
+                req_msg.data = UI_STATE_IN_GAMME;
+                xQueueSend(ui_request_queue, &req_msg, 0);
             }
             else if (key_down == 4) // 按键4: 从选择界面退出到主页
             {
-                Current_State = UI_STATE_START; // 返回开始界面
+                req_msg.data = UI_STATE_START;
+                xQueueSend(ui_request_queue, &req_msg, 0);
             }
             break;
 
         case UI_STATE_IN_GAMME: // 当前在游戏界
             if (key_down == 4)  // 按键4: 从游戏界面退出到主页
             {
-                Current_State = UI_STATE_START; // 返回开始界面
+                req_msg.data = UI_STATE_START;
+                xQueueSend(ui_request_queue, &req_msg, 0);
             }
-            // 在游戏界面，可以添加其他游戏操作的按键逻辑
-            // 例如：else if (key_down == 1) { // 游戏操作1 }
+
             break;
         case UI_STATE_WON:
             if (key_down == 4) // 按键4: 退出到主页
             {
-                Current_State = UI_STATE_START; // 返回开始界面
+                req_msg.data = UI_STATE_START;
+                xQueueSend(ui_request_queue, &req_msg, 0);
             }
             break;
         case UI_STATE_LOSE:
             if (key_down == 4) // 按键4: 退出到主页
             {
-                Current_State = UI_STATE_START; // 返回开始界面
+                 req_msg.data = UI_STATE_START;
+                xQueueSend(ui_request_queue, &req_msg, 0);
             }
             break;
 

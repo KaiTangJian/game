@@ -11,6 +11,7 @@ __IO float voltage;                           // 用于存储计算后的电压�
 bool Screen_On = true;
 uint32_t last_user_activity_time = 0;
 
+
 // --- 初始化 (通常在 main 函数或外设初始化函数中调用一次) ---
 void adc_dma_init(void)
 {
@@ -68,14 +69,5 @@ void Turn_On()
     {
         __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 500);
         Screen_On = true;
-    }
-}
-
-void Update_Action_Time()
-{
-    last_user_activity_time = HAL_GetTick();
-    if (Screen_On == false)
-    {
-        Turn_On();
     }
 }

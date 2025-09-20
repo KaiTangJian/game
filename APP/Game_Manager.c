@@ -1,4 +1,6 @@
 #include "Game_Manager.h"
+#include "queue.h"
+extern QueueHandle_t ui_request_queue;
 GameState_t current_game_state;     // 当前游戏状态
 const Level_t *current_level_data;  // 当前关卡数据
 GamePlayer_t current_player1_state; // 冰人的当前状态
@@ -7,7 +9,22 @@ uint32_t current_game_score;        // 当前游戏分数
 uint32_t remaining_game_time_sec;   // 剩余游戏时间
 extern bool OneNET_Upload_Game_Score(uint32_t score, uint8_t level);
 #define MAX_GEMS_PER_LEVEL 8
+// 消息类型定义
 
+typedef enum {
+    MSG_USER_ACTIVITY = 1,
+    MSG_SCREEN_OFF,
+    MSG_SCREEN_ON,
+    MSG_GAME_STATE_CHANGE,
+    MSG_VOLUME_CHANGE,
+    MSG_WAKEUP,
+    MSG_TIME_UPDATE
+} AppMsgType_t;
+
+typedef struct {
+    AppMsgType_t type;
+    uint32_t data;
+} AppMessage_t;
 typedef struct
 {
     uint8_t x;
@@ -21,7 +38,7 @@ static uint8_t gem_count = 0;
 
 static bool is_move_valid(const GamePlayer_t *player, int8_t dx, int8_t dy)
 {
-    // 计算玩家尝试移动到的新瓦格坐
+    // 计算玩家尝试移动到的新瓦格
     int new_x = player->pos.x + dx;
     int new_y = player->pos.y + dy;
 
@@ -52,25 +69,6 @@ static bool is_move_valid(const GamePlayer_t *player, int8_t dx, int8_t dy)
     {
         return false; // 是墙壁，移动无效
     }
-
-    // 4. 特定玩家类型与危险地形的交互检�?
-    if (player->type == PLAYER_TYPE_ICE)
-    { // 如果是冰人
-        // 冰人不能进入岩浆
-        if (target_tile == TILE_TYPE_FIRE)
-        {
-            return false;
-        }
-    }
-    else
-    { // 如果是 (PLAYER_TYPE_FIRE)
-        // 火人不能进入水域
-        if (target_tile == TILE_TYPE_ICE)
-        {
-            return false;
-        }
-    }
-
     // 5. 其他更复杂的碰撞检 (根据游戏设计添加)
 
     return true; // 所有检查通过，移动有
@@ -78,7 +76,7 @@ static bool is_move_valid(const GamePlayer_t *player, int8_t dx, int8_t dy)
 void Game_HandleInput(uint8_t player_id, int8_t dx, int8_t dy)
 {
     GamePlayer_t *player = NULL;
-    my_printf(&huart1, "Input: dx=%d dy=%d on_ground=%d is_jumping=%d\r\n", dx, dy, player->on_ground, player->is_jumping);
+
     if (player_id == 1)
     {
         player = &current_player1_state;
@@ -304,13 +302,16 @@ void Game_Update(void)
         // 上传分数到OneNET平台
         
         OneNET_Upload_Game_Score(current_game_score, current_level_data->id);
-        Current_State = UI_STATE_WON;
+                // 发送胜利切换请求
+        AppMessage_t req_msg = {MSG_GAME_STATE_CHANGE, UI_STATE_WON};
+        xQueueSend(ui_request_queue, &req_msg, 0);
     }
 
     // 4. 检查游戏失败条件 (除了时间用尽)
     if (current_player1_state.health <= 0 || current_player2_state.health <= 0 || remaining_game_time_sec <= 0)
     {
-        Current_State = UI_STATE_LOSE;
+        AppMessage_t req_msg = {MSG_GAME_STATE_CHANGE, UI_STATE_LOSE};
+        xQueueSend(ui_request_queue, &req_msg, 0);
     }
 }
 
