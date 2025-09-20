@@ -10,18 +10,20 @@ typedef enum
 		UI_STATE_IN_GAMME,
 		UI_STATE_EXIT,
 	 	 UI_STATE_WON,
-		UI_STATE_LOSE
+		UI_STATE_LOSE,
+		 UI_STATE_PASSWORD  
 }UI_STATE_t;
 #define MAX_SCORES_PER_LEVEL 5
 #define TOTAL_LEVELS 5
 extern UI_STATE_t Current_State;//现在的ui界面
-extern int Select_Number;//当前选择的关�??
+extern int Select_Number;//当前选择的关�??
 extern lv_obj_t *Home_Screen;
 extern lv_obj_t *Select_Screen;
 extern lv_obj_t *Select_Label;
 extern lv_obj_t *game_play_screen;
 extern lv_obj_t *game_win_screen;
 extern lv_obj_t *game_lose_screen;
+extern lv_obj_t *password_screen;
 void create_home_screen(void);
 void create_game_play_screen(void);
 void game_screen_draw_map(const Level_t *level_data);

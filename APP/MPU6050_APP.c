@@ -1,6 +1,7 @@
 #include "MPU6050_APP.h"
 #include "gpio.h"
 #include "nrf24L01.h"
+#include "task.h"
 int16_t Accel_X_RAW, Accel_Y_RAW, Accel_Z_RAW;
 int16_t Gyro_X_RAW, Gyro_Y_RAW, Gyro_Z_RAW;
 int16_t Temp_RAW;
@@ -170,8 +171,10 @@ static void Process_Single_Player_Input(uint8_t player_id, MPU6050_PlayerData *d
 void MPU6050_Process_Input(void)
 {
     // 读取两个玩家的传感器数据
+    taskENTER_CRITICAL();
     MPU6050_Read_Player_Data(1);
     MPU6050_Read_Player_Data(2);
+    taskEXIT_CRITICAL();
 
     // 处理玩家1的输入
     Process_Single_Player_Input(1, &player1_data);

@@ -13,6 +13,8 @@
 #include <math.h>
 #define SCREEN_TIMEOUT_MS 30000 // 30秒无操作后熄屏
 #define MOTION_THRESHOLD 0.2f
+#define WAKEUP_THRESHOLD 1.5f
+#define WAKEUP_SAMPLES 3
 // 启动任务配置
 #define START_TASK_STACK_SIZE 130
 #define START_TASK_PRIORITY 4
@@ -195,55 +197,15 @@ void LvHandler_Task(void *pvParameters)
     create_game_win_screen();
     create_game_play_screen();
     create_select_screen();
-
+    create_password_screen(); // 添加密码界面创建
     xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
-    static UI_STATE_t last_state = UI_STATE_START;
-    lv_disp_load_scr(Home_Screen);
-    Current_State = UI_STATE_START;
+    static UI_STATE_t last_state = UI_STATE_PASSWORD;
+    lv_disp_load_scr(password_screen);
+    Current_State = UI_STATE_PASSWORD;
 
     xSemaphoreGive(lvgl_mutex);
     while (1)
     {
-        //        xSemaphoreTake(lvgl_mutex, portMAX_DELAY);
-        //        lv_task_handler();
-        //        xSemaphoreGive(lvgl_mutex);
-        //        vTaskDelay(pdMS_TO_TICKS(5));
-
-        //        if (Current_State != last_state)
-        //        {
-        //            //xSemaphoreTake(lvgl_mutex, portMAX_DELAY); // 屏幕加载前获取互斥锁
-
-        //            switch (Current_State)
-        //            {
-        //            case UI_STATE_START:
-        //                create_home_screen();
-        //                lv_disp_load_scr(Home_Screen);
-        //                break;
-        //            case UI_STATE_SELECT:
-        //                create_select_screen();
-        //                lv_disp_load_scr(Select_Screen);
-        //                break;
-        //            case UI_STATE_IN_GAMME:
-
-        //                create_game_play_screen();
-        //                lv_disp_load_scr(game_play_screen);
-
-        //                break;
-        //            case UI_STATE_WON:
-        //                create_game_win_screen();
-        //                lv_disp_load_scr(game_win_screen);
-
-        //                break;
-        //            case UI_STATE_LOSE:
-        //                create_game_lose_screen();
-        //                lv_disp_load_scr(game_lose_screen);
-        //                break;
-        //            }
-        //            xSemaphoreGive(lvgl_mutex);
-        //        }
-        //        // xSemaphoreGive(lvgl_mutex); // 屏幕加载后释放互斥锁
-        //        last_state = Current_State;
-        // 先处理界面切换逻辑（独立处理）
 
         AppMessage_t req_msg;
         // 处理UI切换请求
@@ -296,6 +258,13 @@ void LvHandler_Task(void *pvParameters)
                         create_game_lose_screen();
                     }
                     lv_disp_load_scr(game_lose_screen);
+                    break;
+                case UI_STATE_PASSWORD:  // 添加密码界面处理
+                    if (password_screen == NULL)
+                    {
+                        create_password_screen();
+                    }
+                    lv_disp_load_scr(password_screen);
                     break;
                 }
 
@@ -367,9 +336,9 @@ void Game_Logic_Task(void *pvParameters)
                 if (Game_LoadLevel(Select_Number))
                 {
 
-                    game_screen_draw_map(current_level_data); // <-- 如果卡在这里，说�??? draw_map 内部有问题（如无限循环或内部尝试再次获取互斥量）
+                    game_screen_draw_map(current_level_data); 
 
-                    game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state); // <-- 如果卡在这里，说�??? update_dynamic_elements 内部有问�???
+                    game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state); 
                     game_initialized_for_current_level = true;
                 }
                 else
@@ -407,26 +376,30 @@ void Game_Logic_Task(void *pvParameters)
 
 void Input_Task(void *pvParameters)
 {
+    taskENTER_CRITICAL();
     MPU6050_Dual_Init();
+    taskEXIT_CRITICAL();
     int16_t last_encoder_count = 0;
     my_printf(&huart1, "Input_Task: Started\r\n");
     while (1)
     {
 
-        key_proc();
-        taskENTER_CRITICAL();
+        key_proc(); 
         MPU6050_Process_Input();
-        taskEXIT_CRITICAL();
-
+        
         int16_t current_encoder_count = __HAL_TIM_GET_COUNTER(&htim1);
         int16_t encoder_diff = current_encoder_count - last_encoder_count;
 
-        if (encoder_diff != 0)
+        if (Screen_On && encoder_diff != 0 )
         {
             Encoder_Control_Volume(encoder_diff);
             last_encoder_count = current_encoder_count;
             AppMessage_t msg = {MSG_USER_ACTIVITY, HAL_GetTick()};
             xQueueSend(app_msg_queue, &msg, 0);
+        }
+       else if (encoder_diff != 0)
+        {
+            last_encoder_count = current_encoder_count;
         }
 
         // 检查MPU6050是否有显著运动，更新用户活动时间
@@ -542,8 +515,6 @@ void Screen_Manager_Task(void *pvParameters)
 void Wakeup_Task(void *pvParameters)
 {
     static int wakeup_counter = 0;
-#define WAKEUP_THRESHOLD 1.5f
-#define WAKEUP_SAMPLES 3
 
     while (1)
     {

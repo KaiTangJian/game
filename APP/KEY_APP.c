@@ -3,12 +3,17 @@
 #include "Bright_APP.h"
 #include "queue.h"
 uint8_t key_val, key_down, key_old, key_up;
-
+extern void password_input_digit(int digit);
+extern void password_confirm(void);
+extern void password_backspace(void);
+extern int Select_Number;
+extern void update_level_labels_highlight(void);
 extern QueueHandle_t app_msg_queue;
 extern QueueHandle_t ui_request_queue;
 extern QueueHandle_t ui_state_queue;
 // 消息类型定义
-typedef enum {
+typedef enum
+{
     MSG_USER_ACTIVITY = 1,
     MSG_SCREEN_OFF,
     MSG_SCREEN_ON,
@@ -18,12 +23,13 @@ typedef enum {
     MSG_TIME_UPDATE
 } AppMsgType_t;
 
-typedef struct {
+typedef struct
+{
     AppMsgType_t type;
     uint32_t data;
 } AppMessage_t;
 
-static UI_STATE_t local_ui_state = UI_STATE_START;
+static UI_STATE_t local_ui_state = UI_STATE_PASSWORD;
 uint8_t key_read()
 {
     uint8_t temp = 0;
@@ -44,12 +50,7 @@ void key_proc()
     key_down = key_val & (key_old ^ key_val); // 检测按键按下事
     key_up = ~key_val & (key_old ^ key_val);  // 检测按键释放事
     key_old = key_val;                        // 更新旧按键状
-    if (key_down != 0) // 检测按键释放事
-    {              
-            AppMessage_t msg = {MSG_USER_ACTIVITY, HAL_GetTick()};
-            xQueueSend(app_msg_queue, &msg, 0);       
-    }
-        AppMessage_t state_msg;
+    AppMessage_t state_msg;
     while (xQueueReceive(ui_state_queue, &state_msg, 0) == pdPASS)
     {
         if (state_msg.type == MSG_GAME_STATE_CHANGE)
@@ -57,10 +58,12 @@ void key_proc()
             local_ui_state = (UI_STATE_t)state_msg.data;
         }
     }
-    
+
     if (Screen_On && key_down != 0) // 只有当有按键按下时才执行以下逻辑
     {
         AppMessage_t req_msg;
+        AppMessage_t msg = {MSG_USER_ACTIVITY, HAL_GetTick()};
+        xQueueSend(app_msg_queue, &msg, 0);
         req_msg.type = MSG_GAME_STATE_CHANGE;
         switch (local_ui_state)
         {
@@ -122,12 +125,29 @@ void key_proc()
         case UI_STATE_LOSE:
             if (key_down == 4) // 按键4: 退出到主页
             {
-                 req_msg.data = UI_STATE_START;
+                req_msg.data = UI_STATE_START;
                 xQueueSend(ui_request_queue, &req_msg, 0);
             }
             break;
 
-            // 可以根据需要添加其他UI状态的处理
+        case UI_STATE_PASSWORD:
+            if (key_down == 1) // 按键1输入数字1
+            {
+                password_input_digit(1);
+            }
+            else if (key_down == 2) // 按键2输入数字2
+            {
+                password_input_digit(2);
+            }
+            else if (key_down == 3) // 按键3确认密码
+            {
+                password_confirm();
+            }
+            else if (key_down == 4) // 按键4删除一个输入的字符
+            {
+                password_backspace();
+            }
+            break;
         }
     }
 }

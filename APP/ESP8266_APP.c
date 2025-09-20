@@ -4,10 +4,8 @@
 // 网络设备驱动
 #include "ESP8266_APP.h"
 
-
 #include "usart.h"
 #include "USART_APP.h" // 添加这个头文件以使用 my_printf
-
 
 #include <string.h>
 #include <stdio.h>
@@ -18,10 +16,10 @@
 // 添加OneNET设备
 #define ONENET_PRODUCT_ID "cd8uB9Qod2"
 #define ONENET_DEVICE_ID "01s"
-
+#define MAX_PASSWORD_LENGTH 8
 unsigned char ESP01S_buf[128];
 unsigned short ESP01S_cnt = 0, ESP01S_cntPre = 0;
-
+extern char system_password[MAX_PASSWORD_LENGTH + 1];
 uint8_t aRxBuffer; // 接收中断缓冲
 
 //==========================================================
@@ -212,6 +210,92 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         else
         {
             ESP01S_buf[ESP01S_cnt++] = aRxBuffer; // 接收数据转存
+
+            // 检查是否收到完整的一行数据
+
+                // 检查是否收到完整的一行数据
+            if (aRxBuffer == '\n' || aRxBuffer == '\r')
+            {
+                // 直接查找连续的四位数字，不检查MQTT消息标识和主题
+                // 查找密码字段 (数字格式: "password":2111)
+                char *password_start = strstr((char *)ESP01S_buf, "\"password\":");
+                if (password_start != NULL)
+                {
+                    password_start += 10; // 跳过"password":字符串
+
+                    // 查找密码结束位置
+                    char *password_end = strchr(password_start, '}');
+                    if (password_end != NULL)
+                    {
+                        *password_end = '\0'; // 临时结束字符串
+
+                        // 去除空格
+                        while (*password_start == ' ')
+                        {
+                            password_start++;
+                        }
+
+                        // 验证是否为纯数字
+                        char *temp = password_start;
+                        bool is_valid_number = true;
+                        while (*temp != '\0' && *temp != ',' && *temp != '}' && *temp != ' ')
+                        {
+                            if (!isdigit((unsigned char)*temp))
+                            {
+                                is_valid_number = false;
+                                break;
+                            }
+                            temp++;
+                        }
+
+                        if (is_valid_number)
+                        {
+                            // 提取数字密码
+                            char password_str[16];
+                            int len = temp - password_start;
+                            if (len < sizeof(password_str) - 1)
+                            {
+                                strncpy(password_str, password_start, len);
+                                password_str[len] = '\0';
+
+                                // 更新系统密码
+                                extern char system_password[];
+                                if (strlen(password_str) <= 8) // MAX_PASSWORD_LENGTH
+                                {
+                                    strncpy(system_password, password_str, 8);
+                                    system_password[8] = '\0';
+                                    my_printf(&huart1, "密码已更新为: %s\r\n", system_password);
+
+                                    // 发送响应确认
+                                    char response_topic[64];
+                                    char response_payload[128];
+
+                                    snprintf(response_topic, sizeof(response_topic),
+                                             "$sys/%s/%s/thing/property/set_reply", ONENET_PRODUCT_ID, ONENET_DEVICE_ID);
+
+                                    snprintf(response_payload, sizeof(response_payload),
+                                             "{\\\"id\\\":\\\"123\\\"\\,\\\"code\\\":200\\,\\\"msg\\\":\\\"success\\\"}");
+
+                                    OneNET_MQTT_Publish(response_topic, response_payload, 0);
+                                }
+                                else
+                                {
+                                    my_printf(&huart1, "新密码长度超限\r\n");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            my_printf(&huart1, "密码格式错误，应为纯数字\r\n");
+                        }
+
+                        *password_end = '}'; // 恢复原字符
+                    }
+                }
+            
+                // 清空缓冲区
+                //ESP01S_Clear();
+            }
         }
 
         HAL_UART_Receive_IT(&huart2, (uint8_t *)&aRxBuffer, 1); // 再开启接收中�?
@@ -370,6 +454,8 @@ bool OneNET_Upload_Game_Score(uint32_t score, uint8_t level)
 //==========================================================
 bool OneNET_Init(void)
 {
+    char subscribe_cmd[128];
+    char topic[64];
     // 连接MQTT
     if (OneNET_MQTT_Connect() != 0)
     {
@@ -378,5 +464,23 @@ bool OneNET_Init(void)
     }
 
     my_printf(&huart1, "OneNET连接成功\r\n");
+
+    // 构造订阅主题 $sys/{pid}/{device-name}/thing/property/set
+    snprintf(topic, sizeof(topic), "$sys/%s/%s/thing/property/set",
+             ONENET_PRODUCT_ID, ONENET_DEVICE_ID);
+
+    // 构造AT命令
+    snprintf(subscribe_cmd, sizeof(subscribe_cmd),
+             "AT+MQTTSUB=0,\"%s\",0\r\n", topic);
+
+    my_printf(&huart1, "订阅属性设置主题: %s\r\n", topic);
+
+    if (ESP01S_SendCmd(subscribe_cmd, "OK") != 0)
+    {
+        my_printf(&huart1, "订阅属性设置主题失败\r\n");
+        return 1;
+    }
+
+    my_printf(&huart1, "订阅属性设置主题成功\r\n");
     return 0;
 }

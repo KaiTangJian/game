@@ -27,14 +27,28 @@ Project File Date:  09/20/2025
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin'
 Build target 'game'
-compiling Game_Data.c...
-..\APP\Game_Data.c(244): warning:  #1-D: last line of file ends without a newline
+compiling ESP8266_APP.c...
+..\APP\ESP8266_APP.c(96): warning:  #870-D: invalid multibyte character sequence
+          my_printf(&huart1, "发送失�?:HAL状态码%d\r\n", status);
+..\APP\ESP8266_APP.c(354): warning:  #870-D: invalid multibyte character sequence
+      my_printf(&huart1, "发送命�?: %s", publish_cmd);
+..\APP\ESP8266_APP.c(359): warning:  #870-D: invalid multibyte character sequence
+          my_printf(&huart1, "�?%d次尝试发布数据\r\n", retry + 1);
+..\APP\ESP8266_APP.c(371): warning:  #870-D: invalid multibyte character sequence
+              my_printf(&huart1, "发送失�?:HAL状态码%d\r\n", status);
+..\APP\ESP8266_APP.c(414): warning:  #870-D: invalid multibyte character sequence
+          my_printf(&huart1, "�?%d次尝试超时\r\n", retry + 1);
+..\APP\ESP8266_APP.c(431): warning:  #177-D: variable "onenet_device_id"  was declared but never referenced
+      char onenet_device_id[100] = ONENET_DEVICE_ID;
+..\APP\ESP8266_APP.c(477): warning:  #870-D: invalid multibyte character sequence
+      my_printf(&huart1, "订阅属性设置主�?: %s\r\n", topic);
+..\APP\ESP8266_APP.c(487): warning:  #1-D: last line of file ends without a newline
   }
-..\APP\Game_Data.c: 1 warning, 0 errors
+..\APP\ESP8266_APP.c: 8 warnings, 0 errors
 linking...
-Program Size: Code=180354 RO-data=50270 RW-data=876 ZI-data=117012  
+Program Size: Code=181934 RO-data=50278 RW-data=900 ZI-data=117024  
 FromELF: creating hex file...
-"game\game.axf" - 0 Error(s), 1 Warning(s).
+"game\game.axf" - 0 Error(s), 8 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -56,7 +70,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE@5.1.2
-Build Time Elapsed:  00:00:10
+Build Time Elapsed:  00:00:08
 </pre>
 </body>
 </html>

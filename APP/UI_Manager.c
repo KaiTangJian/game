@@ -1,5 +1,22 @@
 #include "UI_Manager.h"
-#include  "lvgl.h"
+#include "lvgl.h"
+#include "queue.h"
+#include "semphr.h"
+#include "task.h"
+// 密码相关变量
+#define MAX_PASSWORD_LENGTH 8
+#define DEFAULT_PASSWORD "1221"
+char system_password[MAX_PASSWORD_LENGTH + 1] = DEFAULT_PASSWORD;
+char password_input_buffer[MAX_PASSWORD_LENGTH + 1] = {0};
+uint8_t password_input_index = 0;
+extern QueueHandle_t lvgl_mutex;
+extern QueueHandle_t ui_request_queue;
+// 密码界面对象
+lv_obj_t *password_screen = NULL;
+lv_obj_t *password_title_label = NULL;
+lv_obj_t *password_input_label = NULL;
+lv_obj_t *password_hint_label = NULL;
+
 UI_STATE_t Current_State = UI_STATE_START; // 现在的ui界面
 int Select_Number = 1;                     // 当前选择的关卡
 lv_obj_t *Home_Screen;
@@ -7,6 +24,22 @@ lv_obj_t *Select_Screen;
 lv_obj_t *Select_Label;
 extern bool is_gem_collected(uint8_t x, uint8_t y);
 static lv_color_t canvas_buffer[LV_CANVAS_BUF_SIZE_TRUE_COLOR(MAP_WIDTH * TILE_SIZE, MAP_HEIGHT *TILE_SIZE)];
+typedef enum
+{
+    MSG_USER_ACTIVITY = 1,
+    MSG_SCREEN_OFF,
+    MSG_SCREEN_ON,
+    MSG_GAME_STATE_CHANGE,
+    MSG_VOLUME_CHANGE,
+    MSG_WAKEUP,
+    MSG_TIME_UPDATE
+} AppMsgType_t;
+
+typedef struct
+{
+    AppMsgType_t type;
+    uint32_t data;
+} AppMessage_t;
 
 // 5个关卡的排行榜数据
 uint32_t level_high_scores[TOTAL_LEVELS][MAX_SCORES_PER_LEVEL] = {
@@ -19,11 +52,6 @@ uint32_t level_high_scores[TOTAL_LEVELS][MAX_SCORES_PER_LEVEL] = {
 static lv_obj_t *score_labels[TOTAL_LEVELS][MAX_SCORES_PER_LEVEL] = {{NULL}};
 static lv_obj_t *level_title_labels[TOTAL_LEVELS] = {NULL};
 
-/**
- * @brief 添加分数到指定关卡的排行榜
- * @param level_id 关卡ID (1-5)
- * @param score 要添加的分数
- */
 void add_score_to_leaderboard(uint8_t level_id, uint32_t score)
 {
     // 检查关卡ID有效性
@@ -150,8 +178,6 @@ void create_home_screen(void)
     }
 }
 
-
-
 lv_obj_t *game_play_screen = NULL;
 static lv_obj_t *map_canvas = NULL; // ??????????????
 
@@ -193,7 +219,7 @@ void create_game_play_screen(void)
         player1_obj = lv_obj_create(game_play_screen);
         lv_obj_set_size(player1_obj, TILE_SIZE, TILE_SIZE);
         lv_obj_set_style_bg_color(player1_obj, lv_color_hex(0xFF4500), LV_PART_MAIN); // ?????
-        lv_obj_set_style_border_width(player1_obj, 0, LV_PART_MAIN);                // ????
+        lv_obj_set_style_border_width(player1_obj, 0, LV_PART_MAIN);                  // ????
         lv_obj_clear_flag(player1_obj, LV_OBJ_FLAG_SCROLLABLE);
         // lv_obj_add_flag(player1_obj, LV_OBJ_FLAG_HIDDEN); // ???????
 
@@ -201,7 +227,7 @@ void create_game_play_screen(void)
         player2_obj = lv_obj_create(game_play_screen);
         lv_obj_set_size(player2_obj, TILE_SIZE, TILE_SIZE);
         lv_obj_set_style_bg_color(player2_obj, lv_color_hex(0xF800), LV_PART_MAIN); // ????
-        lv_obj_set_style_border_width(player2_obj, 0, LV_PART_MAIN);                  // ????
+        lv_obj_set_style_border_width(player2_obj, 0, LV_PART_MAIN);                // ????
         lv_obj_clear_flag(player2_obj, LV_OBJ_FLAG_SCROLLABLE);
         // lv_obj_add_flag(player2_obj, LV_OBJ_FLAG_HIDDEN); // ???????
 
@@ -256,7 +282,7 @@ void game_screen_draw_map(const Level_t *level_data)
         for (int x = 0; x < MAP_WIDTH; x++)
         {
             TileType_t tile = (TileType_t)level_data->map_data[y][x];
-            
+
             // 先绘制基础地形背景
             switch (tile)
             {
@@ -280,22 +306,22 @@ void game_screen_draw_map(const Level_t *level_data)
                 rect_dsc.bg_color = lv_color_hex(0x000000);
                 break;
             }
-            
+
             // 绘制基础格子
             lv_canvas_draw_rect(map_canvas, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, &rect_dsc);
-            
+
             // 如果是宝石，则在上方绘制圆形
             switch (tile)
             {
             case TILE_TYPE_COLLECTIBLE_FIRE_GEM:
                 arc_dsc.color = lv_color_make(255, 165, 0); // 橙色
-                lv_canvas_draw_arc(map_canvas, x*TILE_SIZE + TILE_SIZE/2, y*TILE_SIZE + TILE_SIZE/2, 
-                                  TILE_SIZE/3, 0, 360, &arc_dsc);
+                lv_canvas_draw_arc(map_canvas, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2,
+                                   TILE_SIZE / 3, 0, 360, &arc_dsc);
                 break;
             case TILE_TYPE_COLLECTIBLE_ICE_GEM:
                 arc_dsc.color = lv_color_make(173, 216, 230); // 浅蓝色
-                lv_canvas_draw_arc(map_canvas, x*TILE_SIZE + TILE_SIZE/2, y*TILE_SIZE + TILE_SIZE/2, 
-                                  TILE_SIZE/3, 0, 360, &arc_dsc);
+                lv_canvas_draw_arc(map_canvas, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2,
+                                   TILE_SIZE / 3, 0, 360, &arc_dsc);
                 break;
             default:
                 break;
@@ -497,7 +523,7 @@ void game_screen_redraw_tile(uint8_t x, uint8_t y)
         rect_dsc.bg_color = lv_color_hex(0x000000); // 普通地面
         break;
     }
-    
+
     // 绘制基础格子背景
     lv_canvas_draw_rect(map_canvas, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, &rect_dsc);
 
@@ -506,21 +532,134 @@ void game_screen_redraw_tile(uint8_t x, uint8_t y)
     {
         lv_draw_arc_dsc_t arc_dsc;
         lv_draw_arc_dsc_init(&arc_dsc);
-        arc_dsc.width = TILE_SIZE/3;
-        
+        arc_dsc.width = TILE_SIZE / 3;
+
         if (t == TILE_TYPE_COLLECTIBLE_FIRE_GEM)
         {
             arc_dsc.color = lv_color_make(255, 165, 0); // 橙色宝石
-            lv_canvas_draw_arc(map_canvas, x*TILE_SIZE + TILE_SIZE/2, y*TILE_SIZE + TILE_SIZE/2, 
-                              TILE_SIZE/3, 0, 360, &arc_dsc);
+            lv_canvas_draw_arc(map_canvas, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2,
+                               TILE_SIZE / 3, 0, 360, &arc_dsc);
         }
         else if (t == TILE_TYPE_COLLECTIBLE_ICE_GEM)
         {
             arc_dsc.color = lv_color_make(173, 216, 230); // 浅蓝色宝石
-            lv_canvas_draw_arc(map_canvas, x*TILE_SIZE + TILE_SIZE/2, y*TILE_SIZE + TILE_SIZE/2, 
-                              TILE_SIZE/3, 0, 360, &arc_dsc);
+            lv_canvas_draw_arc(map_canvas, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2,
+                               TILE_SIZE / 3, 0, 360, &arc_dsc);
         }
     }
 
     lv_obj_invalidate(map_canvas); // 通知LVGL刷新
+}
+
+void create_password_screen(void)
+{
+    if (password_screen != NULL)
+        return;
+
+    password_screen = lv_obj_create(NULL);
+    lv_obj_set_style_bg_color(password_screen, lv_color_hex(0xFFFF), 0);
+
+    // 标题
+    password_title_label = lv_label_create(password_screen);
+    lv_label_set_text(password_title_label, "Please input your password");
+    lv_obj_set_style_text_font(password_title_label, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_color(password_title_label, lv_color_hex(0x000000), 0);
+    lv_obj_align(password_title_label, LV_ALIGN_TOP_MID, 0, 30);
+
+    // 密码输入显示区域
+    password_input_label = lv_label_create(password_screen);
+    lv_label_set_text(password_input_label, "");
+    lv_obj_set_style_text_font(password_input_label, &lv_font_montserrat_24, 0);
+    lv_obj_set_style_text_color(password_input_label, lv_color_hex(0x0000FF), 0);
+    lv_obj_align(password_input_label, LV_ALIGN_CENTER, 0, 0);
+
+    // 提示信息
+    password_hint_label = lv_label_create(password_screen);
+    lv_label_set_text(password_hint_label, "Key1: Input 1\nKey2: Input 2\nKey3: Enter\nKey4:Delete");
+    lv_obj_set_style_text_color(password_hint_label, lv_color_hex(0x888888), 0);
+    lv_obj_align(password_hint_label, LV_ALIGN_BOTTOM_MID, 0, -30);
+}
+
+void password_input_digit(int digit)
+{
+    if (password_input_index < MAX_PASSWORD_LENGTH)
+    {
+        password_input_buffer[password_input_index] = digit + '0';
+        password_input_index++;
+        password_input_buffer[password_input_index] = '\0';
+
+        // 更新显示为*
+        char stars[MAX_PASSWORD_LENGTH + 1];
+        for (int i = 0; i < password_input_index; i++)
+        {
+            stars[i] = '*';
+        }
+        stars[password_input_index] = '\0';
+
+        if (xSemaphoreTake(lvgl_mutex, pdMS_TO_TICKS(100)) == pdTRUE)
+        {
+            lv_label_set_text(password_input_label, stars);
+            xSemaphoreGive(lvgl_mutex);
+        }
+    }
+}
+
+void password_backspace(void)
+{
+    if (password_input_index > 0)
+    {
+        password_input_index--;
+        password_input_buffer[password_input_index] = '\0';
+
+        // 更新显示
+        char stars[MAX_PASSWORD_LENGTH + 1];
+        for (int i = 0; i < password_input_index; i++)
+        {
+            stars[i] = '*';
+        }
+        stars[password_input_index] = '\0';
+
+        if (xSemaphoreTake(lvgl_mutex, pdMS_TO_TICKS(100)) == pdTRUE)
+        {
+            lv_label_set_text(password_input_label, stars);
+            xSemaphoreGive(lvgl_mutex);
+        }
+    }
+}
+
+void password_confirm(void)
+{
+    if (strcmp(password_input_buffer, system_password) == 0)
+    {
+        // 密码正确
+        my_printf(&huart1, "密码验证通过\r\n");
+        password_input_index = 0;
+        memset(password_input_buffer, 0, sizeof(password_input_buffer));
+
+        // 切换到主界面
+        AppMessage_t msg = {MSG_GAME_STATE_CHANGE, UI_STATE_START};
+        xQueueSend(ui_request_queue, &msg, 0);
+    }
+    else
+    {
+        // 密码错误
+        my_printf(&huart1, "密码错误\r\n");
+
+        // 显示错误信息
+        if (xSemaphoreTake(lvgl_mutex, pdMS_TO_TICKS(100)) == pdTRUE)
+        {
+            lv_label_set_text(password_input_label, "密码错误!");
+            xSemaphoreGive(lvgl_mutex);
+
+            // 1秒后清空显示并重置输入
+            vTaskDelay(pdMS_TO_TICKS(1000));
+            password_input_index = 0;
+            memset(password_input_buffer, 0, sizeof(password_input_buffer));
+            if (xSemaphoreTake(lvgl_mutex, pdMS_TO_TICKS(100)) == pdTRUE)
+            {
+                lv_label_set_text(password_input_label, "");
+                xSemaphoreGive(lvgl_mutex);
+            }
+        }
+    }
 }

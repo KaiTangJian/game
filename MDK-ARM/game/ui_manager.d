@@ -172,3 +172,7 @@ game\ui_manager.o: ../FreeRTOS/include/portable.h
 game\ui_manager.o: ../FreeRTOS/include/deprecated_definitions.h
 game\ui_manager.o: ../FreeRTOS/portable/RVDS/ARM_CM4F/portmacro.h
 game\ui_manager.o: ../FreeRTOS/include/mpu_wrappers.h
+game\ui_manager.o: ../FreeRTOS/include/queue.h
+game\ui_manager.o: ../FreeRTOS/include/task.h
+game\ui_manager.o: ../FreeRTOS/include/list.h
+game\ui_manager.o: ../FreeRTOS/include/semphr.h
