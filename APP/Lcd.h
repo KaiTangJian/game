@@ -1,8 +1,9 @@
 #ifndef __LCD_H
 #define __LCD_H
 #include "main.h"
-#include "mydefine.h"
+#include "lv_port_disp.h"
 #include "lvgl.h"
+extern DMA_HandleTypeDef hdma_spi1_tx;
 // LCD参数结构体
 typedef struct
 {

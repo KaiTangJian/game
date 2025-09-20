@@ -8,6 +8,8 @@ Release/
 Core/Startup/
 Drivers/CMSIS/
 
+/MDK-ARM/game/
+
 # 编译输出
 *.elf
 *.axf

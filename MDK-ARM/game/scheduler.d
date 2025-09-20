@@ -53,7 +53,6 @@ game\scheduler.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\in
 game\scheduler.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdarg.h
 game\scheduler.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\math.h
 game\scheduler.o: ..\APP\KEY_APP.h
-game\scheduler.o: ..\APP\mydefine.h
 game\scheduler.o: ..\APP\Bright_APP.h
 game\scheduler.o: ../Core/Inc/adc.h
 game\scheduler.o: ..\APP\USART_APP.h
@@ -186,6 +185,7 @@ game\scheduler.o: ..\APP\Game_Manager.h
 game\scheduler.o: ..\APP\Buzzer_APP.h
 game\scheduler.o: ..\APP\DS1302_APP.h
 game\scheduler.o: ..\APP\Lcd.h
+game\scheduler.o: ../lvgl/examples/porting/lv_port_disp.h
 game\scheduler.o: ../lvgl/examples/porting/lv_port_disp.h
 game\scheduler.o: ../FreeRTOS/include/queue.h
 game\scheduler.o: ../FreeRTOS/include/semphr.h

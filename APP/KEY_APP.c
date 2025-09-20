@@ -1,4 +1,4 @@
-#include "mydefine.h"
+
 #include "UI_Manager.h"
 #include "Bright_APP.h"
 #include "queue.h"

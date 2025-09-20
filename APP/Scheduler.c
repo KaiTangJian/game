@@ -568,8 +568,7 @@ void Wakeup_Task(void *pvParameters)
             {
                 wakeup_counter++;
                 if (wakeup_counter >= WAKEUP_SAMPLES)
-                {
-                
+                {              
                     Turn_On();
                     AppMessage_t msg = {MSG_WAKEUP, HAL_GetTick()};
                     xQueueSend(app_msg_queue, &msg, 0);

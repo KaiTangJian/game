@@ -160,12 +160,12 @@ game\lv_port_disp.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
 game\lv_port_disp.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 game\lv_port_disp.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 game\lv_port_disp.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+game\lv_port_disp.o: ../lvgl/examples/porting/lv_port_disp.h
 game\lv_port_disp.o: ../APP/mydefine.h
 game\lv_port_disp.o: ../Core/Inc/gpio.h
 game\lv_port_disp.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\stdio.h
 game\lv_port_disp.o: C:\Users\71551\Desktop\keil5\ARM\ARM_Complier_5.06u7\Bin\..\include\math.h
 game\lv_port_disp.o: ../APP/KEY_APP.h
-game\lv_port_disp.o: ../APP/mydefine.h
 game\lv_port_disp.o: ../APP/Bright_APP.h
 game\lv_port_disp.o: ../Core/Inc/adc.h
 game\lv_port_disp.o: ../APP/USART_APP.h
@@ -185,5 +185,4 @@ game\lv_port_disp.o: ../FreeRTOS/portable/RVDS/ARM_CM4F/portmacro.h
 game\lv_port_disp.o: ../FreeRTOS/include/mpu_wrappers.h
 game\lv_port_disp.o: ../APP/Buzzer_APP.h
 game\lv_port_disp.o: ../APP/DS1302_APP.h
-game\lv_port_disp.o: ../APP/Lcd.h
 game\lv_port_disp.o: ../lvgl/examples/porting/lv_port_disp.h

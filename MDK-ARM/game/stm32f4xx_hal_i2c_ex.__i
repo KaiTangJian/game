@@ -1,5 +1,0 @@
---c99 -c --cpu Cortex-M4.fp.sp -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../APP -I ../FreeRTOS/include -I ../Core/Src -I ../FreeRTOS/portable/RVDS/ARM_CM4F -I ../lvgl -I ../lvgl/src -I ../lvgl/examples/porting -I ../lvgl/src/font --diag_suppress=68 --diag_suppress=111 --diag_suppress=188 --diag_suppress=223 --diag_suppress=546  --diag_suppress=1295
--I.\RTE\_game
--IC:\Users\71551\Desktop\keil5\ARM\CMSIS\5.4.0\CMSIS\Core\Include
--D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx
--o game\stm32f4xx_hal_i2c_ex.o --omf_browse game\stm32f4xx_hal_i2c_ex.crf --depend game\stm32f4xx_hal_i2c_ex.d "../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c"
