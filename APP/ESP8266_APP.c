@@ -213,90 +213,49 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
             // 检查是否收到完整的一行数据
 
-                // 检查是否收到完整的一行数据
             if (aRxBuffer == '\n' || aRxBuffer == '\r')
             {
-                // 直接查找连续的四位数字，不检查MQTT消息标识和主题
-                // 查找密码字段 (数字格式: "password":2111)
-                char *password_start = strstr((char *)ESP01S_buf, "\"password\":");
-                if (password_start != NULL)
+                if (strstr((char *)ESP01S_buf, "password") != NULL)
                 {
-                    password_start += 10; // 跳过"password":字符串
+                    char *data_ptr = (char *)ESP01S_buf;
+                    int consecutive_digits = 0;
+                    char *digit_start = NULL;
 
-                    // 查找密码结束位置
-                    char *password_end = strchr(password_start, '}');
-                    if (password_end != NULL)
+                    while (*data_ptr != '\0')
                     {
-                        *password_end = '\0'; // 临时结束字符串
-
-                        // 去除空格
-                        while (*password_start == ' ')
+                        if (isdigit((unsigned char)*data_ptr))
                         {
-                            password_start++;
-                        }
-
-                        // 验证是否为纯数字
-                        char *temp = password_start;
-                        bool is_valid_number = true;
-                        while (*temp != '\0' && *temp != ',' && *temp != '}' && *temp != ' ')
-                        {
-                            if (!isdigit((unsigned char)*temp))
+                            if (consecutive_digits == 0)
                             {
-                                is_valid_number = false;
-                                break;
+                                digit_start = data_ptr; // 记录数字开始位置
                             }
-                            temp++;
-                        }
+                            consecutive_digits++;
 
-                        if (is_valid_number)
-                        {
-                            // 提取数字密码
-                            char password_str[16];
-                            int len = temp - password_start;
-                            if (len < sizeof(password_str) - 1)
+                            // 如果找到连续四个数字
+                            if (consecutive_digits == 4)
                             {
-                                strncpy(password_str, password_start, len);
-                                password_str[len] = '\0';
+                                // 提取四位数字
+                                char password_str[5];
+                                strncpy(password_str, digit_start, 4);
+                                password_str[4] = '\0';
 
                                 // 更新系统密码
                                 extern char system_password[];
-                                if (strlen(password_str) <= 8) // MAX_PASSWORD_LENGTH
-                                {
-                                    strncpy(system_password, password_str, 8);
-                                    system_password[8] = '\0';
-                                    my_printf(&huart1, "密码已更新为: %s\r\n", system_password);
+                                strncpy(system_password, password_str, 4);
+                                system_password[4] = '\0';
+                                my_printf(&huart1, "密码已更新为: %s\r\n", system_password);
 
-                                    // 发送响应确认
-                                    char response_topic[64];
-                                    char response_payload[128];
-
-                                    snprintf(response_topic, sizeof(response_topic),
-                                             "$sys/%s/%s/thing/property/set_reply", ONENET_PRODUCT_ID, ONENET_DEVICE_ID);
-
-                                    snprintf(response_payload, sizeof(response_payload),
-                                             "{\\\"id\\\":\\\"123\\\"\\,\\\"code\\\":200\\,\\\"msg\\\":\\\"success\\\"}");
-
-                                    OneNET_MQTT_Publish(response_topic, response_payload, 0);
-                                }
-                                else
-                                {
-                                    my_printf(&huart1, "新密码长度超限\r\n");
-                                }
+                                break;
                             }
                         }
                         else
                         {
-                            my_printf(&huart1, "密码格式错误，应为纯数字\r\n");
+                            consecutive_digits = 0; // 重置计数
                         }
-
-                        *password_end = '}'; // 恢复原字符
+                        data_ptr++;
                     }
                 }
-            
-                // 清空缓冲区
-                //ESP01S_Clear();
-            }
-        }
+            }        }
 
         HAL_UART_Receive_IT(&huart2, (uint8_t *)&aRxBuffer, 1); // 再开启接收中�?
     }

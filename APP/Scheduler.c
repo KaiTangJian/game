@@ -11,7 +11,7 @@
 #include "Buzzer_APP.h"
 #include "DS1302_APP.h"
 #include <math.h>
-#define SCREEN_TIMEOUT_MS 30000 // 30秒无操作后熄屏
+#define SCREEN_TIMEOUT_MS 60000 // 30秒无操作后熄屏
 #define MOTION_THRESHOLD 0.2f
 #define WAKEUP_THRESHOLD 1.5f
 #define WAKEUP_SAMPLES 3
@@ -35,7 +35,7 @@ void Task3(void *pvParameters);
 
 // 游戏逻辑任务
 #define GAME_LOGIC_TASK_STACK_SIZE 1024
-#define GAME_LOGIC_TASK_PRIORITY 2 
+#define GAME_LOGIC_TASK_PRIORITY 2
 TaskHandle_t Game_Logic_Task_Handle;
 void Game_Logic_Task(void *pvParameters);
 
@@ -219,9 +219,7 @@ void LvHandler_Task(void *pvParameters)
 
         if (Current_State != last_state)
         {
-            // 等待获取互斥锁来处理界面切换
-            if (xSemaphoreTake(lvgl_mutex, pdMS_TO_TICKS(100)) == pdTRUE)
-            {
+
                 switch (Current_State)
                 {
                 case UI_STATE_START:
@@ -259,7 +257,7 @@ void LvHandler_Task(void *pvParameters)
                     }
                     lv_disp_load_scr(game_lose_screen);
                     break;
-                case UI_STATE_PASSWORD:  // 添加密码界面处理
+                case UI_STATE_PASSWORD: // 添加密码界面处理
                     if (password_screen == NULL)
                     {
                         create_password_screen();
@@ -268,32 +266,16 @@ void LvHandler_Task(void *pvParameters)
                     break;
                 }
 
-                xSemaphoreGive(lvgl_mutex);
+                
 
                 AppMessage_t state_msg = {MSG_GAME_STATE_CHANGE, Current_State};
                 xQueueSend(ui_state_queue, &state_msg, 0);
                 xQueueSend(game_state_queue, &state_msg, 0); // 给 Game_Logic_Task 使用
                 last_state = Current_State;
-            }
-            else
-            {
-                // 如果无法获取互斥锁，稍后再试
-                vTaskDelay(pdMS_TO_TICKS(10));
-                continue;
-            }
+            
         }
-
-        // 处理常规的LVGL任务
-        if (xSemaphoreTake(lvgl_mutex, pdMS_TO_TICKS(50)) == pdTRUE)
-        {
             lv_task_handler();
-            xSemaphoreGive(lvgl_mutex);
-        }
-        else
-        {
-            // 如果无法获取互斥锁，短暂等待
-            vTaskDelay(pdMS_TO_TICKS(5));
-        }
+
 
         vTaskDelay(pdMS_TO_TICKS(5));
     }
@@ -336,9 +318,9 @@ void Game_Logic_Task(void *pvParameters)
                 if (Game_LoadLevel(Select_Number))
                 {
 
-                    game_screen_draw_map(current_level_data); 
+                    game_screen_draw_map(current_level_data);
 
-                    game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state); 
+                    game_screen_update_dynamic_elements(&current_player1_state, &current_player2_state);
                     game_initialized_for_current_level = true;
                 }
                 else
@@ -384,20 +366,20 @@ void Input_Task(void *pvParameters)
     while (1)
     {
 
-        key_proc(); 
+        key_proc();
         MPU6050_Process_Input();
-        
+
         int16_t current_encoder_count = __HAL_TIM_GET_COUNTER(&htim1);
         int16_t encoder_diff = current_encoder_count - last_encoder_count;
 
-        if (Screen_On && encoder_diff != 0 )
+        if (Screen_On && encoder_diff != 0)
         {
             Encoder_Control_Volume(encoder_diff);
             last_encoder_count = current_encoder_count;
             AppMessage_t msg = {MSG_USER_ACTIVITY, HAL_GetTick()};
             xQueueSend(app_msg_queue, &msg, 0);
         }
-       else if (encoder_diff != 0)
+        else if (encoder_diff != 0)
         {
             last_encoder_count = current_encoder_count;
         }
@@ -519,10 +501,10 @@ void Wakeup_Task(void *pvParameters)
     while (1)
     {
         // 只在屏幕关闭时检测唤醒
-        
+
         if (!Screen_On)
         {
-            
+
             // 读取MPU6050数据用于唤醒检测
             taskENTER_CRITICAL();
             MPU6050_Read_Player_Data(1);
@@ -541,7 +523,7 @@ void Wakeup_Task(void *pvParameters)
             {
                 wakeup_counter++;
                 if (wakeup_counter >= WAKEUP_SAMPLES)
-                {              
+                {
                     Turn_On();
                     AppMessage_t msg = {MSG_WAKEUP, HAL_GetTick()};
                     xQueueSend(app_msg_queue, &msg, 0);

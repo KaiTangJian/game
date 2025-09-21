@@ -272,11 +272,6 @@ void game_screen_draw_map(const Level_t *level_data)
     rect_dsc.border_width = 0;
     rect_dsc.radius = 0;
 
-    // 声明圆形绘图描述符
-    lv_draw_arc_dsc_t arc_dsc;
-    lv_draw_arc_dsc_init(&arc_dsc);
-    arc_dsc.width = TILE_SIZE / 3;
-
     for (int y = 0; y < MAP_HEIGHT; y++)
     {
         for (int x = 0; x < MAP_WIDTH; x++)
@@ -299,8 +294,10 @@ void game_screen_draw_map(const Level_t *level_data)
                 rect_dsc.bg_color = lv_color_hex(0x07E0); // 绿色
                 break;
             case TILE_TYPE_COLLECTIBLE_FIRE_GEM:
+                rect_dsc.bg_color = lv_color_hex(0xFFD700);
+                break;
             case TILE_TYPE_COLLECTIBLE_ICE_GEM:
-                rect_dsc.bg_color = lv_color_hex(0xFFE0); // 宝石格子使用普通地面颜色
+                rect_dsc.bg_color = lv_color_hex(0xFF00FF); // 宝石格子使用普通地面颜色
                 break;
             default:
                 rect_dsc.bg_color = lv_color_hex(0x000000);
@@ -309,33 +306,12 @@ void game_screen_draw_map(const Level_t *level_data)
 
             // 绘制基础格子
             lv_canvas_draw_rect(map_canvas, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, &rect_dsc);
-
-            // 如果是宝石，则在上方绘制圆形
-            switch (tile)
-            {
-            case TILE_TYPE_COLLECTIBLE_FIRE_GEM:
-                arc_dsc.color = lv_color_make(255, 165, 0); // 橙色
-                lv_canvas_draw_arc(map_canvas, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2,
-                                   TILE_SIZE / 3, 0, 360, &arc_dsc);
-                break;
-            case TILE_TYPE_COLLECTIBLE_ICE_GEM:
-                arc_dsc.color = lv_color_make(173, 216, 230); // 浅蓝色
-                lv_canvas_draw_arc(map_canvas, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2,
-                                   TILE_SIZE / 3, 0, 360, &arc_dsc);
-                break;
-            default:
-                break;
-            }
         }
     }
     lv_obj_invalidate(map_canvas);
 }
 
-/**
- * @brief 动态元素更�?
- * @param p1 ????????????
- * @param p2 ????????????
- */
+
 void game_screen_update_dynamic_elements(const GamePlayer_t *p1, const GamePlayer_t *p2)
 {
 
@@ -516,8 +492,10 @@ void game_screen_redraw_tile(uint8_t x, uint8_t y)
         rect_dsc.bg_color = lv_color_hex(0x07E0); // 绿色
         break;
     case TILE_TYPE_COLLECTIBLE_FIRE_GEM:
+        rect_dsc.bg_color = lv_color_hex(0x07E0);
+        break;
     case TILE_TYPE_COLLECTIBLE_ICE_GEM:
-        rect_dsc.bg_color = lv_color_hex(0xFFE0); // 宝石格子使用普通地面颜色作为背景
+        rect_dsc.bg_color = lv_color_hex(0x07E0);
         break;
     default:
         rect_dsc.bg_color = lv_color_hex(0x000000); // 普通地面
@@ -526,27 +504,6 @@ void game_screen_redraw_tile(uint8_t x, uint8_t y)
 
     // 绘制基础格子背景
     lv_canvas_draw_rect(map_canvas, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, &rect_dsc);
-
-    // 如果是宝石，则在上方绘制圆形
-    if (t == TILE_TYPE_COLLECTIBLE_FIRE_GEM || t == TILE_TYPE_COLLECTIBLE_ICE_GEM)
-    {
-        lv_draw_arc_dsc_t arc_dsc;
-        lv_draw_arc_dsc_init(&arc_dsc);
-        arc_dsc.width = TILE_SIZE / 3;
-
-        if (t == TILE_TYPE_COLLECTIBLE_FIRE_GEM)
-        {
-            arc_dsc.color = lv_color_make(255, 165, 0); // 橙色宝石
-            lv_canvas_draw_arc(map_canvas, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2,
-                               TILE_SIZE / 3, 0, 360, &arc_dsc);
-        }
-        else if (t == TILE_TYPE_COLLECTIBLE_ICE_GEM)
-        {
-            arc_dsc.color = lv_color_make(173, 216, 230); // 浅蓝色宝石
-            lv_canvas_draw_arc(map_canvas, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2,
-                               TILE_SIZE / 3, 0, 360, &arc_dsc);
-        }
-    }
 
     lv_obj_invalidate(map_canvas); // 通知LVGL刷新
 }

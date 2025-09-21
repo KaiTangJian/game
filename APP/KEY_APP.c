@@ -73,7 +73,11 @@ void key_proc()
                 req_msg.data = UI_STATE_SELECT;
                 xQueueSend(ui_request_queue, &req_msg, 0);
             }
-            // 如果开始界面有其他按键功能，可以在这里添加
+                else if (key_down == 4) // 在开始界面按下按键4
+            {
+                req_msg.data = UI_STATE_PASSWORD;
+                xQueueSend(ui_request_queue, &req_msg, 0);
+            }
             break;
 
         case UI_STATE_SELECT:  // 当前在选择界面
