@@ -12,35 +12,34 @@ bool Screen_On = true;
 uint32_t last_user_activity_time = 0;
 
 
-// --- 初始化 (通常在 main 函数或外设初始化函数中调用一次) ---
+
 void adc_dma_init(void)
 {
 
     HAL_ADC_Start_DMA(&hadc1, (uint32_t *)adc_dma_buffer, ADC_DMA_BUFFER_SIZE);
 }
 
-// --- 处理任务 (在主循环或定时器回调中定期调用) ---
+
 void adc_task(void)
 {
     if (Screen_On)
     {
         uint32_t adc_sum = 0;
         uint32_t pwm_duty_cycle = 0;
-        // 1. 计算 DMA 缓冲区中所有采样值的总和
-        //    注意：这里直接读取缓冲区，可能包含不同时刻的采样值
+
         for (uint16_t i = 0; i < ADC_DMA_BUFFER_SIZE; i++)
         {
             adc_sum += adc_dma_buffer[i];
         }
 
         adc_val = adc_sum / ADC_DMA_BUFFER_SIZE;
-        my_printf(&huart1, "ADC Value: %lu\n", adc_val);
+        //my_printf(&huart1, "ADC Value: %lu\n", adc_val);
 
         if (adc_val > ADC_MAX_VALUE)
             adc_val = ADC_MAX_VALUE;
 
         pwm_duty_cycle = (uint32_t)(((1.0f - (float)adc_val / ADC_MAX_VALUE) * (BRIGHTNESS_MAX - BRIGHTNESS_MIN)) + BRIGHTNESS_MIN);
-        my_printf(&huart1, "pwm_duty_cycle: %lu\n", pwm_duty_cycle);
+        //my_printf(&huart1, "pwm_duty_cycle: %lu\n", pwm_duty_cycle);
         if (pwm_duty_cycle > BRIGHTNESS_MAX)
         {
             pwm_duty_cycle = BRIGHTNESS_MAX;

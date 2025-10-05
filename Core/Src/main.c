@@ -120,7 +120,7 @@ int main(void)
   lv_port_disp_init();
   update_home_screen_leaderboard();
   adc_dma_init();
-  //DS1302_Set_Time(25, 1, 9, 7, 11, 16, 0);
+  //DS1302_Set_Time(25, 1, 9, 21, 10, 21, 0);
 
   
   ESP01S_Init();

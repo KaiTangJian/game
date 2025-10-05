@@ -7,6 +7,7 @@
 #include "Game_Manager.h"
 #include "USART_APP.h"
 extern I2C_HandleTypeDef hi2c2;
+extern I2C_HandleTypeDef hi2c3;
 extern UART_HandleTypeDef huart1;
 // 定义两个MPU6050的I2C地址
 #define MPU6050_PLAYER1_ADDR (0x68 << 1) // 玩家1传感器地址
@@ -21,10 +22,24 @@ extern UART_HandleTypeDef huart1;
 #define ACCEL_XOUT_H_REG 0x3B
 // 控制阈值定义
 #define MOVE_THRESHOLD_GYRO 30.0f // 左右移动阈值（陀螺仪度/秒）
-#define JUMP_THRESHOLD_ACCEL 0.3f // 跳跃检测阈值
+#define JUMP_THRESHOLD_ACCEL 0.5f // 跳跃检测阈值
 #define JUMP_COOLDOWN 3000         // 跳跃冷却时间（毫秒）
 #define MOVE_INTERVAL 500         // 连续移动间隔（毫秒）
-#define MOVE_THRESHOLD_ACCEL 0.3f // 倾斜移动阈值
+#define MOVE_THRESHOLD_ACCEL 0.8f // 倾斜移动阈值
+
+// 互补滤波相关定义
+#define COMPLEMENTARY_FILTER_ALPHA 0.98f  // 互补滤波系数
+
+// 互补滤波结构体
+typedef struct {
+    float angle_x;      // X轴角度
+    float angle_y;      // Y轴角度
+    float angle_z;      // Z轴角度
+    float gyro_bias_x;  // X轴陀螺仪偏置
+    float gyro_bias_y;  // Y轴陀螺仪偏置
+    float gyro_bias_z;  // Z轴陀螺仪偏置
+    uint32_t last_time; // 上次更新时间
+} ComplementaryFilterData;
 // 双传感器数据结构
 typedef struct
 {
@@ -53,6 +68,7 @@ void MPU6050_Read_All_Single(uint16_t device_addr, MPU6050_PlayerData *data);
 // 全局数据变量
 extern MPU6050_PlayerData player1_data;
 extern MPU6050_PlayerData player2_data;
-
+extern ComplementaryFilterData filter_data1;
+extern ComplementaryFilterData filter_data2;
 #endif
 

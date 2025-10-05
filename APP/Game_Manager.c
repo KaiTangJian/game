@@ -271,7 +271,7 @@ void Game_Update(void)
                 gems[i].collected = true;
                 current_game_score += 100;
                 game_screen_redraw_tile(p1x, p1y); // 只重绘该格子
-                play_collect_item_sound();
+                //play_collect_item_sound();
                 break;
             }
         }

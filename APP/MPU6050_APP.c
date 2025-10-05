@@ -14,47 +14,44 @@ MPU6050_PlayerData player2_data;
 HAL_StatusTypeDef MPU6050_Init_Single(uint16_t device_addr)
 {
     uint8_t check = 0, data;
-
+    I2C_HandleTypeDef *i2c_handle;
     //  WHO_AM_I
-    if (HAL_I2C_Mem_Read(&hi2c2, device_addr, WHO_AM_I_REG, 1, &check, 1, 100) != HAL_OK)
-    {
-        return HAL_ERROR;
-    }
     if (device_addr == MPU6050_PLAYER1_ADDR)
     {
-        if (check != 0x68)
-        {
-            return HAL_ERROR;
-        }
+        i2c_handle = &hi2c2; // 玩家1使用I2C1
+        my_printf(&huart1, "Initializing Player 1 MPU6050 on I2C1, addr: 0x%X\r\n", device_addr >> 1);
     }
     else
     {
-        if (check != 0x70) // 新的mpu地址
-        {
-            return HAL_ERROR;
-        }
+        i2c_handle = &hi2c3; // 玩家2使用I2C2
+        my_printf(&huart1, "Initializing Player 2 MPU6050 on I2C2, addr: 0x%X\r\n", device_addr >> 1);
     }
+    if (HAL_I2C_Mem_Read(i2c_handle, device_addr, WHO_AM_I_REG, 1, &check, 1, 100) != HAL_OK)
+    {
+        return HAL_ERROR;
+    }
+
 
     // 配置电源管理
     data = 0x00;
-    HAL_I2C_Mem_Write(&hi2c2, device_addr, PWR_MGMT_1_REG, 1, &data, 1, 100);
+    HAL_I2C_Mem_Write(i2c_handle, device_addr, PWR_MGMT_1_REG, 1, &data, 1, 100);
     HAL_Delay(10);
 
     // 配置采样
     data = 0x07;
-    HAL_I2C_Mem_Write(&hi2c2, device_addr, SMPLRT_DIV_REG, 1, &data, 1, 100);
+    HAL_I2C_Mem_Write(i2c_handle, device_addr, SMPLRT_DIV_REG, 1, &data, 1, 100);
 
     // 配置滤波
     data = 0x03;
-    HAL_I2C_Mem_Write(&hi2c2, device_addr, CONFIG_REG, 1, &data, 1, 100);
+    HAL_I2C_Mem_Write(i2c_handle, device_addr, CONFIG_REG, 1, &data, 1, 100);
 
     // 配置陀螺仪量程
     data = 0x00;
-    HAL_I2C_Mem_Write(&hi2c2, device_addr, GYRO_CONFIG_REG, 1, &data, 1, 100);
+    HAL_I2C_Mem_Write(i2c_handle, device_addr, GYRO_CONFIG_REG, 1, &data, 1, 100);
 
     // 配置加速度计量
     data = 0x00;
-    HAL_I2C_Mem_Write(&hi2c2, device_addr, ACCEL_CONFIG_REG, 1, &data, 1, 100);
+    HAL_I2C_Mem_Write(i2c_handle, device_addr, ACCEL_CONFIG_REG, 1, &data, 1, 100);
 
     return HAL_OK;
 }
@@ -81,7 +78,8 @@ HAL_StatusTypeDef MPU6050_Dual_Init(void)
     // 如果任一传感器初始化失败，返回错误
     if (status1 != HAL_OK || status2 != HAL_OK)
     {
-        return HAL_ERROR;
+      my_printf(&huart1,"ERROR");  
+			return HAL_ERROR;
     }
 
     return HAL_OK;
@@ -89,10 +87,19 @@ HAL_StatusTypeDef MPU6050_Dual_Init(void)
 // 读取单个传感器的所有数值
 void MPU6050_Read_All_Single(uint16_t device_addr, MPU6050_PlayerData *data)
 {
-    uint8_t buf[14];
-
-    // 读取所有传感器数据
-    HAL_I2C_Mem_Read(&hi2c2, device_addr, ACCEL_XOUT_H_REG, 1, buf, 14, 100);
+    uint8_t buf[14] = {0};
+    I2C_HandleTypeDef *i2c_handle;
+    // 根据设备地址选择对应的I2C总线
+    if (device_addr == MPU6050_PLAYER1_ADDR)
+    {
+        i2c_handle = &hi2c2; // 玩家1使用I2C1
+    }
+    else
+    {
+        i2c_handle = &hi2c3; // 玩家2使用I2C2
+    }
+    HAL_StatusTypeDef status = HAL_I2C_Mem_Read(i2c_handle, device_addr, ACCEL_XOUT_H_REG, 1, buf, 14, 100);
+    HAL_Delay(10);
 
     // 解析原始数据
     data->Accel_X_RAW = (int16_t)(buf[0] << 8 | buf[1]);
@@ -136,17 +143,19 @@ static void Process_Single_Player_Input(uint8_t player_id, MPU6050_PlayerData *d
     uint32_t current_time = HAL_GetTick();
     int8_t dx = 0;
     bool should_move = false;
-
+    // my_printf(&huart1,"Player %d RAW: Ax_RAW=%d, PROC: Ax=%.3f\r\n", player_id, data->Accel_X_RAW, data->Ax);
 
     // 左右移动检测（基于倾斜角度）
     if (data->Ax > MOVE_THRESHOLD_ACCEL)
     {
-        dx = -1; // 向右倾斜
+        dx = -1; // 向左倾斜
+        my_printf(&huart1, "Player %d: Moving left %f\r\n", player_id, data->Ax);
         should_move = true;
     }
     else if (data->Ax < -MOVE_THRESHOLD_ACCEL)
     {
-        dx = 1; // 向左倾斜
+        dx = 1; // 向右倾斜
+        my_printf(&huart1, "Player %d: Moving right\r\n", player_id);
         should_move = true;
     }
 
